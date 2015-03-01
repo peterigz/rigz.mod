@@ -1,0 +1,85 @@
+<html><head><title>Math module for general math functions reference</title>
+<link rel=stylesheet Type=text/css href='../../../../doc/bmxstyle.css'>
+</head><body>
+<table width=100% cellspacing=0><tr align=center><td class=small>&nbsp;</td>
+<td class=small width=1%><b>rigz.math:</b></td>
+<td class=small width=1%><a href=#functions class=small>Functions</a></td>
+<td class=small width=1%><a href=#modinfo class=small>Modinfo</a></td>
+<td class=small width=1%><a href='../../../../mod/rigz.mod/math.mod/math.bmx' class=small>Source</a></td>
+<td class=small>&nbsp;</td></tr></table>
+<h1>Math module for general math functions</h1>
+<h2><a name=functions></a>Functions Summary</h2><table class=doc width=100%>
+<tr><td class=docleft width=1%><a href=#AngleDifference>AngleDifference</a></td><td class=docright>
+Get the difference between 2 angles.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetDirection>GetDirection</a></td><td class=docright>
+get the direction from 1 point to another.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetDistance>GetDistance</a></td><td class=docright>
+The distance between 1 point and another.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetNearestPowerOf2>GetNearestPowerOf2</a></td><td class=docright>
+Round up to the nearest power of 2.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetTexSize>GetTexSize</a></td><td class=docright>
+Gets the texture size needed for an animation with a given size and number of frames.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#Round>Round</a></td><td class=docright>
+rounds a number to the nearest int.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#TweenValues>TweenValues</a></td><td class=docright>
+Interpolate between 2 values.
+</td></tr>
+</table>
+<h2
+ id=functionsdet>Functions
+</h2>
+<table class=doc width=100% cellspacing=3 id=AngleDifference>
+<tr><td class=doctop colspan=2>Function AngleDifference:Float(Angle1:Float, Angle2:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the difference between 2 angles.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=GetDirection>
+<tr><td class=doctop colspan=2>Function GetDirection:Float(fromx:Float, fromy:Float, tox:Float, toy:Float)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>Angle of difference.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>get the direction from 1 point to another.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Thanks to "Snarkbait" for this little code snippit.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=GetDistance>
+<tr><td class=doctop colspan=2>Function GetDistance:Float(fromx:Float, fromy:Float, tox:Float, toy:Float, fast:Int = False)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>The distance between the 2 points.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>The distance between 1 point and another.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=GetNearestPowerOf2>
+<tr><td class=doctop colspan=2>Function GetNearestPowerOf2:Int(n:Int)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Round up to the nearest power of 2.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=GetTexSize>
+<tr><td class=doctop colspan=2>Function GetTexSize(w:Int, h:Int, frames:Int, powersof2:Int = True, texwidth:Int Var, texheight:Int Var, Cols:Int Var, rows:Int Var)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>the texture width and height, along with the number of columns and rows of animation frames.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Gets the texture size needed for an animation with a given size and number of frames.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>this function will ensure that the texture width and height remain in powers of 2.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=Round>
+<tr><td class=doctop colspan=2>Function Round:Int(v:Double)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>Rounded Int.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>rounds a number to the nearest int.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=TweenValues>
+<tr><td class=doctop colspan=2>Function TweenValues:Float(oldValue:Float, value:Float, tween:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Interpolate between 2 values.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This is the function used to achieve render tweening by taking the old and new values and interpolating between the 2.</td></tr>
+</table>
+<br>
+<h2 id=modinfo>Module Information</h2>
+<table width=100%>
+<tr><th width=1%>Author</th><td>Peter J. Rigby</td></tr>
+<tr><th width=1%>Copyright</th><td>Peter J. Rigby 2009</td></tr>
+<tr><th width=1%>Purpose</th><td>A General Math Module</td></tr>
+<tr><th width=1%>Version</th><td>v1</td></tr>
+</body></html>

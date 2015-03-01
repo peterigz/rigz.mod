@@ -1,0 +1,244 @@
+<html><head><title>2d Vector and Matrix types for basic 2d geometry stuff reference</title>
+<link rel=stylesheet Type=text/css href='../../../../doc/bmxstyle.css'>
+</head><body>
+<table width=100% cellspacing=0><tr align=center><td class=small>&nbsp;</td>
+<td class=small width=1%><b>rigz.vector:</b></td>
+<td class=small width=1%><a href=#functions class=small>Functions</a></td>
+<td class=small width=1%><a href=#types class=small>Types</a></td>
+<td class=small width=1%><a href=#modinfo class=small>Modinfo</a></td>
+<td class=small width=1%><a href='../../../../mod/rigz.mod/vector.mod/vector.bmx' class=small>Source</a></td>
+<td class=small>&nbsp;</td></tr></table>
+<h1>2d Vector and Matrix types for basic 2d geometry stuff</h1>
+These types are basic with the minimum functionality required for the rest of the rigz collection of modules.
+These type grow as the overal need grows.
+<h2><a name=functions></a>Functions Summary</h2><table class=doc width=100%>
+<tr><td class=docleft width=1%><a href=#CreateMatrix2>CreateMatrix2</a></td><td class=docright>
+Create a new 2d matrix.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#CreateVector2>CreateVector2</a></td><td class=docright>
+Create a new 2d vector.
+</td></tr>
+</table>
+<h2><a name=types></a>Types Summary</h2><table class=doc width=100%>
+<tr><td class=docleft width=1%><a href=#tlMatrix2>tlMatrix2</a></td><td class=docright>
+Matrix type which can be used to easily transform vectors.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#tlVector2>tlVector2</a></td><td class=docright>
+2d vector type for basic vector handling.
+</td></tr>
+</table>
+<h2
+ id=functionsdet>Functions
+</h2>
+<table class=doc width=100% cellspacing=3 id=CreateMatrix2>
+<tr><td class=doctop colspan=2>Function CreateMatrix2:tlMatrix2(aa:Float = 1, ab:Float = 0, ba:Float = 0, bb:Float = 1)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create a new 2d matrix.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=CreateVector2>
+<tr><td class=doctop colspan=2>Function CreateVector2:tlVector2(x:Float, y:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create a new 2d vector.</td></tr>
+</table>
+<br>
+<h2
+ id=typesdet>Types
+</h2>
+<table class=doc width=100% cellspacing=3 id=tlMatrix2>
+<tr><td class=doctop colspan=2>Type tlMatrix2</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Matrix type which can be used to easily transform vectors.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Matrices come in handy for transforming vectors such as scale and rotation.</td></tr>
+</table>
+<table class=doc width=90% align=center><tr ><th class=doctop colspan=2 align=left><a name=tlMatrix2_methods></a>Methods Summary</th></tr>
+<tr><td class=docleft width=1%><a href=#scale>scale</a></td><td class=docright>
+Scale the matrix by a given amount.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#set>set</a></td><td class=docright>
+Set the matrix to a new set of values.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#transform>transform</a></td><td class=docright>
+Transfrom the matrix.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#transformpoint>transformpoint</a></td><td class=docright>
+Transfrom a point.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#transformvector>transformvector</a></td><td class=docright>
+Transfrom a vector with the matrix.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#transpose>transpose</a></td><td class=docright>
+Transpose the matrix.
+</td></tr>
+</table>
+<table class=doc width=90% align=center><tr ><th class=doctop colspan=2 align=left><a name=tlMatrix2_functions></a>Functions Summary</th></tr>
+<tr><td class=docleft width=1%><a href=#Create>Create</a></td><td class=docright>
+Create a new matrix.
+</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=scale>
+<tr><td class=doctop colspan=2>Method scale(s:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Scale the matrix by a given amount.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=set>
+<tr><td class=doctop colspan=2>Method set(_aa:Float = 1, _ab:Float = 0, _ba:Float = 0, _bb:Float = 1)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the matrix to a new set of values.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Use this to prepare the matrix for a new transform. For example if you wanted to to rotate a vector, then you could do
+<pre><matrix.set(cos(angle),sin(angle),-sin(angle),cos(angle))</pre>
+and then transform the vector with
+<pre>matrix.transformvector(vector)</pre></td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=transform>
+<tr><td class=doctop colspan=2>Method transform:tlMatrix2(m:tlMatrix2)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Transfrom the matrix.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Multiplies 2 matrices together
+returns: New transformed matrix.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=transformpoint>
+<tr><td class=doctop colspan=2>Method transformpoint(x:Float, y:Float, tx:Float Var, ty:Float Var)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New coordinates for the tranformed point in tx and ty.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Transfrom a point.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will transform a point (x,y) and appply the new coordinates into tx and ty.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=transformvector>
+<tr><td class=doctop colspan=2>Method transformvector:tlVector2(v:tlVector2)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New transformed vector.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Transfrom a vector with the matrix.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>You can use this to transfrom a vector, rotating it, scaling it etc.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=transpose>
+<tr><td class=doctop colspan=2>Method transpose()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Transpose the matrix.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Create>
+<tr><td class=doctop colspan=2>Function Create:tlMatrix2(aa:Float = 1, ab:Float = 0, ba:Float = 0, bb:Float = 1)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New matrix type.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create a new matrix.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=tlVector2>
+<tr><td class=doctop colspan=2>Type tlVector2</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>2d vector type for basic vector handling.</td></tr>
+</table>
+<table class=doc width=90% align=center><tr ><th class=doctop colspan=2 align=left><a name=tlVector2_methods></a>Methods Summary</th></tr>
+<tr><td class=docleft width=1%><a href=#AddVector>AddVector</a></td><td class=docright>
+Add this tlVector2 vector to another and return the result in a new vector.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#Clone>Clone</a></td><td class=docright>
+Clone a Vector.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#Create>Create</a></td><td class=docright>
+Create a new vector with the given coordinates.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#DotProduct>DotProduct</a></td><td class=docright>
+Get the dot product of the vector.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#Length>Length</a></td><td class=docright>
+Get the length of the vector.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#Move>Move</a></td><td class=docright>
+Move a vector but the given x and y amount.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#MoveByVector>MoveByVector</a></td><td class=docright>
+Move a vector buy the given vector.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#Multiply>Multiply</a></td><td class=docright>
+multiply this vector with another and return the result.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#Normal>Normal</a></td><td class=docright>
+get the normal of the vector.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#Normalise>Normalise</a></td><td class=docright>
+Normalise the vector.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#Scale>Scale</a></td><td class=docright>
+Scale the vector by the given amount and return the result in a new vector.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetPosition>SetPosition</a></td><td class=docright>
+Reposition the vector by the new x,y coordinates given.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetPositionByVector>SetPositionByVector</a></td><td class=docright>
+Reposition the vector by the given vector.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SubtractVector>SubtractVector</a></td><td class=docright>
+Subtract this tlVector2 vector by another and return the result in a new vector.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#Unit>Unit</a></td><td class=docright>
+Get the unit vector of the vector.
+</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=AddVector>
+<tr><td class=doctop colspan=2>Method AddVector:tlVector2(v:tlVector2)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>A new <a href=#tlVector2>tlVector2</a>.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Add this tlVector2 vector to another and return the result in a new vector.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Clone>
+<tr><td class=doctop colspan=2>Method Clone:tlVector2()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>Newly cloned <a href=#tlVector2>tlVector2</a>.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Clone a Vector.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Create>
+<tr><td class=doctop colspan=2>Method Create:tlVector2(vx:Float, vy:Float)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New <a href=#tlVector2>tlVector2</a>.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create a new vector with the given coordinates.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=DotProduct>
+<tr><td class=doctop colspan=2>Method DotProduct:Float(v:tlVector2)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>The dot product of the vector.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the dot product of the vector.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Length>
+<tr><td class=doctop colspan=2>Method Length:Float()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>The length or magnitude of the vector.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the length of the vector.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Move>
+<tr><td class=doctop colspan=2>Method Move(distance_x:Float, distance_y:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Move a vector but the given x and y amount.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=MoveByVector>
+<tr><td class=doctop colspan=2>Method MoveByVector(distance:tlVector2)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Move a vector buy the given vector.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Multiply>
+<tr><td class=doctop colspan=2>Method Multiply:tlVector2(v:tlVector2)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New <a href=#tlvector2>tlvector2</a>.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>multiply this vector with another and return the result.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Normal>
+<tr><td class=doctop colspan=2>Method Normal:tlVector2()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New <a href=#tlVector2>tlVector2</a> normal of this vector.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>get the normal of the vector.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Normalise>
+<tr><td class=doctop colspan=2>Method Normalise()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Normalise the vector.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Scale>
+<tr><td class=doctop colspan=2>Method Scale:tlVector2(scale:Float)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>new scaled <a href=#tlvector2>tlvector2</a>.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Scale the vector by the given amount and return the result in a new vector.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetPosition>
+<tr><td class=doctop colspan=2>Method SetPosition(_x:Float, _y:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Reposition the vector by the new x,y coordinates given.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetPositionByVector>
+<tr><td class=doctop colspan=2>Method SetPositionByVector(v:tlVector2)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Reposition the vector by the given vector.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SubtractVector>
+<tr><td class=doctop colspan=2>Method SubtractVector:tlVector2(v:tlVector2)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>A new <a href=#tlVector2>tlVector2</a>.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Subtract this tlVector2 vector by another and return the result in a new vector.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Unit>
+<tr><td class=doctop colspan=2>Method Unit:tlVector2()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New unit vector of this vector.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the unit vector of the vector.</td></tr>
+</table>
+<br>
+<h2 id=modinfo>Module Information</h2>
+<table width=100%>
+<tr><th width=1%>Author</th><td>Peter J. Rigby</td></tr>
+<tr><th width=1%>Copyright</th><td>Peter J. Rigby 2009</td></tr>
+<tr><th width=1%>Purpose</th><td>Classes for vectors and matrices</td></tr>
+<tr><th width=1%>Version</th><td>v1.07</td></tr>
+</body></html>

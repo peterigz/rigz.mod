@@ -1,0 +1,74 @@
+<html><head><title>Single Surface mod reference</title>
+<link rel=stylesheet Type=text/css href='../../../../doc/bmxstyle.css'>
+</head><body>
+<table width=100% cellspacing=0><tr align=center><td class=small>&nbsp;</td>
+<td class=small width=1%><b>rigz.singlesurface:</b></td>
+<td class=small width=1%><a href=#functions class=small>Functions</a></td>
+<td class=small width=1%><a href=#types class=small>Types</a></td>
+<td class=small width=1%><a href=#modinfo class=small>Modinfo</a></td>
+<td class=small width=1%><a href='../../../../mod/rigz.mod/singlesurface.mod/singlesurface.bmx' class=small>Source</a></td>
+<td class=small>&nbsp;</td></tr></table>
+<h1>Single Surface mod</h1>
+Most of the credit For this goes To indiepath from Blitzmax forums. I changed a few things And made it work with the DX9 Mod by Dstastny
+Its questionable how much faster this makes things, but it might make improvements on slower cards, and it doesn't seem to slow down faster ones so...
+This depends on DStastny's DX9 mod. If you don't have that and don't want to use it then rem out where marked below.
+<h2><a name=functions></a>Functions Summary</h2><table class=doc width=100%>
+<tr><td class=docleft width=1%><a href=#DrawSprite>DrawSprite</a></td><td class=docright>
+Draw a tAnimImage to the screen.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#LoadSprite>LoadSprite</a></td><td class=docright>
+Load an image and store it as a tAnimImage.
+</td></tr>
+</table>
+<h2><a name=types></a>Types Summary</h2><table class=doc width=100%>
+<tr><td class=docleft width=1%><a href=#TAnimImage>TAnimImage</a></td><td class=docright>
+Type for creating single surface animations.
+</td></tr>
+</table>
+<h2
+ id=functionsdet>Functions
+</h2>
+<table class=doc width=100% cellspacing=3 id=DrawSprite>
+<tr><td class=doctop colspan=2>Function DrawSprite(sprite:TAnimImage, x:Float, y:Float, frame:Int = 0)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Draw a tAnimImage to the screen.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright><p>Very similar to BRL's DrawImage except of course it draws a tAnimImage.</p>
+<p>Parametres:</p>
+<ul>
+<li><b>sprite: </b>The tAnimImage that you want to draw</li>
+<li><b>x: </b>The horizontal location that you want to draw to.</li>
+<li><b>y: </b>The vertical location that you want to draw to.</li>
+<li><b>frame: </b>The frame of the animation that you want to draw. The frame index starts from 0.</li>
+</ul></td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=LoadSprite>
+<tr><td class=doctop colspan=2>Function LoadSprite:TAnimImage(url:Object, width:Float = 0, height:Float = 0, frames:Int = 1, FindRadius:Int = False)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Load an image and store it as a tAnimImage.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright><p>Very similar to BRL's loadanimimage except of course it returns a tAnimImage.</p>
+<p>Parametres:</p>
+<ul>
+<li><b>url: </b>The path or stream to your image.</li>
+<li><b>width: </b>The width of each frame of animation.</li>
+<li><b>height: </b>The height of each frame of animation.</li>
+<li><b>frames: </b>The number of frames of the aniamtion. If you're loading a single frame image then you can omit this</li>
+</ul></td></tr>
+</table>
+<br>
+<h2
+ id=typesdet>Types
+</h2>
+<table class=doc width=100% cellspacing=3 id=TAnimImage>
+<tr><td class=doctop colspan=2>Type TAnimImage</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Type for creating single surface animations.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This type replaces the usual drawimage with one that lets you draw animations using a single surface.
+Its questionable how much faster this makes things, but it might make improvements on slower cards, and it
+doesn't seem to slow down faster ones so. You can use the helper functions <a href=#LoadSprite>LoadSprite</a> and <a href=#DrawSprite>DrawSprite</a> to create
+and draw your images.</td></tr>
+</table>
+<br>
+<h2 id=modinfo>Module Information</h2>
+<table width=100%>
+<tr><th width=1%>Author</th><td>Tim Fisher (Indiepath) Modified by Peter Rigby</td></tr>
+<tr><th width=1%>Purpose</th><td>Single surface image drawing when using animated images</td></tr>
+<tr><th width=1%>Version</th><td>v1</td></tr>
+</body></html>

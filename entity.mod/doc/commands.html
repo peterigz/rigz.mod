@@ -1,0 +1,892 @@
+<html><head><title>Timeline Entity System for blitzmax reference</title>
+<link rel=stylesheet Type=text/css href='../../../../doc/bmxstyle.css'>
+</head><body>
+<table width=100% cellspacing=0><tr align=center><td class=small>&nbsp;</td>
+<td class=small width=1%><b>rigz.entity:</b></td>
+<td class=small width=1%><a href=#functions class=small>Functions</a></td>
+<td class=small width=1%><a href=#types class=small>Types</a></td>
+<td class=small width=1%><a href=#modinfo class=small>Modinfo</a></td>
+<td class=small width=1%><a href='../../../../mod/rigz.mod/entity.mod/entity.bmx' class=small>Source</a></td>
+<td class=small>&nbsp;</td></tr></table>
+<h1>Timeline Entity System for blitzmax</h1>
+This module provides a base entity class for use in any applications that need to have objects in world that need to be controlled
+and drawn onto the screen. tlEntity provides the means to control these objects in a structured hierarchy with parent and child entities.
+Entities are drawn using sprites from the single surface module; singlesurface.mod.
+<h2><a name=functions></a>Functions Summary</h2><table class=doc width=100%>
+<tr><td class=docleft width=1%><a href=#CreateEntity>CreateEntity</a></td><td class=docright>
+Create a new entity.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetUpdateFrequency>SetUpdateFrequency</a></td><td class=docright>
+Set the current Update Frequency.
+</td></tr>
+</table>
+<h2><a name=types></a>Types Summary</h2><table class=doc width=100%>
+<tr><td class=docleft width=1%><a href=#tlEntity>tlEntity</a></td><td class=docright>
+Entity type for basic object information.
+</td></tr>
+</table>
+<h2
+ id=functionsdet>Functions
+</h2>
+<table class=doc width=100% cellspacing=3 id=CreateEntity>
+<tr><td class=doctop colspan=2>Function CreateEntity:tlEntity()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create a new entity.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=SetUpdateFrequency>
+<tr><td class=doctop colspan=2>Function SetUpdateFrequency(v:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the current Update Frequency.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>the default update frequency is 30 times per second.</td></tr>
+</table>
+<br>
+<h2
+ id=typesdet>Types
+</h2>
+<table class=doc width=100% cellspacing=3 id=tlEntity>
+<tr><td class=doctop colspan=2>Type tlEntity</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Entity type for basic object information.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright><p>This is the main type for storing entity information such as coordinates, colour and other information. This type is designed to be a base
+type that you can use to extend and create other types, for example tPlayer or tBullet. </p>
+<p>Entities can be parented to other entities and maintain and update a list of children. These children can be relative to their parents therefore
+minimising the work needed to calculate where entities should be drawn to the screen. If a parent rotates, then it's children will rotate with it and
+likewise, if the parent moves then its children will move with it as well. Children don't have to be relative however, set realative to false using <a href=#setrelative>setrelative</a>
+to make the children move independantly, however they will still be updated by their parent</p>
+<p>If you have an entity with children, and those children in turn have children, in order to update all of those entities only one call to the parent
+<a href=#update>update</a> method is required to see all of the children updated too. This also applies to rendering the entities on screen - by calling <a href=#render>render</a> on the parent entity
+all children entities will also be rendered. See the code below for an example</p>
+<p>Entities draw to the screen using tAnimImage, a type that allows for single surface drawing from the singlesurface.mod. To set the image use <a href=#setavatar>setavatar</a>
+and loadsprite() to set the tAnimImage. You can adjust the appearence of the entity such as colour and scale using commands such as <a href=#setentitycolor>setentitycolor</a>, <a href=#setentityalpha>setentityalpha</a>,
+<a href=#setentityscale>setentityscale</a> and <a href=#setangle>setangle</a></p>
+<p>When entities are rendered they can be tweened so that their animation and movement on the screen is smoothed out using fixed rate timing. To do this you need to make a call
+to <a href=#capture>capture</a> each time the entity is updated which stores the entities last position and other details. <a href=#Capture>Capture</a> is not included in the <a href=#udpate>udpate</a> method because it makes things
+too inflexible. There are situations where you might want to specify when exactly you want to <a href=#capture>capture</a> the entity. This means that when you extend tlentity it's a good idea to
+overide the update method with your own and include a call to capture within it. Then you can make a call to super.update so that the base update method is still tun. Again, see
+the example to see how it can work.</p></td></tr>
+<tr><td class=docleft width=1%><a href=tlEntity.bmx class=small>Example</a></td><td class=docright><pre>SuperStrict
+
+Framework brl.max2d
+Import rigz.entity
+Import rigz.tweener
+Import brl.pngloader
+
+SetGraphicsDriver GLMax2DDriver()
+
+Graphics 800, 600
+
+'set up a type that extends tlEntity
+Type tAstralBody Extends tlEntity
+	
+	'create an update method that uses capture to store the old entity values for tweening
+	Method update()
+		capture()
+		
+		'call the main update method
+		Super.update()
+	End Method
+
+End Type
+
+'setup some locals for our solar system
+Local Sun:tAstralBody = New tAstralBody
+Local Earth:tAstralBody = New tAstralBody
+Local Moon:tAstralBody = New tAstralBody
+Local Moonlet:tAstralBody = New tAstralBody
+
+sun.setsprite(LoadSprite("sun.png",,, , True))
+earth.setsprite(LoadSprite("earth.png",,, , True))
+moon.setsprite(LoadSprite("moon.png",,, , True))
+moonlet.setsprite(LoadSprite("moon.png",,, , True))
+sun.SetHandleX(-100)
+sun.SetHandleY(-100)
+sun.SetentityScale(.75, .75)
+sun.SetAutoCenter(False)
+sun.SetZ(0.5)
+'add the earth to the sun as a child
+sun.addchild(earth)
+'set the suns postion
+sun.SetPosition(400, 300)
+'call capture so there's no tweening at the start
+sun.capture()
+'add the moon to the earth as a child
+earth.addchild(moon)
+
+'as the earth is parented to the sun, its position will be relative to the sun.
+'set x will set the earths position 250 pixels to the sun's right
+earth.setx(250)
+'scale the earth sprite down by half
+earth.SetentityScale(0.5, 0.5)
+earth.capture()
+earth.SetHandleX(-100)
+earth.SetHandleY(100)
+earth.name = "earth"
+earth.SetAutoCenter(False)
+
+
+'set the moon 75 pixels to the right of the earth
+moon.setx(75)
+'scale it down to a quarter of its size
+moon.SetentityScale(0.25, 0.25)
+moon.capture()
+
+moonlet.SetX(25)
+moonlet.SetEntityScale(0.1, 0.1)
+moonlet.Capture
+moonlet.SetSpeed(25)
+moonlet.name = "Moonlet"
+moon.AddChild(moonlet)
+
+sun.SetRadiusCalculate(True)
+
+'set up a tweener using the tweener module
+Local tweener:tTweener = New tTweener.Create(30)
+SetUpdateFrequency(30)
+
+'main loop
+While Not KeyDown(KEY_ESCAPE)
+	Cls
+	
+	'update the tweener to get the current tween value
+	tweener.Update
+	
+	'logic update loop
+	For Local c:Int = 0 To tweener.getFrameTicks()
+		'update the sun, which will update its children. For this reason there
+		'is no need to update the earth or the moon as the sun will did it for us
+		tweener.UpdateExecutionTime()
+		sun.update()
+		'rotate the sun and the earth
+		sun.rotate(1)
+		earth.rotate(-5)
+		moon.Rotate(2.5)
+		If KeyDown(KEY_SPACE) moonlet.SetSpeed(0)
+	Next
+	
+	'draw them all to the screen
+	sun.render(1)
+	'sun.DrawBoundingBox()
+	sun.DrawEntityBoundary()
+	earth.DrawentityBoundary()
+	moon.DrawEntityBoundary()
+	moonlet.DrawEntityBoundary()
+	
+	Flip 0
+	
+Wend</pre></td></tr>
+</table>
+<table class=doc width=90% align=center><tr ><th class=doctop colspan=2 align=left><a name=tlEntity_methods></a>Methods Summary</th></tr>
+<tr><td class=docleft width=1%><a href=#AddChild>AddChild</a></td><td class=docright>
+Add a new child entity to the entity.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#AssignRootParent>AssignRootParent</a></td><td class=docright>
+Assign the root parent of the entity.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#CalculateBoundingBox>CalculateBoundingBox</a></td><td class=docright>
+Set the AABB Include value for this tlEntity object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#Capture>Capture</a></td><td class=docright>
+Capture world coordinates, entity angle and scale for tweening.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#CaptureAll>CaptureAll</a></td><td class=docright>
+Capture all including all children.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#ClearChildren>ClearChildren</a></td><td class=docright>
+Clear all child entities from this list of children.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#Decay>Decay</a></td><td class=docright>
+Increases the age value by a given amount.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#Destroy>Destroy</a></td><td class=docright>
+Destroy the entity.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#DrawBoundingBox>DrawBoundingBox</a></td><td class=docright>
+draw the bounding box for debugging.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#DrawEntityBoundary>DrawEntityBoundary</a></td><td class=docright>
+Draw the whole boundary of the entity including children.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#DrawImageBoundary>DrawImageBoundary</a></td><td class=docright>
+Draw the image boundary of the entity.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetAge>GetAge</a></td><td class=docright>
+Get the age value in this tlEntity object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetAngle>GetAngle</a></td><td class=docright>
+Get the current angle of rotation.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetAnimating>GetAnimating</a></td><td class=docright>
+Returns true if the entity is animating.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetBlendMode>GetBlendMode</a></td><td class=docright>
+Get the current blendmode.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetBlue>GetBlue</a></td><td class=docright>
+Get the blue value in this tlEntity object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetChildren>GetChildren</a></td><td class=docright>
+Get the children that this entity has.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetCurrentFrame>GetCurrentFrame</a></td><td class=docright>
+Get the currentframe of the entity sprite animation.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetEntityAlpha>GetEntityAlpha</a></td><td class=docright>
+Get the alpha value in this tlEntity object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetEntityDirection>GetEntityDirection</a></td><td class=docright>
+Get the direction value in this tlEntity object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetEntityRadius>GetEntityRadius</a></td><td class=docright>
+Get the Entity Radius value in this tlEntity object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetEntityScale>GetEntityScale</a></td><td class=docright>
+Gets the x and y scale of the entity.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetFrameRate>GetFrameRate</a></td><td class=docright>
+Get the framerate value in this tlEntity object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetGreen>GetGreen</a></td><td class=docright>
+Get the green value in this tlEntity object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetHandleX>GetHandleX</a></td><td class=docright>
+Get the current entity handle x.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetHandleY>GetHandleY</a></td><td class=docright>
+Get the current entity image handle y.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetImageRadius>GetImageRadius</a></td><td class=docright>
+Get the Image Radius value in this tlEntity object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetLifeTime>GetLifeTime</a></td><td class=docright>
+Get the lifetime value in this tlEntity object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetName>GetName</a></td><td class=docright>
+Get the name of the entity.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetOKToRender>GetOKToRender</a></td><td class=docright>
+Get the oktorender value in this tlEntity object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetParent>GetParent</a></td><td class=docright>
+Get the current parent of the entity.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetRadiusCalculate>GetRadiusCalculate</a></td><td class=docright>
+Get the Radius Calculate value in this tlEntity object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetRed>GetRed</a></td><td class=docright>
+Get the red value in this tlEntity object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetRelative>GetRelative</a></td><td class=docright>
+Get whether this entity is relative to it's parent.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetSpeed>GetSpeed</a></td><td class=docright>
+Get the current speed of the entity.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetSprite>GetSprite</a></td><td class=docright>
+Get the current sprite (tAnimImage) that the entity uses when it draws to the screen.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetWX>GetWX</a></td><td class=docright>
+Get the wx value in this tlEntity object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetWY>GetWY</a></td><td class=docright>
+Get the wy value in this tlEntity object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetX>GetX</a></td><td class=docright>
+Get the current x coordinate of the entity.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetY>GetY</a></td><td class=docright>
+Get the current y coordinate of the entity.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#HasBoundingBox>HasBoundingBox</a></td><td class=docright>
+Returns true if the axis aligned bounding box is being calculated for this entity.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#KillChildren>KillChildren</a></td><td class=docright>
+Recursively kills all child entities and any children within those too and so on.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#MiniUpdate>MiniUpdate</a></td><td class=docright>
+A mini update called when the entity is created.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#Move>Move</a></td><td class=docright>
+Move the entity by the amount x and y that you pass to it.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#RemoveChild>RemoveChild</a></td><td class=docright>
+Remove a child entity from this entity's list of children.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#Render>Render</a></td><td class=docright>
+Render the entity.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#Rotate>Rotate</a></td><td class=docright>
+Rotate the entity by the number of degrees you pass to it.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetAge>SetAge</a></td><td class=docright>
+Set the age value for this tlEntity object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetAngle>SetAngle</a></td><td class=docright>
+Set the current angle of rotation of the entity.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetAnimateOnce>SetAnimateOnce</a></td><td class=docright>
+Set to true to make the entity animate just once.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetAnimating>SetAnimating</a></td><td class=docright>
+Set to true to make the entity animate.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetAutoCenter>SetAutoCenter</a></td><td class=docright>
+Set to true to position the handle of the entity at the center.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetBlendMode>SetBlendMode</a></td><td class=docright>
+Set the current blendmode of the entity ie., ALPHABLEND/LIGHTBLEND.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetBlue>SetBlue</a></td><td class=docright>
+Set the blue value for this tlEntity object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetCurrentFrame>SetCurrentFrame</a></td><td class=docright>
+Set the currentframe of the entity sprite animation.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetEntityAlpha>SetEntityAlpha</a></td><td class=docright>
+Set the alpha value for this tlEntity object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetEntityColor>SetEntityColor</a></td><td class=docright>
+Set the colour for the tlEntity object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetEntityDirection>SetEntityDirection</a></td><td class=docright>
+Set the direction value for this tlEntity object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetEntityScale>SetEntityScale</a></td><td class=docright>
+Sets the scale of the entity.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetFrameRate>SetFrameRate</a></td><td class=docright>
+Set the framerate value for this tlEntity object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetGreen>SetGreen</a></td><td class=docright>
+Set the green value for this tlEntity object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetHandleX>SetHandleX</a></td><td class=docright>
+Set the entities x handle.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetHandleY>SetHandleY</a></td><td class=docright>
+Set the entities y handle.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetLifeTime>SetLifeTime</a></td><td class=docright>
+Set the lifetime value for this tlEntity object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetName>SetName</a></td><td class=docright>
+Set the name of the entity.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetOKToRender>SetOKToRender</a></td><td class=docright>
+Set the oktorender value for this tlEntity object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetParent>SetParent</a></td><td class=docright>
+Set the parent of the entity.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetPosition>SetPosition</a></td><td class=docright>
+The the x and y position of the entity.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetRadiusCalculate>SetRadiusCalculate</a></td><td class=docright>
+Set the Radius Calculate value for this tlEntity object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetRed>SetRed</a></td><td class=docright>
+Set the red value for this tlEntity object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetRelative>SetRelative</a></td><td class=docright>
+Sets whether this entity remains relative to it's parent.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetSpeed>SetSpeed</a></td><td class=docright>
+Set the current speed of the entity.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetSprite>SetSprite</a></td><td class=docright>
+Set the sprite (tAnimImage) that the entity uses when it draws to the screen.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetUpdateSpeed>SetUpdateSpeed</a></td><td class=docright>
+Set the UpdateSpeed value for this tlEntity object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetWX>SetWX</a></td><td class=docright>
+Set the current world x coordinate of the entity.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetWY>SetWY</a></td><td class=docright>
+Set the current world y coordinate of the entity.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetX>SetX</a></td><td class=docright>
+Set the current x coordinate of the entity.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetY>SetY</a></td><td class=docright>
+Set the current y coordinate of the entity.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetZ>SetZ</a></td><td class=docright>
+Set the current zoom level of the entity.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#Update>Update</a></td><td class=docright>
+Update the entity.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#UpdateBoundingBox>UpdateBoundingBox</a></td><td class=docright>
+Update the entities bounding box.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#UpdateChildren>UpdateChildren</a></td><td class=docright>
+Update all children of this entity.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#UpdateEntityRadius>UpdateEntityRadius</a></td><td class=docright>
+Update the entity's radius of influence.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#UpdateParentBoundingBox>UpdateParentBoundingBox</a></td><td class=docright>
+Update the entity's parent bounding box.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#UpdateParentEntityRadius>UpdateParentEntityRadius</a></td><td class=docright>
+Update the entity's parent radius of influence.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#UpdateRootParentEntityRadius>UpdateRootParentEntityRadius</a></td><td class=docright>
+Update the entity's parent radius of influence.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#Zoom>Zoom</a></td><td class=docright>
+Change the level of zoom for the particle.
+</td></tr>
+</table>
+<table class=doc width=90% align=center><tr ><th class=doctop colspan=2 align=left><a name=tlEntity_functions></a>Functions Summary</th></tr>
+<tr><td class=docleft width=1%><a href=#TweenValues>TweenValues</a></td><td class=docright>
+Interpolate between 2 values.
+</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=AddChild>
+<tr><td class=doctop colspan=2>Method AddChild(e:tlEntity)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Add a new child entity to the entity.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will also automatically set the childs parent.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=AssignRootParent>
+<tr><td class=doctop colspan=2>Method AssignRootParent(e:tlEntity)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Assign the root parent of the entity.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This assigns the root parent of the entity which will be the highest level in the entity hierarchy. This method is generally only used
+internally, when an entity is added as a child to another entity.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=CalculateBoundingBox>
+<tr><td class=doctop colspan=2>Method CalculateBoundingBox(Value:Int = True)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the AABB Include value for this tlEntity object.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Capture>
+<tr><td class=doctop colspan=2>Method Capture()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Capture world coordinates, entity angle and scale for tweening.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Tweening is used in applications that use fixed rate timing. This is where the logic routines of an application are updated a fixed
+amount of times each frame, but the drawing routines are updated as many times as possible. Each time the entity is updated during a logic
+update you can capture its coordinates, then, depending on how much time has passed since the last logic update, the entity can be interpolated
+between the old coordinates and the new ones creating a nice smooth movement no matter the PC you're running it on. To simplify things you
+can use the tweener.mod to implement fixed rate timing. See the tweener.mod for more info.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=CaptureAll>
+<tr><td class=doctop colspan=2>Method CaptureAll()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Capture all including all children.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=ClearChildren>
+<tr><td class=doctop colspan=2>Method ClearChildren()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Clear all child entities from this list of children.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This completely destroys them so the garbage collector can free the memory.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Decay>
+<tr><td class=doctop colspan=2>Method Decay(MilliSeconds:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Increases the age value by a given amount.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Destroy>
+<tr><td class=doctop colspan=2>Method Destroy()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Destroy the entity.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will destroy the entity and all it's children, ensuring all references are removed. Best to call this
+when you're finished with the entity to avoid memory leaks.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=DrawBoundingBox>
+<tr><td class=doctop colspan=2>Method DrawBoundingBox()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>draw the bounding box for debugging.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=DrawEntityBoundary>
+<tr><td class=doctop colspan=2>Method DrawEntityBoundary()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Draw the whole boundary of the entity including children.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=DrawImageBoundary>
+<tr><td class=doctop colspan=2>Method DrawImageBoundary()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Draw the image boundary of the entity.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetAge>
+<tr><td class=doctop colspan=2>Method GetAge:Float()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the age value in this tlEntity object.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>See <a href=#SetAge>SetAge</a> and <a href=#Decay>Decay</a>.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetAngle>
+<tr><td class=doctop colspan=2>Method GetAngle:Float()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the current angle of rotation.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetAnimating>
+<tr><td class=doctop colspan=2>Method GetAnimating:Int()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Returns true if the entity is animating.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetBlendMode>
+<tr><td class=doctop colspan=2>Method GetBlendMode:Int()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the current blendmode.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetBlue>
+<tr><td class=doctop colspan=2>Method GetBlue:Int()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the blue value in this tlEntity object.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetChildren>
+<tr><td class=doctop colspan=2>Method GetChildren:TList()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the children that this entity has.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will return a list of children that the entity currently has.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetCurrentFrame>
+<tr><td class=doctop colspan=2>Method GetCurrentFrame:Float()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the currentframe of the entity sprite animation.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetEntityAlpha>
+<tr><td class=doctop colspan=2>Method GetEntityAlpha:Float()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the alpha value in this tlEntity object.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetEntityDirection>
+<tr><td class=doctop colspan=2>Method GetEntityDirection:Float()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the direction value in this tlEntity object.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Get the current direction the entity is travelling in.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetEntityRadius>
+<tr><td class=doctop colspan=2>Method GetEntityRadius:Float()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the Entity Radius value in this tlEntity object.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>The entity radius is similar to the Image_Radius except that it also takes into account all the children of the entity as well.
+Radius_Calculate needs to be set to true for this value to be kept updated.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetEntityScale>
+<tr><td class=doctop colspan=2>Method GetEntityScale(sx:Float Var, sy:Float Var)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Gets the x and y scale of the entity.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetFrameRate>
+<tr><td class=doctop colspan=2>Method GetFrameRate:Float()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the framerate value in this tlEntity object.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>see <a href=#SetFrameRate>SetFrameRate</a> for more info.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetGreen>
+<tr><td class=doctop colspan=2>Method GetGreen:Int()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the green value in this tlEntity object.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetHandleX>
+<tr><td class=doctop colspan=2>Method GetHandleX:Int()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the current entity handle x.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetHandleY>
+<tr><td class=doctop colspan=2>Method GetHandleY:Int()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the current entity image handle y.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetImageRadius>
+<tr><td class=doctop colspan=2>Method GetImageRadius:Float()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the Image Radius value in this tlEntity object.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>The image radius is the area that the entity could possible be drawn to. This takes into account scale and more importantly, the handle
+of the image. Radius_Calculate needs to be set to true for this value to be kept updated.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetLifeTime>
+<tr><td class=doctop colspan=2>Method GetLifeTime:Int()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the lifetime value in this tlEntity object.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>See <a href=#SetLifeTime>SetLifeTime</a>.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetName>
+<tr><td class=doctop colspan=2>Method GetName:String()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the name of the entity.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetOKToRender>
+<tr><td class=doctop colspan=2>Method GetOKToRender:Int()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the oktorender value in this tlEntity object.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>see <a href=#SetOKToRender>SetOKToRender</a>.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetParent>
+<tr><td class=doctop colspan=2>Method GetParent:tlEntity()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the current parent of the entity.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Entities can have parents and children. Entities are drawn relative to their parents if the relative flag is true.
+Using this command and <a href=#addchild>addchild</a> you can create a hierarchy of entities.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetRadiusCalculate>
+<tr><td class=doctop colspan=2>Method GetRadiusCalculate:Int()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the Radius Calculate value in this tlEntity object.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>see <a href=#SetRadiusCalculate>SetRadiusCalculate</a> for more info.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetRed>
+<tr><td class=doctop colspan=2>Method GetRed:Int()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the red value in this tlEntity object.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetRelative>
+<tr><td class=doctop colspan=2>Method GetRelative:Int()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get whether this entity is relative to it's parent.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetSpeed>
+<tr><td class=doctop colspan=2>Method GetSpeed:Float()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the current speed of the entity.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetSprite>
+<tr><td class=doctop colspan=2>Method GetSprite:TAnimImage()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the current sprite (tAnimImage) that the entity uses when it draws to the screen.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetWX>
+<tr><td class=doctop colspan=2>Method GetWX:Float()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the wx value in this tlEntity object.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>WX represents the current x world coordinate of the entity. This may differ to x, which will contain the x coordinate relative
+to the parent entity.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetWY>
+<tr><td class=doctop colspan=2>Method GetWY:Float()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the wy value in this tlEntity object.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>WY represents the current Y world coordinate of the entity. This may differ to y, which will contain the Y coordinate relative
+to the parent entity.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetX>
+<tr><td class=doctop colspan=2>Method GetX:Float()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the current x coordinate of the entity.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will be relative to the parent if relative is set to true.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetY>
+<tr><td class=doctop colspan=2>Method GetY:Float()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the current y coordinate of the entity.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will be relative to the parent if relative is set to true.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=HasBoundingBox>
+<tr><td class=doctop colspan=2>Method HasBoundingBox:Int()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Returns true if the axis aligned bounding box is being calculated for this entity.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=KillChildren>
+<tr><td class=doctop colspan=2>Method KillChildren()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Recursively kills all child entities and any children within those too and so on.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This sets all the children's dead field to true so that you can tidy them later on however you need. If you just want to
+get rid of them completely use <a href=#clearchildren>clearchildren</a>.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=MiniUpdate>
+<tr><td class=doctop colspan=2>Method MiniUpdate()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>A mini update called when the entity is created.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This is sometimes necessary to get the correct world coordinates for when new entities are spawned so that tweening is updated too. Otherwise
+you might experience the entity shooting across the screen as it tweens between locations.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Move>
+<tr><td class=doctop colspan=2>Method Move(xamount:Float, yamount:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Move the entity by the amount x and y that you pass to it.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=RemoveChild>
+<tr><td class=doctop colspan=2>Method RemoveChild(e:tlEntity)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Remove a child entity from this entity's list of children.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Render>
+<tr><td class=doctop colspan=2>Method Render(tween:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Render the entity.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will Draw the entity onto the screen using the tween value you pass to it to interpolate between old and new positions when
+using fixed rate timing.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Rotate>
+<tr><td class=doctop colspan=2>Method Rotate(degrees:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Rotate the entity by the number of degrees you pass to it.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetAge>
+<tr><td class=doctop colspan=2>Method SetAge(Value:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the age value for this tlEntity object.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Setting the age of of the entity allows you to keep track of how old the entity so that something can happen after a given amount of time.
+See <a href=#Decay>Decay</a> to increase the age by a given amount.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetAngle>
+<tr><td class=doctop colspan=2>Method SetAngle(v:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the current angle of rotation of the entity.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetAnimateOnce>
+<tr><td class=doctop colspan=2>Method SetAnimateOnce(v:Int)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set to true to make the entity animate just once.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Once the entity as reached the end of the animation cycle it will stop animating.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetAnimating>
+<tr><td class=doctop colspan=2>Method SetAnimating(Value:Int)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set to true to make the entity animate.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetAutoCenter>
+<tr><td class=doctop colspan=2>Method SetAutoCenter(v:Int)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set to true to position the handle of the entity at the center.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetBlendMode>
+<tr><td class=doctop colspan=2>Method SetBlendMode(v:Int)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the current blendmode of the entity ie., ALPHABLEND/LIGHTBLEND.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetBlue>
+<tr><td class=doctop colspan=2>Method SetBlue(Value:Int)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the blue value for this tlEntity object.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetCurrentFrame>
+<tr><td class=doctop colspan=2>Method SetCurrentFrame(Value:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the currentframe of the entity sprite animation.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetEntityAlpha>
+<tr><td class=doctop colspan=2>Method SetEntityAlpha(Value:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the alpha value for this tlEntity object.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetEntityColor>
+<tr><td class=doctop colspan=2>Method SetEntityColor(_red:Int, _green:Int, _blue:Int)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the colour for the tlEntity object.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetEntityDirection>
+<tr><td class=doctop colspan=2>Method SetEntityDirection(Value:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the direction value for this tlEntity object.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Set the current direction the entity is travelling in.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetEntityScale>
+<tr><td class=doctop colspan=2>Method SetEntityScale(sx:Float, sy:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Sets the scale of the entity.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will set both the x and y scale of the entity based on the values you pass it.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetFrameRate>
+<tr><td class=doctop colspan=2>Method SetFrameRate(Value:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the framerate value for this tlEntity object.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>the frame rate dicates how fast the entity animates if it has more then 1 frame
+of animation. The framerate is measured in frames per second.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetGreen>
+<tr><td class=doctop colspan=2>Method SetGreen(Value:Int)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the green value for this tlEntity object.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetHandleX>
+<tr><td class=doctop colspan=2>Method SetHandleX(v:Int)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the entities x handle.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will not apply if autocenter is set to true.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetHandleY>
+<tr><td class=doctop colspan=2>Method SetHandleY(v:Int)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the entities y handle.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will not apply if autocenter is set to true.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetLifeTime>
+<tr><td class=doctop colspan=2>Method SetLifeTime(Value:Int)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the lifetime value for this tlEntity object.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>LifeTime represents the length of time that the entity should "Live" for. This allows entities to decay and expire in a given time.
+LifeTime is measured in milliseconds. See <a href=#SetAge>SetAge</a> and <a href=#Decay>Decay</a> for adjusting the age of the entity.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetName>
+<tr><td class=doctop colspan=2>Method SetName(v:String)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the name of the entity.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetOKToRender>
+<tr><td class=doctop colspan=2>Method SetOKToRender(Value:Int)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the oktorender value for this tlEntity object.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Somethimes you might not always want entities to be rendered. When the render method is called, it will always render the children aswell,
+but if some of those children are effects which are rendered by a particle manager, then you don't want them rendered twice, so you can set this
+to false to avoid them being rendered.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetParent>
+<tr><td class=doctop colspan=2>Method SetParent(e:tlEntity)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the parent of the entity.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Entities can have parents and children. Entities are drawn relative to their parents if the relative flag is set to true.
+Using this command and <a href=#addchild>addchild</a> you can create a hierarchy of entities. There's no need to call <a href=#addchild>addchild</a> as well as <a href=#setparent>setparent</a>
+because both commands will automatically set both accordingly.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetPosition>
+<tr><td class=doctop colspan=2>Method SetPosition(_x:Float, _y:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>The the x and y position of the entity.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will be relative to the parent if relative is set to true.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetRadiusCalculate>
+<tr><td class=doctop colspan=2>Method SetRadiusCalculate(Value:Int)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the Radius Calculate value for this tlEntity object.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Radius is the radius of the entity where it could possible be drawn to. This includes all of it's children as well.
+This will also propagate to all children, so it's best to set this to true before adding children to the entity, that way, the children will acquire
+the same value as the parent. By default this is false.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetRed>
+<tr><td class=doctop colspan=2>Method SetRed(Value:Int)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the red value for this tlEntity object.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetRelative>
+<tr><td class=doctop colspan=2>Method SetRelative(v:Int)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Sets whether this entity remains relative to it's parent.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Entities that are relative to their parent entity will position, rotate and scale with their parent.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetSpeed>
+<tr><td class=doctop colspan=2>Method SetSpeed(v:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the current speed of the entity.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetSprite>
+<tr><td class=doctop colspan=2>Method SetSprite(sprite:TAnimImage)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the sprite (tAnimImage) that the entity uses when it draws to the screen.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>tAnimImage is defined in singlesurface.mod, and is a type that draws animated images using a single surface for extra speed.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetUpdateSpeed>
+<tr><td class=doctop colspan=2>Method SetUpdateSpeed(Value:Int)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the UpdateSpeed value for this tlEntity object.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Set to true or false, default is true. Setting to false will make the update method
+ignore any speed calculations. This is useful in situations where you want to extend tlEntity
+and calculate speed in your own way.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetWX>
+<tr><td class=doctop colspan=2>Method SetWX(v:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the current world x coordinate of the entity.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetWY>
+<tr><td class=doctop colspan=2>Method SetWY(v:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the current world y coordinate of the entity.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetX>
+<tr><td class=doctop colspan=2>Method SetX(v:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the current x coordinate of the entity.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will be relative to the parent if relative is set to true.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetY>
+<tr><td class=doctop colspan=2>Method SetY(v:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the current y coordinate of the entity.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will be relative to the parent if relative is set to true.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetZ>
+<tr><td class=doctop colspan=2>Method SetZ(v:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the current zoom level of the entity.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Update>
+<tr><td class=doctop colspan=2>Method Update()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Update the entity.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Updates its coordinates based on the current speed (cs), applies any gravity, updates the current frame of the image and also updates the world coordinates. World
+coordinates (wx and wy) represent the location of the entity where it will be drawn on screen. This is calculated based on where the entity is in relation to
+it's parent entities. Update also updates the entity's children so only a single call to the parent entity is required to see all the children updated.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=UpdateBoundingBox>
+<tr><td class=doctop colspan=2>Method UpdateBoundingBox()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Update the entities bounding box.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will update the entities bounding box, and if the entity has no children it will update its parent bounding box if it has one.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=UpdateChildren>
+<tr><td class=doctop colspan=2>Method UpdateChildren()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Update all children of this entity.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=UpdateEntityRadius>
+<tr><td class=doctop colspan=2>Method UpdateEntityRadius()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Update the entity's radius of influence.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>The radius of influence is the area around the entity that could possibly be drawn to. This is used in the timelinefx editor where
+it's used to autofit the effect to the animation frame.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=UpdateParentBoundingBox>
+<tr><td class=doctop colspan=2>Method UpdateParentBoundingBox()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Update the entity's parent bounding box.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=UpdateParentEntityRadius>
+<tr><td class=doctop colspan=2>Method UpdateParentEntityRadius()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Update the entity's parent radius of influence.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=UpdateRootParentEntityRadius>
+<tr><td class=doctop colspan=2>Method UpdateRootParentEntityRadius()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Update the entity's parent radius of influence.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Zoom>
+<tr><td class=doctop colspan=2>Method Zoom(v:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Change the level of zoom for the particle.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=TweenValues>
+<tr><td class=doctop colspan=2>Function TweenValues:Float(oldValue:Float, value:Float, tween:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Interpolate between 2 values.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This is the function used to achieve render tweening by taking the old and new values and interpolating between the 2.</td></tr>
+</table>
+<br>
+<h2 id=modinfo>Module Information</h2>
+<table width=100%>
+<tr><th width=1%>Author</th><td>Peter J. Rigby</td></tr>
+<tr><th width=1%>Copyright</th><td>Peter J. Rigby 2009</td></tr>
+<tr><th width=1%>Purpose</th><td>A base entity class</td></tr>
+<tr><th width=1%>Version</th><td>v1.07</td></tr>
+<tr><th width=1%>History v1.07</th><td>8th November 2009 - Tidied up the behaviour of entities that have a z value other then 1</td></tr>
+<tr><th width=1%>History v1.07</th><td>7th November 2009 - New field: RootParent. This is the absolute root parent of the entity. Set when you add the entity as a child. see AssignRootParent</td></tr>
+<tr><th width=1%>History v1.07</th><td>1st November 2009 - You can now SetRadiusCalculate Which starts calculating the entity's area of influence. See SetRadiusCalculate</td></tr>
+<tr><th width=1%>History v1.06</th><td>20th September 2009 - Initial implementation of Z on entities (changes the overal scale of an entity and its children)</td></tr>
+<tr><th width=1%>History v1.04</th><td>7th September 2009 - Added a few more Getters and Setters</td></tr>
+<tr><th width=1%>History v1.04</th><td>7th September 2009 - Fixed a bug with animated entities causing a crash</td></tr>
+<tr><th width=1%>History v1.03</th><td>8th August 2009 - Added new variables for storing the bounding boxes of the entity</td></tr>
+<tr><th width=1%>History v1.03</th><td>8th August 2009 - Render method now only renders if avatar is not null and OKToRender is true</td></tr>
+<tr><th width=1%>History v1.03</th><td>8th August 2009 - Added OKToRender field so you can control wheter entities are actually rendered</td></tr>
+<tr><th width=1%>History v1.03</th><td>8th August 2009 - Add a few more getters and settings for various variables</td></tr>
+<tr><th width=1%>History v1.03</th><td>7th August 2009 - Added UpdateSpeed flag to tlEntity so you can override the updating of the entity speed and movement</td></tr>
+<tr><th width=1%>History v1.02</th><td>27th July 2009 - Changed field cs to speed for more readability and added GetSpeed method</td></tr>
+<tr><th width=1%>History v1.01</th><td>14th July 2009 - Moved tp_LOOKUP_FREQUENCY and tp_LOOKUP_FREQUENCY_OVERTIME over to timelinefx.mod</td></tr>
+<tr><th width=1%>History v1.01</th><td>14th July 2009 - Render method now renders all children as well</td></tr>
+<tr><th width=1%>History v1.01</th><td>14th July 2009 - Tidied up the documentation and fleshed it out a bit</td></tr>
+<tr><th width=1%>History v1.01</th><td>14th July 2009 - Fixed bug in tlEntity example - import brl.pngloader was omitted</td></tr>
+<tr><th width=1%>History v1.01</th><td>13th July 2009 - Fixed a bug in tAnimImage where it wouldn't load images properly</td></tr>
+<tr><th width=1%>History v1.00</th><td>28th March 2009 - First Release</td></tr>
+</body></html>

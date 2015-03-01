@@ -1,0 +1,133 @@
+What's new in the TimelineFX Module?
+
+20.06.10
+TimelineFX
+
+- Added SetGlobalAmountScale to the particle manger, for controlling the amount of particles spawned.
+- Fixed a bug with stretch causing recycled particles to stretch way out of shaped on spawning
+
+Collision.mod
+- Fixed a bug with velocity not being taken into account after querying a quadtree which was causing tunnelling to occurr.
+
+New module
+-config.mod: A small but handy mod for creating config files so that settings can easily be remembered.
+
+26.05.10
+
+TimelineFX
+
+- Fixed a bug where emitters containing sub effects were not playing out the end of their graphs properly.
+
+- Fixed a bug with reverse animation not working properly
+
+
+03.05.10
+TimelineFX
+- You can now change the way particles are drawn by grouping them by the emitter that spawns them. Use effect.SetGroupParticles(true) to achieve this. You won't notice any difference unless you're using  effects that have sub effects however.
+- Fixed a bug where emitters that use the splatter graph are not effected by global zoom properly.
+
+New modules
+- 3 new modules more for the TimelineFX editor at this stage but I included them anyway. max2dext.mod, glmax2dext.mod and graphicsext.mod. These add the possibility to draw images with alpha premultiplied making it easier to grab the screen with alpha channel intact.
+
+04.04.10
+- Fixed an error on loading effects files with empty folders
+
+29.03.10
+TimelineFX
+- Added a new attribute - Splatter
+- Fixed a memory leak when effects files are loaded over and over again
+
+20.03.10
+New module
+- rigz.zipstreamloader - adds loadeffects2 which allows you to load incbin'd effects files (requires koriolis.zipstream module)
+
+timelinefx.mod
+- fixed a minor bug with precise mode.
+
+06.01.10
+New Modules!
+- rigz.collision - collision module with quadtrees, see documentation for more information
+- rigz.vector - This was in in entity.mod but I decided to put it in a separate module since expanding it
+
+08.11.09
+entity.mod
+- Tidied up the behaviour of entities that have a z value other then 1
+- New field: RootParent. This is the absolute root parent of the entity. Set when you add the entity as a child. see AssignRootParent
+- You can now SetRadiusCalculate Which starts calculating the entity's area of influence. This is used in the editor to auto fit the effect to the animation frame size
+
+TimelineFX.mod
+- Tidied up the behaviour of adjusting the Z value of effects and implented globalz as a graph attribute
+- Particle manager now restores the GFX states (alpha, scale etc.) after drawing particles
+- Added Destroy method to tlParticleManager. Use to avoid memory leaks
+
+Tweener.mod
+- Fixed a bug in the example program
+
+24.09.09
+timelinefx.mod
+- Initial implementation of Z on effects (changes the overal scale of an effect)
+
+entity.mod
+- Initial implementation of Z on entities (changes the overal scale of an entity and its children)
+
+07.09.09
+entity.mod
+- History v1.04: 7th September 2009 - Added a few more Getters and Setters
+- History v1.04: 7th September 2009 - Fixed a bug with animated entities causing a crash
+
+24.08.09
+TimelineFX
+- Fixed a but causing large angle changes to tween incorrectly
+- Added a Global Stretch attribute to tlEffects
+- Emitters that spawn particles with a random frame, now have the correct range of frames to choose from (it was always missing the last frame)
+- Separated the graph drawing routines into a separate mod
+
+11.08.09
+entity.mod
+- Render method now only renders if avatar is not null and OKToRender is true
+- Added OKToRender field so you can control wheter entities are actually rendered
+- Add a few more getters and settings for various variables
+- Added UpdateSpeed flag to tlEntity so you can override the updating of the entity speed and movement
+- Added new variables for storing the bounding boxes of the entity
+
+TimelineFX.mod
+- Added new method SetEffectParticleSize, which rolls SetSizeX and Y into one method
+- Particle manager now sets oktorender to false for the particles it renders, see SetOKToRender in entity.mod
+
+tweener.mod
+- GetTween() now returns tween like it's supposed to!
+- Added GetFps() Method for finding out the current FPS of the game/app using it
+
+27.07.09
+entity.mod
+- Change the name of field cs (current speed) to speed for better readability
+- Added GetSpeed() method
+
+25.07.09
+timelinefx.mod
+- Fixed a bug where the speed of new particles being spawned was not the correct value
+- Fixed a bug where life variation was being halved
+- Added new attribute Stretch. Particles are stretched according to how fast they're travelling
+- When lockedangle is used, particles will now take into account gravity when aligning themselves
+- Loadsprite now returns null if the dimensions passed to the function excede that of the image being loaded
+- Single particles now loop over thier overtime graphs.
+
+tweener.mod
+- Fixed a typo: UpdateFrequecy now spelt UpdateFrequency! (thanks thomashaaks)
+
+16.07.09
+
+entity.mod
+- Render method now renders all children as well
+- Tidied up the documentation and fleshed it out a bit
+- Fixed bug in tlEntity example - import brl.pngloader was omitted
+- Fixed a bug in tAnimImage where it wouldn't load images properly
+- Moved tp_LOOKUP_FREQUENCY and tp_LOOKUP_FREQUENCY_OVERTIME over to timelinefx.mod
+
+timelinefx.mod
+- Moved some globals from entity.mod to here because it made more sense. Created globals.bmx
+- Deleted consts.bmx, not used anymore
+- Added new command to pre load effects to tlParticleManager - AddPreLoadedEffect()
+
+tweener.mod
+- Fixed create method so it now returns self - thanks redspark!

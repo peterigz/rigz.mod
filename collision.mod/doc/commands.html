@@ -1,0 +1,2167 @@
+<html><head><title>Collision Module with quadtrees for spatial partitioning of boundaries reference</title>
+<link rel=stylesheet Type=text/css href='../../../../doc/bmxstyle.css'>
+</head><body>
+<table width=100% cellspacing=0><tr align=center><td class=small>&nbsp;</td>
+<td class=small width=1%><b>rigz.collision:</b></td>
+<td class=small width=1%><a href=#functions class=small>Functions</a></td>
+<td class=small width=1%><a href=#types class=small>Types</a></td>
+<td class=small width=1%><a href=#modinfo class=small>Modinfo</a></td>
+<td class=small width=1%><a href='../../../../mod/rigz.mod/collision.mod/collision.bmx' class=small>Source</a></td>
+<td class=small>&nbsp;</td></tr></table>
+<h1>Collision Module with quadtrees for spatial partitioning of boundaries</h1>
+<p>This modules provides a way to check for collisions between boxes, circles, lines and polygons (referred to as boundaries throughout
+to documentation). The option of using a quadtree
+is also there to speed up collision checking between large numbers of objects.</p>
+<p>Thanks to matibee, Leadwerks and Oddball from the Blitzmax forums, plus the authors of these sites http://en.wikipedia.org/wiki/Quadtree,
+http://www.kyleschouviller.com/wsuxna/quadtree-source-included/, http://www.heroicvirtuecreations.com/QuadTree.html,
+http://www.metanetsoftware.com/technique/tutorialA.html and http://www.codeproject.com/KB/GDI-plus/PolygonCollision.aspx where I found lots of useful
+info!</p>
+<p>The aim of this module was to try as much as possible to combine ease of use with performance. In terms of performance it uses a collision checking
+technique called separating axis theorem, which is quite a common and fast approach to collision detection, as well as providing an easy way to find
+out about each collision that happens in order to calculate things such as overlap prevention, and rebound vector calculation.</p>
+<p>For an example as to how easy the module is to use, to calculate a collision between 2 objects, you can simply use <a href=#CheckCollisions>CheckCollisions</a> like so:
+<pre>local result:tlCollisionResult=CheckCollisions(SourceObject, TargetObject)</pre>
+Where source and target objects can be either a <a href=#tlBox>tlBox</a>, <a href=#tlCircle>tlCircle</a>, <a href=#tlLine>tlLine</a> or <a href=#tlPolygon>tlPolygon</a>. Once the check is done the results of the collision are
+returned in a <a href=#tlCollisionResult>tlCollisionResult</a> where you can find out a number of things about the nature of the collision. To prevent 2 objects from overlapping
+you can simply do:
+<pre>PreventOverlap(result)</pre>
+and if a collision occurred then the 2 objects will be separated. See <a href=#PreventOverlap>PreventOverlap</a> for more info and an example</p>
+<p>Quadtrees are also simple to use, see <a href=#tlQuadtree>tlQuadtree</a> for more info and an example.</p>
+<p>All boundaries can be placed on one or more layers (up to 32) to help you organise collisions more easily. You can use the constants tlLAYER_1, tlLAYER_2..
+etc. up to 32 or tlLAYER_ALL to place a boundary on all layers. To set a layer you can either do it on creation of a boundary ie., with <a href=#CreateBox>CreateBox</a>, or
+you can use <a href=#SetBoundaryLayer>SetBoundaryLayer</a>. Use <a href=#GetBoundaryLayer>GetBoundaryLayer</a> to find out the layer of a boudnary.</p>
+<p>It's might be worth noting, that whilst function wrappers for most types have been created for extra convienience, you can still access the those methods
+directly in a more OO approach if you wish. Peruse the documentation for the specific methods etc.</p>
+<h2><a name=functions></a>Functions Summary</h2><table class=doc width=100%>
+<tr><td class=docleft width=1%><a href=#AddBoundaryToQuadtree>AddBoundaryToQuadtree</a></td><td class=docright>
+Add a new bounding box to the Quadtree.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#CheckCollision>CheckCollision</a></td><td class=docright>
+Check for a collision between 2 Boundaries.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#CheckRayCollision>CheckRayCollision</a></td><td class=docright>
+See if a ray collides with a boundary.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#CreateBox>CreateBox</a></td><td class=docright>
+Create a new <a href=#tlBox>tlBox</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#CreateCircle>CreateCircle</a></td><td class=docright>
+Create a <a href=#tlLine>tlLine</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#CreateLine>CreateLine</a></td><td class=docright>
+Create a <a href=#tlCircle>tlCircle</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#CreatePolygon>CreatePolygon</a></td><td class=docright>
+Create a <a href=#tlPolygon>tlPolygon</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#CreateQuadtree>CreateQuadtree</a></td><td class=docright>
+Create a new <a href=#tlQuadTree>tlQuadTree</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetBoundaryData>GetBoundaryData</a></td><td class=docright>
+Get the data assigned to a boundary.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetBoundaryLayer>GetBoundaryLayer</a></td><td class=docright>
+Get the collision layer that this boundary is on.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetQuad>GetQuad</a></td><td class=docright>
+Get the quad a vertex lies within.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetReboundVector>GetReboundVector</a></td><td class=docright>
+Get the rebound vector.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#IntervalDistance>IntervalDistance</a></td><td class=docright>
+Find the amount of overlap between 2 1D lines.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#LinesCross>LinesCross</a></td><td class=docright>
+Do a Line to Line collision check.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#LinesCrossAtPoint>LinesCrossAtPoint</a></td><td class=docright>
+Do a Line to Line collision check and return the point of intersection.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#LineToCircle>LineToCircle</a></td><td class=docright>
+Do a Line to Circle collision check.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#MoveBoundary>MoveBoundary</a></td><td class=docright>
+Move a Boundary by a given amount.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#NearestPointToCircle>NearestPointToCircle</a></td><td class=docright>
+Return the nearest point on a line to the center of a circle.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#PointInside>PointInside</a></td><td class=docright>
+Find out if a point is within a boundary.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#PreventOverlap>PreventOverlap</a></td><td class=docright>
+Prevent boundaries from overlapping, based on a <a href=#tlCollisionResult>tlCollisionResult</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#QueryQuadtreeArea>QueryQuadtreeArea</a></td><td class=docright>
+Query a Quadtree to find objects with an area.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#QueryQuadtreeBox>QueryQuadtreeBox</a></td><td class=docright>
+Query a quadtree to find objects within a <a href=#tlBox>tlBox</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#QueryQuadtreeCircle>QueryQuadtreeCircle</a></td><td class=docright>
+Query a quadtree to find objects within a <a href=#tlCircle>tlCircle</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#QueryQuadtreeEdge>QueryQuadtreeEdge</a></td><td class=docright>
+Query a quadtree with a line edge.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#QueryQuadtreeLine>QueryQuadtreeLine</a></td><td class=docright>
+Query a quadtree with a <a href=#tlLine>tlLine</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#QueryQuadtreeRange>QueryQuadtreeRange</a></td><td class=docright>
+Query a quadtree to find objects within a certain radius.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#QueryQuadtreeRay>QueryQuadtreeRay</a></td><td class=docright>
+Query a quadtree with a Ray.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#RemoveBoundaryFromQuadTree>RemoveBoundaryFromQuadTree</a></td><td class=docright>
+Remove a boundary from the quadtree.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#RotatePolygon>RotatePolygon</a></td><td class=docright>
+Rotate a <a href=#tlPolygon>tlPolygon</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#RunQuadtreeMaintenance>RunQuadtreeMaintenance</a></td><td class=docright>
+Perform some house keeping on a quadtree.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SameLayer>SameLayer</a></td><td class=docright>
+Find out if 2 boundaries are on the same collision layers.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#ScaleBoundary>ScaleBoundary</a></td><td class=docright>
+Set the scale of a Boundary.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetBoundaryData>SetBoundaryData</a></td><td class=docright>
+Assign an object to a boundary.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetBoundaryLayer>SetBoundaryLayer</a></td><td class=docright>
+Set the collision layer that this boundary is on.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetBoundaryPosition>SetBoundaryPosition</a></td><td class=docright>
+Set the position of a Boundary.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetBoundaryVelocity>SetBoundaryVelocity</a></td><td class=docright>
+Set the velocity of a boundary.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetPolygonAngle>SetPolygonAngle</a></td><td class=docright>
+Set the angle of a <a href=#tlPolygon>tlPolygon</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#UpdateBoundaryPosition>UpdateBoundaryPosition</a></td><td class=docright>
+Update the position of the boundary.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#WithinFieldOfView>WithinFieldOfView</a></td><td class=docright>
+Check if a point is with a field of view.
+</td></tr>
+</table>
+<h2><a name=types></a>Types Summary</h2><table class=doc width=100%>
+<tr><td class=docleft width=1%><a href=#tlBox>tlBox</a></td><td class=docright>
+Type for handling Axis Aligned Bounding Boxes.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#tlCircle>tlCircle</a></td><td class=docright>
+tlCircle for circular boundaries for collision checking.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#tlCollisionResult>tlCollisionResult</a></td><td class=docright>
+Type to store the results of collisions.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#tlLine>tlLine</a></td><td class=docright>
+tlLine for line collisions.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#tlPolygon>tlPolygon</a></td><td class=docright>
+tlPolygon for convex polygon collisions.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#tlQuadTree>tlQuadTree</a></td><td class=docright>
+Quadtree type for managing a quadtree.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#tlQuadTreeNode>tlQuadTreeNode</a></td><td class=docright>
+tlQuadTreeNode type for containing objects within the QuadTree.
+</td></tr>
+</table>
+<h2
+ id=functionsdet>Functions
+</h2>
+<table class=doc width=100% cellspacing=3 id=AddBoundaryToQuadtree>
+<tr><td class=doctop colspan=2>Function AddBoundaryToQuadtree:Int(quadtree:tlQuadTree, Box:tlBox)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>False if the box doesn't overlap the quadtree, otherwise True.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Add a new bounding box to the Quadtree.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>A quadtree isn't much use without any objects. Use this to add a <a href=#tlBox>tlBox</a> to the quadtree. If the bounding box does not overlap the
+quadtree then null is returned.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=CheckCollision>
+<tr><td class=doctop colspan=2>Function CheckCollision:tlCollisionResult(Source:tlBox, Target:tlBox)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright><a href=#tlCollisionResult>tlCollisionResult</a>.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Check for a collision between 2 Boundaries.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>You can use this function to check for collisions between any type of boundary: <a href=#tlBox>tlBox</a>, <a href=#tlCircle>tlCircle</a>, <a href=#tlLine>tlLine</a> and <a href=#tlPolygon>tlPolygon</a>. The <a href=#tlCollisionResult>tlCollisionResult</a>
+can then be used to determine what you want to do if a collision happened (or will happen). See <a href=#PreventOverlap>PreventOverlap</a> to make boundaries block or push
+each other.</td></tr>
+<tr><td class=docleft width=1%><a href=CheckCollision.bmx class=small>Example</a></td><td class=docright><pre>SuperStrict
+
+Import rigz.collision
+
+Graphics 800, 600
+
+'create a polygon to collide with
+Local verts:Float[] = [0.0, 0.0, -150.0, 100.0, 50.0, 150.0, 185.0, 100.0, 300.0, 0.0]
+'verts = [- 10.0, -10.0, 10.0, -10.0, 10.0, 10.0, -10.0, 10.0]
+Local poly:tlPolygon = CreatePolygon(400, 200, verts)
+
+'create a box to move about
+Local box:tlBox = CreateBox(100, 100, 20, 20)
+
+'a local collision result to store the result of the collision test
+Local result:tlCollisionResult = New tlCollisionResult
+
+'some velocity vectors to move the box about
+Local VelVector:tlVector2 = CreateVector2(0, 0)
+Local VelMatrix:tlMatrix2 = CreateMatrix2()
+Local Direction:Float
+Local speed:Float = 4
+
+While Not KeyDown(KEY_ESCAPE)
+	
+	Cls
+	
+	'rotate the polygon by 1 degree every frame
+	poly.Rotate(1)
+	
+	'some basic movement controls for the box
+	If KeyDown(KEY_UP) direction = 0
+	If KeyDown(KEY_RIGHT) direction = 90
+	If KeyDown(KEY_DOWN) direction = 180
+	If KeyDown(KEY_LEFT) direction = 270
+	If KeyDown(KEY_RIGHT) And KeyDown(KEY_DOWN) direction = 135
+	If KeyDown(KEY_DOWN) And KeyDown(KEY_LEFT) direction = 225
+	If KeyDown(KEY_UP) And KeyDown(KEY_RIGHT) direction = 45
+	If KeyDown(KEY_LEFT) And KeyDown(KEY_UP) direction = 315
+	If KeyDown(KEY_UP) Or KeyDown(KEY_DOWN) Or KeyDown(KEY_LEFT) Or KeyDown(KEY_RIGHT)
+		velvector.SetPosition(0, -speed)
+	Else
+		velvector.SetPosition(0, 0)
+	End If
+	velmatrix.set(Cos(direction) , Sin(direction) , -Sin(direction) , Cos(direction))
+	velvector = velmatrix.transformvector(velvector).Unit()
+	'set the box velocity so that the collision check can see whether the 2 objects will collide
+	'the next frame. You don't *have* to do this, but it makes for more accurate collisions
+	box.velocity = velvector.Scale(speed)
+
+	'check for a collision with the poly
+	result = CheckCollision(box, poly)
+	
+	'prevent the box from overlapping the poly
+	PreventOverlap(result)
+	
+	'move the box. Important to do this after the collision check, but only if you're setting
+	'the box velicity.
+	box.Move(box.velocity.x, box.velocity.y)
+	
+	box.draw()
+	poly.draw()
+	
+	Flip
+	
+Wend</pre></td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=CheckRayCollision>
+<tr><td class=doctop colspan=2>Function CheckRayCollision:tlCollisionResult(Target:tlBox, px:Float, py:Float, dx:Float, dy:Float, maxdistance:Float = 0)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright><a href=#tlCollisionResult>tlCollisionResult</a> with the results of the collision.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>See if a ray collides with a boundary.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>You can use this to test for a collision with a ray and any type of boundary: <a href=#tlBox>tlBox</a>, <a href=#tlCircle>tlCircle</a>, <a href=#tlLine>tlLine</a> and <a href=#tlPolygon>tlPolygon</a>.
+Pass the origin of the ray with px and py, and set the direction of the raycast with dx and dy vector. dx and dy will be normalised and extended
+infinitely if maxdistance equals 0 (default), otherwise set maxdistance to how ever far you want the ray to extend to before stopping. If the ray starts
+inside the poly then result.rayorigininside will be set to true. You can find the angle of reflection to bounce the ray using <a href=#GetReboundVector>GetReboundVector</a>.</td></tr>
+<tr><td class=docleft width=1%><a href=CheckRayCollision.bmx class=small>Example</a></td><td class=docright><pre>SuperStrict
+
+Import rigz.collision
+
+Graphics 800, 600
+
+'create some shapes for collisions
+Local verts:Float[] = [- 100.0, 0.0, -150.0, 100.0, 50.0, 150.0, 185.0, 100.0, 300.0, 0.0]
+Local poly:tlPolygon = New tlPolygon.CreatePoly(400, 200, verts)
+Local line:tlLine = CreateLine(200, 500, 800, 100)
+Local box:tlBox = CreateBox(400, 300, 100, 100)
+Local circle:tlCircle = CreateCircle(400, 300, 40)
+
+Local ray:tlVector2 = CreateVector2(0, 0)
+Local result:tlCollisionResult = New tlCollisionResult
+Local point:tlVector2 = CreateVector2(0, 0)
+
+Local shape:Int
+
+While Not KeyDown(KEY_ESCAPE)
+	
+	Cls
+	
+	'set the ray vector based on the point->mouse vector
+	If MouseDown(1) point.SetPosition(MouseX(), MouseY())
+	ray.SetPosition(MouseX() - point.x, MouseY() - point.y)
+	
+	'normalise the ray so we can draw the laser a fixed length a bit more easily
+	ray.Normalise()
+	
+	'iterate through shapes if space is pressed
+	If KeyHit(KEY_SPACE)
+		shape:+1
+		If shape > 3 shape = 0
+	End If
+	
+	SetColor 255, 255, 255
+	
+	DrawText "Press space to change shape", 10, 10
+	DrawText "Click and drag to move the laser, mouse pointer set the laser direction", 10, 20
+	
+	'do a ray collision checked on the selected shape and store the result
+	Select shape
+		Case 0
+			box.draw()
+			result = CheckRayCollision(box, point.x, point.y, ray.x, ray.y)
+		Case 1
+			line.Rotate(1)
+			line.draw()
+			result = CheckRayCollision(line, point.x, point.y, ray.x, ray.y)
+		Case 2
+			circle.draw()
+			result = CheckRayCollision(circle, point.x, point.y, ray.x, ray.y)
+		Case 3
+			poly.Rotate(1)
+			poly.draw()
+			result = CheckRayCollision(poly, point.x, point.y, ray.x, ray.y)
+	End Select
+	
+	SetColor 255, 0, 0
+	DrawRect point.x - 5, point.y - 5, 10, 10
+
+	'if the result shows an intersection and it wasn't insise the shape
+	If result.GetRayIntersection() And Not result.GetRayOriginInside()
+		'draw the ray upto the intersection point
+		DrawLine point.x, point.y, result.rayintersection.x, result.rayintersection.y
+		DrawOval result.rayintersection.x - 4, result.rayintersection.y - 4, 8, 8
+		'find the rebound vector
+		Local rebound:tlVector2 = GetReboundVector(result, ray)
+		'draw the rebounded ray
+		DrawLine result.rayintersection.x, result.rayintersection.y,  ..
+				result.rayintersection.x + rebound.x * 500, result.rayintersection.y + rebound.y * 500
+	ElseIf result.rayorigininside
+		DrawText "Ray starts inside object!", 10, 30
+	Else
+		'no intersection, draw a line for the ray
+		DrawLine point.x, point.y, point.x + ray.x * 1000, point.y + ray.y * 1000
+	EndIf
+
+	Flip 
+	
+Wend</pre></td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=CreateBox>
+<tr><td class=doctop colspan=2>Function CreateBox:tlBox(x:Float, y:Float, w:Float, h:Float, layer:Int = tlLAYER_1)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New <a href=#tlBox>tlBox</a>.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create a new <a href=#tlBox>tlBox</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Creates a new Bounding box that you can use for collision checking and adding to a <a href=#tlQuadTree>tlQuadTree</a>. Use layer to specify a particular layer
+to place the box on so that you can more easily organise your collisions. You use tlLAYER_1, tlLAYER_2..and so on up to tlLAYER_32, or tlLAYER_ALL
+to place the boundary on all layers.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=CreateCircle>
+<tr><td class=doctop colspan=2>Function CreateCircle:tlCircle(x:Float, y:Float, radius:Float, layer:Int = tlLAYER_1)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New <a href=#tlLine>tlLine</a>.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create a <a href=#tlLine>tlLine</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Create a new <a href=#tlLine>tlLine</a> at the given coordinates with the given radius. The coordinates will represent the center of the circle. Use layer to specify a particular layer
+to place the box on so that you can more easily organise your collisions. You use tlLAYER_1, tlLAYER_2..and so on up to tlLAYER_32, or tlLAYER_ALL
+to place the boundary on all layers.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=CreateLine>
+<tr><td class=doctop colspan=2>Function CreateLine:tlLine(x1:Float, y1:Float, x2:Float, y2:Float, layer:Int = tlLAYER_1)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New <a href=#tlCircle>tlCircle</a>.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create a <a href=#tlCircle>tlCircle</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Create a new <a href=#tlLine>tlLine</a> at the coordinates given, x1 and y1 being the start of the line and x2 and y2 being the end. The will placed exactly
+according to the coordinates you give, but it's worth bearing in mind that the handle of the line will be at the center point along the line. Therefore
+the world coordinates will be set to half way point along the line. Use layer to specify a particular layer
+to place the box on so that you can more easily organise your collisions. You use tlLAYER_1, tlLAYER_2..and so on up to tlLAYER_32, or tlLAYER_ALL
+to place the boundary on all layers.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=CreatePolygon>
+<tr><td class=doctop colspan=2>Function CreatePolygon:tlPolygon(x:Float, y:Float, verts:Float[], layer:Int = tlLAYER_1)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New <a href=#tlPolygon>tlPolygon</a>, or Null if verts[] contained the wrong amount.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create a <a href=#tlPolygon>tlPolygon</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Create a new <a href=#tlPolygon>tlPolygon</a> at the given coordinates with the given array of vertices. The coordinates will represent the center of the polygon which is
+automatically calculated. The array must contain more then 5 values (2 per vertex) and be an even number or null will be returned. The coordinates of
+the vertices in the array are arranged like so: [x,y,x,y,x,y .. etc]. Use layer to specify a particular layer
+to place the box on so that you can more easily organise your collisions. You use tlLAYER_1, tlLAYER_2..and so on up to tlLAYER_32, or tlLAYER_ALL
+to place the boundary on all layers.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=CreateQuadtree>
+<tr><td class=doctop colspan=2>Function CreateQuadtree:tlQuadtree(x:Float, y:Float, w:Float, h:Float, maxlevels:Int = 4, maxpernode:Int = 4)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>A new <a href=#tlQuadtree>tlQuadtree</a>.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create a new <a href=#tlQuadTree>tlQuadTree</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Creates a new quad tree with the coordinates and dimensions given. Maxlevels determines how many times the quadtree can be sub divided. A
+quadtreenode is only subdivided when a certain amount of objects have been added, which is set by passing maxpernode. There's no optimum values for
+these, it largely depends on your specific needs, so you will probably do well to experiment.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=GetBoundaryData>
+<tr><td class=doctop colspan=2>Function GetBoundaryData:Object(Boundary:tlBox, Data:Object)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the data assigned to a boundary.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Use this to retrieve the custom data you have assign to a boundary.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=GetBoundaryLayer>
+<tr><td class=doctop colspan=2>Function GetBoundaryLayer:Int(Boundary:tlBox)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the collision layer that this boundary is on.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=GetQuad>
+<tr><td class=doctop colspan=2>Function GetQuad:Int(axis_x:Float, axis_y:Float, vert_x:Float, vert_y:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the quad a vertex lies within.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will return the quad a vertex lies within according to the x and y axis you pass it.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=GetReboundVector>
+<tr><td class=doctop colspan=2>Function GetReboundVector:tlVector2(Result:tlCollisionResult, v:tlVector2, friction:Float = 0, bounce:Float = 1)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New <a href=#tlVector2>tlVector2</a> with the resulting rebound vector, or v, if there was nothing to rebound.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the rebound vector.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>When an object collides with a surface you may want to know a resulting vector based on bounce and friction. So you can call this
+and pass the velocity vector of the incoming object, and the amount of bounce and friction to have, where a bounce value of 1 and a friction value of 0
+will result in a perfect bounce.</td></tr>
+<tr><td class=docleft width=1%><a href=GetReboundVector.bmx class=small>Example</a></td><td class=docright><pre>SuperStrict
+
+Import rigz.collision
+
+Graphics 800, 600
+
+Local qtree:tlQuadTree = CreateQuadtree(0, 0, GraphicsWidth(), GraphicsHeight())
+
+'Add some obstacles to the quadtree
+AddBoundaryToQuadtree(qtree, CreateBox(10, 0, GraphicsWidth() - 20, 10))
+AddBoundaryToQuadtree(qtree, CreateBox(10, GraphicsHeight() - 10, GraphicsWidth() - 20, 10))
+AddBoundaryToQuadtree(qtree, CreateBox(0, 10, 10, GraphicsHeight() - 20))
+AddBoundaryToQuadtree(qtree, CreateBox(GraphicsWidth() - 10, 10, 10, GraphicsHeight() - 20))
+Local verts:Float[] = [- 50.0, -50.0, -70.0, 0.0, -50.0, 50.0, 50.0, 50.0, 100.0, 0.0, 50.0, -50.0]
+AddBoundaryToQuadtree(qtree, CreatePolygon(Rnd(GraphicsWidth()), Rnd(GraphicsHeight()), verts))
+AddBoundaryToQuadtree(qtree, CreateCircle(500, 400, 100))
+AddBoundaryToQuadtree(qtree, CreateBox(500, 200, 50, 50))
+AddBoundaryToQuadtree(qtree, CreateLine(300, 300, 350, 590))
+
+'create a ball to bounce about
+Local ball:tlCircle = CreateCircle(200, 200, 10)
+SetBoundaryVelocity(ball, 5, 5)
+
+While Not KeyDown(KEY_ESCAPE)
+	
+	Cls
+	
+	'Query the quadtree with the screen area and call a function that will draw the stuff it finds
+	QueryQuadtreeArea(qtree, 0, 0, GraphicsWidth(), GraphicsHeight(), Null, renderscreen)
+	'Query the quadtree with the ball  and call the function to handle it colliding with stuff in the quadtree
+	QueryQuadtreeBox(qtree, ball, ball, BounceBall)
+	
+	UpdateBoundaryPosition(ball)
+	
+	ball.draw()
+	
+	Flip 1
+
+Wend
+
+'render screen callback function
+Function renderscreen(o:Object, data:Object)
+	
+	Local box:tlBox = tlBox(o)
+	SetColor 255, 255, 255
+	box.Draw()
+
+End Function
+
+'ball colliding callback function
+Function BounceBall(o:Object, data:Object)
+	'o will be the object found in the quadtree
+	'data is our ball we passed through to this function	
+
+	'cast the objects into local variables
+	Local ball:tlCircle = tlCircle(data)
+	Local wall:tlBox = tlBox(o)
+	
+	'check for collisions between the ball and the obstacle found in the quadtree
+	Local result:tlCollisionResult = CheckCollision(ball, wall)
+	'prevent the 2 objects from overlapping
+	PreventOverlap(result)
+	'set the ball velocity to the appropriate rebound vector to make it bounce off the walls.
+	ball.velocity = GetReboundVector(result, ball.velocity)
+	
+End Function</pre></td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=IntervalDistance>
+<tr><td class=doctop colspan=2>Function IntervalDistance:Float(min0:Float, max0:Float, min1:Float, max1:Float)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>The amount of overlap. Any value less then 0 is not overlapping.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Find the amount of overlap between 2 1D lines.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=LinesCross>
+<tr><td class=doctop colspan=2>Function LinesCross:Int(x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>True if lines overlap.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Do a Line to Line collision check.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>x0, y0, x1, y1 is the first line and x2, y2, x3, y3 is the second line you want want check for an intersection.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=LinesCrossAtPoint>
+<tr><td class=doctop colspan=2>Function LinesCrossAtPoint:Int(x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, X_Point:Float Var, Y_Point:Float Var)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>True if lines overlap, and Sets X_Point and Y_Point to the point of interection.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Do a Line to Line collision check and return the point of intersection.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>x0, y0, x1, y1 is the first line and x2, y2, x3, y3 is the second line you want want check for an intersection.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=LineToCircle>
+<tr><td class=doctop colspan=2>Function LineToCircle:Int(x1:Float, y1:Float, x2:Float, y2:Float, px:Float, py:Float, r:Float)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>True if line and circle overlap.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Do a Line to Circle collision check.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>x1, y1 and x2, y2 represent the beginning and end line coordinates, and px, py and r represent the circle coordinates and radius.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=MoveBoundary>
+<tr><td class=doctop colspan=2>Function MoveBoundary(Boundary:tlBox, x:Float, y:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Move a Boundary by a given amount.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This sets the position of a <a href=#tlBox>tlBox</a>, <a href=#tlCircle>tlCircle</a> or <a href=#tlPolygon>tlPolygon</a> by moving it by the x and y amount.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=NearestPointToCircle>
+<tr><td class=doctop colspan=2>Function NearestPointToCircle:Int(x1:Float, y1:Float, x2:Float, y2:Float, px:Float, py:Float, r:Float, NearestPoint_x:Float, NearestPoint_y:Float)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>NearestPoint_x and NearestPoint_y.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Return the nearest point on a line to the center of a circle.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>x1, y1 and x2, y2 represent the beginning and end line coordinates, and px, py and r represent the circle coordinates and radius.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=PointInside>
+<tr><td class=doctop colspan=2>Function PointInside:Int(Boundary:tlBox, x:Float, y:Float)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>True if the point is within.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Find out if a point is within a boundary.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Use this to find out if a point at x,y falls within a <a href=#tlBox>tlBox</a>, <a href=#tlCircle>tlCircle</a> or <a href=#tlPolygon>tlPolygon</a>.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=PreventOverlap>
+<tr><td class=doctop colspan=2>Function PreventOverlap(Result:tlCollisionResult, Push:Int = False)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Prevent boundaries from overlapping, based on a <a href=#tlCollisionResult>tlCollisionResult</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>After you have retrieved a <a href=#tlCollisionResult>tlCollisionResult</a> from calling <a href=#CheckCollision>CheckCollision</a> you can call this function to separate 2 boundaries from each other.
+If push is false (default) then the source boundary will be stopped by the target boundary, otherwsie the source bouandry will push the target boundary
+along it's veloctity vector and the normal of the edge it's pushing against.
+***NOTE*** Remember that after an overlap has been been prevented, the coordinates of the boundary wil have change in order to separate it from the other
+boundary, so remember to update any other objects coordinates to match this (such as your game object). If your game object is dictating where the boundary
+is located then it might inadvertantly place the bouandary back inside the object it's colliding with causing strange things to happen.</td></tr>
+<tr><td class=docleft width=1%><a href=PreventOverlap.bmx class=small>Example</a></td><td class=docright><pre>SuperStrict
+
+Import rigz.collision
+Import "TDungeon.bmx"
+
+Const wallsize:Int = 64
+
+'set up a maze using TDungeon - Thanks to impixi from the blitz forums for the code in archives found here: 
+'http://www.blitzbasic.com/codearcs/codearcs.php?code=1891
+
+Graphics 800, 600
+
+Cls
+DrawText "Please wait, generating a maze", 10, 10
+Flip
+
+Local WallGrid:Byte[,]
+
+Local Columns:Int
+Local Rows:Int
+
+Local maze:TDungeon = New TDungeon
+maze.generate(MilliSecs(), 128, 128)
+wallgrid = maze.getWallGrid()
+Local d:Int[] = WallGrid.Dimensions()
+columns = d[0]
+rows = d[1]
+
+'create the quadtree. We're creating quite a big game world so the quad tree needs quite a few levels to create
+'the amount of partitioning we need. 9 levels=256x256 possible partitions (2^(levels-1))
+Local QTree:tlQuadTree = CreateQuadtree(0, 0, columns * wallsize, rows * wallsize, 9, 1)
+
+'create and add all of the walls of the maze to the quadtree using tlBox for walls.
+Local wall:tlBox
+Local wallcount:Int
+For Local c:Int = 0 To Columns - 1
+	For Local r:Int = 0 To Rows - 1
+		
+		If wallgrid[c, r] = True
+			wall = CreateBox(c * wallsize, r * wallsize, wallsize, wallsize)
+			AddBoundaryToQuadtree(qtree, wall)
+			wallcount:+1
+		End If
+		
+	Next
+Next
+
+DebugLog wallcount + " walls added to quadtree"
+DebugLog "World size is " + (columns * wallsize) + " x "+ (rows * wallsize)
+
+Local direction:Float
+Local speed:Float = 5.1
+Local velvector:tlVector2 = CreateVector2(0, 0)
+Local VelMatrix:tlMatrix2 = CreateMatrix2()
+
+'create a player to move about the world, and a camera vector to scroll about with
+Local camera:tlVector2 = CreateVector2(0, 0)
+Local player:tlCircle = CreateCircle(96, 96, 16)
+
+Local time:Int = MilliSecs()
+
+While Not KeyDown(KEY_ESCAPE)
+	
+	Cls
+	
+	'some basic movement controls for the player
+	If KeyDown(KEY_UP) direction = 0
+	If KeyDown(KEY_RIGHT) direction = 90
+	If KeyDown(KEY_DOWN) direction = 180
+	If KeyDown(KEY_LEFT) direction = 270
+	If KeyDown(KEY_RIGHT) And KeyDown(KEY_DOWN) direction = 135
+	If KeyDown(KEY_DOWN) And KeyDown(KEY_LEFT) direction = 225
+	If KeyDown(KEY_UP) And KeyDown(KEY_RIGHT) direction = 45
+	If KeyDown(KEY_LEFT) And KeyDown(KEY_UP) direction = 315
+	
+	If KeyDown(KEY_UP) Or KeyDown(KEY_DOWN) Or KeyDown(KEY_LEFT) Or KeyDown(KEY_RIGHT)
+		velvector.SetPosition(0, -speed)
+	Else
+		velvector.SetPosition(0, 0)
+	End If
+	
+	velmatrix.set(Cos(direction) , Sin(direction) , -Sin(direction) , Cos(direction))
+	velvector = velmatrix.transformvector(velvector).Unit()
+	velvector = velvector.Scale(speed)
+	
+	'move the player
+	player.Move(velvector.x, velvector.y)
+	
+	time = MilliSecs()
+	'query the screen space of the quadtree and call the renderscreen callback funtion
+	QueryQuadtreeArea(qtree, camera.x, camera.y, GraphicsWidth() , GraphicsHeight() , camera, RenderScreen)
+	Local screenobjects:Int = qtree.GetObjectsFound()
+	'query the quadtree with the player and call the PlayervsWall callback function
+	'to prevent overlapping with the wall
+	QueryQuadtreeCircle(qtree, player, player, PlayervsWall)
+	
+	'update the camera position
+	camera.SetPosition(player.world.x - GraphicsWidth() / 2, player.world.y - GraphicsHeight() / 2)
+	
+	'draw the player
+	setcolor 0, 255, 0
+	player.draw(camera.x, camera.y)
+	
+	DrawText "Time to run all queries:" + (MilliSecs() - time), 10, 10
+	DrawText "Render screen objects found: " + screenobjects + " / " + wallcount, 10, 20
+	DrawText "Objects close to player found: " + qtree.GetObjectsFound() + " / " + wallcount, 10, 30
+	
+	Flip
+
+Wend
+
+'Here's the Render screen function called by the QueryQuadtreeArea function in the mainloop
+'everytime it finds an object on screen to draw
+Function RenderScreen(wall:Object, cam:Object)
+	'Here, we're passing the wall and the camera as objects through to the callback function
+	'so we can use casting to put them into local variables
+	Local box:tlBox = tlBox(wall)
+	Local camera:tlVector2 = tlVector2(cam)
+	SetColor 128, 128, 128
+	'draw the wall, offsetting it's location by the camera coordinates
+	DrawRect box.world.x - camera.x - wallsize / 2, box.world.y - camera.y - wallsize / 2, wallsize, wallsize
+End Function
+
+'And here's the function called by the QueryQuadtreeCircle function in the mainloop
+'evertime it finds an object in the same space as the player
+Function PlayervsWall(wall:Object, player:Object)
+	'cast the objects into locals
+	Local box:tlBox = tlBox(wall)
+	Local p:tlCircle = tlCircle(player)
+	
+	'check for a collision between the player, and the wall
+	Local result:tlCollisionResult = CheckCollision(p, box)
+	'prevent the 2 from overlapping if necessary.
+	PreventOverlap(result)
+End Function</pre></td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=QueryQuadtreeArea>
+<tr><td class=doctop colspan=2>Function QueryQuadtreeArea(Quadtree:tlQuadTree, x:Float, y:Float, w:Float, h:Float, Data:Object, callback:Int(ReturnedObject:Object, Data:Object), Layer:Int = tlLAYER_ALL)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Query a Quadtree to find objects with an area.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>When you want to find objects within a particular area of the quadtree you can use this method.  Pass the area coordinates and dimensions
+that you want to check, an object (Data) that can be anything that you want to pass through to the callback function, and the function callback that you want
+to perform whatever tasks you need on the objects that are found within the area.
+The callback function you create needs to have 2 parameters: ReturnedObject:object which will be the Box/circle/poly, and Data:object which can be
+an object you want to pass through to the call back function.
+Use <a href=#GetObjectsFound>GetObjectsFound</a> to find out how many objects were found on the last search.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=QueryQuadtreeBox>
+<tr><td class=doctop colspan=2>Function QueryQuadtreeBox(Quadtree:tlQuadTree, area:tlBox, Data:Object, callback:Int(o:Object, Data:Object), Layer:Int = tlLAYER_ALL)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Query a quadtree to find objects within a <a href=#tlBox>tlBox</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This does the same thing as <a href=#QueryQuadtreeArea>QueryQuadtreeArea</a> except you can pass a <a href=#tlBox>tlBox</a> instead to query the quadtree.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=QueryQuadtreeCircle>
+<tr><td class=doctop colspan=2>Function QueryQuadtreeCircle(Quadtree:tlQuadTree, circle:tlCircle, Data:Object, callback:Int(ReturnedObject:Object, Data:Object), Layer:Int = tlLAYER_ALL)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Query a quadtree to find objects within a <a href=#tlCircle>tlCircle</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will query the quadtree and do a callback on any objects it finds within the given <a href=#tlCircle>tlCircle</a>.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=QueryQuadtreeEdge>
+<tr><td class=doctop colspan=2>Function QueryQuadtreeEdge:Int(Quadtree:tlQuadTree, x1:Float, y1:Float, x2:Float, y2:Float, Data:Object, callback:Int(ReturnedObject:Object, Data:Object, Result:tlCollisionResult), Layer:Int = tlLAYER_ALL)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>False if the line did not touch anything, otherwise True.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Query a quadtree with a line edge.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will query the quadtree with a line and perform a callback on all the objects the line intersects. Pass the quadtree to do the query on, the
+start and end point of the line (x1,y1,x2,y2), an object you want to pass through to the callback, and the callback itself. It's worth noting that the callback also requires
+you have a <a href=#tlCollisionResult>tlCollisionResult</a> parameter which will be passed to the callback function with information about the results of the raycast.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=QueryQuadtreeLine>
+<tr><td class=doctop colspan=2>Function QueryQuadtreeLine:Int(Quadtree:tlQuadTree, Line:tlLine, Data:Object, callback:Int(ReturnedObject:Object, Data:Object, Result:tlCollisionResult), Layer:Int = tlLAYER_ALL)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>False if the line did not touch anything, otherwise True.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Query a quadtree with a <a href=#tlLine>tlLine</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will query the quadtree with a line and perform a callback on all the objects the <a href=#tlLine>tlLine</a> intersects. Pass the quadtree to do the query on, the
+<a href=#tlLine>tlLine</a> to query with, an object you want to pass through to the callback, and the callback itself. It's worth noting that the callback also requires
+you have a <a href=#tlCollisionResult>tlCollisionResult</a> parameter which will be passed to the callback function with information about the results of the raycast.</td></tr>
+<tr><td class=docleft width=1%><a href=QueryQuadtreeLine.bmx class=small>Example</a></td><td class=docright><pre>SuperStrict
+
+Import rigz.collision
+
+Graphics 1024, 768
+
+'Create our quadtree. Here we're allowing for 5 levels of subdivision and upto 1 object before subdividing
+'a quadtree node
+Local QTree:tlQuadTree = CreateQuadtree(0, 0, GraphicsWidth() , GraphicsHeight(), 5, 1)
+
+'Populate the quadtree with a bunch of objects
+For Local c:Int = 1 To 1000
+	Local t:Int = Rnd(3)
+	Local rect:tlBox
+	Select t
+		Case 0
+			'Create a Basic bounding box boundary
+			rect = CreateBox(Rnd(GraphicsWidth()), Rnd(GraphicsHeight()), 10, 10)
+		Case 1
+			'Create a circle Boundary
+			rect = CreateCircle(Rnd(GraphicsWidth()), Rnd(GraphicsHeight()), 5)
+		Case 2
+			'Create a polygon boundary
+			Local verts:Float[] = [- 10.0, -10.0, -15.0, 0.0, -10.0, 10.0, 10.0, 10.0, 15.0, 0.0, 10.0, -10.0]
+			rect = CreatePolygon(Rnd(GraphicsWidth()), Rnd(GraphicsHeight()), verts)
+			RotatePolygon(tlPolygon(rect), Rnd(360))
+	End Select
+	'Add the boundary to the quadtree
+	AddBoundaryToQuadtree(QTree, rect)
+Next
+
+'create a ray vector and its point of origin
+Local line:tlLine = CreateLine(200, 200, 500, 500)
+
+While Not KeyDown(KEY_ESCAPE)
+	
+	Cls
+	
+	'set the ray to point towards the mouse pointer
+	If MouseDown(1) line.SetPosition(MouseX(), MouseY())
+	If MouseDown(2) line.Rotate(1)
+	
+	'Query screen space and render all on screen
+	QueryQuadtreeArea(QTree, 0, 0, GraphicsWidth(), GraphicsHeight(), Null, RenderScreen)
+	
+	'query the quadtree with the ray and run our call back if it hit. Otherwise draw the full length of the ray (300)
+	'we're using the data variable here to pass through the Point to the callback function	
+	QueryQuadtreeLine(qtree, line, line, LineHandler)
+	
+	SetColor 255, 255, 255
+	line.draw()
+	
+	SetColor 0, 255, 0
+	DrawText "Click and drag to move the line about", 10, 10
+	DrawText "Use right mouse to rotate the line", 10, 20
+	
+	Flip 1
+
+Wend
+
+'Our first callback function which is called when space is pressed and objects are found within the screen space
+Function RenderScreen(o:Object, data:Object)
+	'use casting to create the local rect
+	Local rect:tlBox = tlBox(o)
+	'and draw it
+	SetColor 255, 255, 255
+	rect.draw()
+End Function
+
+'Our call back function to handle the ray cast. Note that a ray cast callback must also have a tlCollisionResult parameter.
+Function LineHandler(o:Object, data:Object, result:tlCollisionResult)
+	
+	'cast the objects to some local variables
+	Local line:tlLine = tlLine(data)
+	Local box:tlBox = tlBox(o)
+	
+	SetColor 0, 255, 0
+	box.Draw()
+
+End Function</pre></td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=QueryQuadtreeRange>
+<tr><td class=doctop colspan=2>Function QueryQuadtreeRange(Quadtree:tlQuadTree, x:Float, y:Float, radius:Float, Data:Object, callback:Int(ReturnedObject:Object, Data:Object), Layer:Int = tlLAYER_ALL)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Query a quadtree to find objects within a certain radius.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will query the quadtree and do a callback on any objects it finds within a given radius. See <a href=#QueryQuadtreeArea>QueryQuadtreeArea</a> for more info.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=QueryQuadtreeRay>
+<tr><td class=doctop colspan=2>Function QueryQuadtreeRay:Int(Quadtree:tlQuadTree, px:Float, py:Float, dx:Float, dy:Float, maxdistance:Float = 0, Data:Object, callback:Int(ReturnedObject:Object, Data:Object, Result:tlCollisionResult), Layer:Int = tlLAYER_ALL)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>False if the ray did not hit anything, otherwise True.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Query a quadtree with a Ray.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will query the quadtree with a ray and perform a callback on the first object the ray hits. Pass the quadtree to do the query on, the
+starting point of the ray (px,py), the direction vector of the ray (dx,dy), the maximum distance you want the ray to travel (maxdistance, 0 means
+an infinit ray will be cast), an object you want to pass through to the callback, and the callback itself. It's worth noting that the callback also requires
+you have a <a href=#tlCollisionResult>tlCollisionResult</a> parameter which will be passed to the callback function with information about the results of the raycast.</td></tr>
+<tr><td class=docleft width=1%><a href=QueryQuadtreeRay.bmx class=small>Example</a></td><td class=docright><pre>SuperStrict
+
+Import rigz.collision
+
+Graphics 1024, 768
+
+'Create our quadtree. Here we're allowing for 5 levels of subdivision and upto 1 object before subdividing
+'a quadtree node
+Local QTree:tlQuadTree = CreateQuadtree(0, 0, GraphicsWidth() , GraphicsHeight(), 5, 1)
+
+'Populate the quadtree with a bunch of objects
+For Local c:Int = 1 To 250
+	Local t:Int = Rnd(3)
+	Local rect:tlBox
+	Select t
+		Case 0
+			'Create a Basic bounding box boundary
+			rect = CreateBox(Rnd(GraphicsWidth()), Rnd(GraphicsHeight()), 10, 10)
+		Case 1
+			'Create a circle Boundary
+			rect = CreateCircle(Rnd(GraphicsWidth()), Rnd(GraphicsHeight()), 5)
+		Case 2
+			'Create a polygon boundary
+			Local verts:Float[] = [- 10.0, -10.0, -15.0, 0.0, -10.0, 10.0, 10.0, 10.0, 15.0, 0.0, 10.0, -10.0]
+			rect = CreatePolygon(Rnd(GraphicsWidth()), Rnd(GraphicsHeight()), verts)
+			RotatePolygon(tlPolygon(rect), Rnd(360))
+	End Select
+	'Add the boundary to the quadtree
+	AddBoundaryToQuadtree(QTree, rect)
+Next
+
+'create a ray vector and its point of origin
+Local ray:tlVector2 = New tlVector2.Create(0, 0)
+Local point:tlVector2 = New tlVector2.Create(400, 300)
+
+While Not KeyDown(KEY_ESCAPE)
+	
+	Cls
+	
+	'set the ray to point towards the mouse pointer
+	If MouseDown(1) point.SetPosition(MouseX(), MouseY())
+	ray.SetPosition(MouseX() - point.x, MouseY() - point.y)
+	'normalise the ray into a unit vector. Not necessary for the ray cast query, it's just so
+	'I can draw the ray a specific length
+	ray.Normalise()
+	
+	'Query screen space and render all on screen
+	QueryQuadtreeArea(QTree, 0, 0, GraphicsWidth(), GraphicsHeight(), Null, RenderScreen, 1)
+	
+	'query the quadtree with the ray and run our call back if it hit. Otherwise draw the full length of the ray (300)
+	'we're using the data variable here to pass through the Point to the callback function	
+	If Not QueryQuadtreeRay(qtree, point.x, point.y, ray.x, ray.y, 300, point, RayHandler, 1)
+		SetColor 255, 0, 0
+		DrawLine point.x, point.y, point.x + ray.x * 300, point.y + ray.y * 300
+	End If
+	
+	SetColor 255, 255, 255
+	DrawText "Click and drag to move the ray origin about", 10, 10
+	
+	Flip 1
+
+Wend
+
+'Our first callback function which is called when space is pressed and objects are found within the screen space
+Function RenderScreen(o:Object, data:Object)
+	'use casting to create the local rect
+	Local rect:tlBox = tlBox(o)
+	'and draw it
+	SetColor 255, 255, 255
+	rect.draw()
+End Function
+
+'Our call back function to handle the ray cast. Note that a ray cast callback must also have a tlCollisionResult parameter.
+Function RayHandler(o:Object, data:Object, result:tlCollisionResult)
+	
+	'cast the objects to some local variables
+	Local point:tlVector2 = tlVector2(data)
+	Local box:tlBox = tlBox(o)
+	
+	SetColor 255, 0, 0
+	
+	'if the ray does not originate inside an object then draw the ray and intersection point
+	If Not result.GetRayOriginInside()
+		DrawLine point.x, point.y, result.GetRayIntersection().x, result.GetRayIntersection().y
+		DrawOval result.GetRayIntersection().x - 4, result.GetRayIntersection().y - 4, 8, 8
+	End If
+	
+	'draw the box we collided with in a different colour
+	box.Draw()
+
+End Function</pre></td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=RemoveBoundaryFromQuadTree>
+<tr><td class=doctop colspan=2>Function RemoveBoundaryFromQuadTree(Box:tlBox)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Remove a boundary from the quadtree.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will remove a boundary from the quadtree. You'll need to do this when your actor/entity using the boundary is destroyed, blown up or whatever!
+No need to pass the quadtree as the boundary knows what quadtree it lives in.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=RotatePolygon>
+<tr><td class=doctop colspan=2>Function RotatePolygon(Poly:tlPolygon, angle:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Rotate a <a href=#tlPolygon>tlPolygon</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will rotate the polygon by the given amount.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=RunQuadtreeMaintenance>
+<tr><td class=doctop colspan=2>Function RunQuadtreeMaintenance(Quadtree:tlQuadtree)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Perform some house keeping on a quadtree.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will search a quadtree tree for any empty <a href=#tlQuadTreeNodes>tlQuadTreeNodes</a> and unpartition them if necessary. It's probably unnecessary to run to every frame.
+Every other frame should be more then enough, and maybe not even necessary at all, it will depend on how you're using the quadtree.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=SameLayer>
+<tr><td class=doctop colspan=2>Function SameLayer:Int(Source:tlBox, Target:tlBox)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>True if they are on the same layer, otherwise false.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Find out if 2 boundaries are on the same collision layers.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=ScaleBoundary>
+<tr><td class=doctop colspan=2>Function ScaleBoundary(Boundary:tlBox, x:Float, y:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the scale of a Boundary.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This sets the scale a <a href=#tlBox>tlBox</a>, <a href=#tlCircle>tlCircle</a> or <a href=#tlPolygon>tlPolygon</a> by x and y (or just x in the case if a <a href=#tlCircle>tlCircle</a>)</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=SetBoundaryData>
+<tr><td class=doctop colspan=2>Function SetBoundaryData(Boundary:tlBox, Data:Object)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Assign an object to a boundary.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This can be handy to store extra custom info about a boundary.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=SetBoundaryLayer>
+<tr><td class=doctop colspan=2>Function SetBoundaryLayer(Boundary:tlBox, layer:Int)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the collision layer that this boundary is on.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>The layer a boundary is on can determine what other boundarys this one can collide with. You may not want some objects to be able to collide
+with each other, so you can arrange them of different layers. There are 32 layers, assigned to constants: tlLAYER_1, tlLAYER2, tlLAYER_3.. and so on up
+to 32, so to assign a layer, simply pass the appropriate constant:
+<pre>MyBox.SetCollisionLayer(tlLAYER_1)</pre>
+You can also assign to more then one layer using OR:
+<pre>MyBox.SetCollisionLayer(tlLAYER_1 | tlLAYER_2 | tlLAYER_3)</pre>
+Finally, assign it to all layers using:
+<pre>MyBox.SetCollisionLayer(tlLAYER_ALL)</pre></td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=SetBoundaryPosition>
+<tr><td class=doctop colspan=2>Function SetBoundaryPosition(Boundary:tlBox, x:Float, y:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the position of a Boundary.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Sets the position of a <a href=#tlBox>tlBox</a>, <a href=#tlCircle>tlCircle</a> or <a href=#tlPolygon>tlPolygon</a>.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=SetBoundaryVelocity>
+<tr><td class=doctop colspan=2>Function SetBoundaryVelocity(Boundary:tlBox, Velocity_x:Float, Velocity_y:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the velocity of a boundary.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>It's import to set the velocity of the boundary so that collisions can be more accurately calculated. If you're attaching this
+to an entity in your game then you'll just need to match this to your entities velocity.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=SetPolygonAngle>
+<tr><td class=doctop colspan=2>Function SetPolygonAngle(Poly:tlPolygon, angle:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the angle of a <a href=#tlPolygon>tlPolygon</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will set the angle of a polygon to the given amount.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=UpdateBoundaryPosition>
+<tr><td class=doctop colspan=2>Function UpdateBoundaryPosition(Boundary:tlBox)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Update the position of the boundary.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>You can use this function to update a boundary's position according to its current velocity vector.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=WithinFieldOfView>
+<tr><td class=doctop colspan=2>Function WithinFieldOfView:Int(Observer_x:Float, Observer_y:Float, FOV:Float, Direction:Float, PointX:Float, PointY:Float)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>True if if point is withing observers fov, otherwise false.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Check if a point is with a field of view.</td></tr>
+</table>
+<br>
+<h2
+ id=typesdet>Types
+</h2>
+<table class=doc width=100% cellspacing=3 id=tlBox>
+<tr><td class=doctop colspan=2>Type tlBox</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Type for handling Axis Aligned Bounding Boxes.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright><p>This type can be used to create bounding boxes for the purpose of collision checking. This is the type used to stored objects in <a href=#tlQuadTree>tlQuadTree</a>. It's
+extended by <a href=#tlCircle>tlCircle</a> and <a href=#tlPolygon>tlPolygon</a>. To implement collision checking in you game/app will probably end up inlcluding these as a field within
+your own types, and possibly extending these types so that they can contain a field linking back to your own entity/actor types. Use <a href=#SetPosistion>SetPosistion</a> and <a href=#Move>Move</a>
+to align them in your game world, using these methods also ensures that they will be updated within the quadtree if they belong in one.</p>
+<p>It's worth noting that if you want a bounding box that can be orientated then create a 4 sided poly using a <a href=#tlPolygon>tlPolygon</a>.</p>
+<p>The world coordinates are stored as a vector within the field World, so you can use world.x and world.y to retreive the coordinates of the box.</p></td></tr>
+</table>
+<table class=doc width=90% align=center><tr ><th class=doctop colspan=2 align=left><a name=tlBox_methods></a>Methods Summary</th></tr>
+<tr><td class=docleft width=1%><a href=#BoundingBoxOverlap>BoundingBoxOverlap</a></td><td class=docright>
+Compare this <a href=#tlBox>tlBox</a> with another to see if they overlap.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#BoxCollide>BoxCollide</a></td><td class=docright>
+Check for a collision with another <a href=#tlBox>tlBox</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#CircleCollide>CircleCollide</a></td><td class=docright>
+Check for a collision with a <a href=#tlCircle>tlCircle</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#CircleOverlap>CircleOverlap</a></td><td class=docright>
+Compare this <a href=#tlBox>tlBox</a> with a <a href=#tlCircle>tlCircle</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#Create>Create</a></td><td class=docright>
+Create a new <a href=#tlBox>tlBox</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#Draw>Draw</a></td><td class=docright>
+Draw this tlBox.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetCollisionLayer>GetCollisionLayer</a></td><td class=docright>
+Get the collision layer that this boundary is on.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetCollisionType>GetCollisionType</a></td><td class=docright>
+Get the collision type of the Box.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetData>GetData</a></td><td class=docright>
+Get the data assigned to this boundary.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetShadowPolys>GetShadowPolys</a></td><td class=docright>
+Get a poly represting the shadow of the box.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetWorldX>GetWorldX</a></td><td class=docright>
+Get the x world coordinate of the boundary.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetWorldY>GetWorldY</a></td><td class=docright>
+Get the y world coordinate of the boundary.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#LineCollide>LineCollide</a></td><td class=docright>
+Check for a collision with a <a href=#tlLine>tlLine</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#Move>Move</a></td><td class=docright>
+Move the bounding box by a given amount.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#PointInside>PointInside</a></td><td class=docright>
+Find out if a point is within the bounding box.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#PolyCollide>PolyCollide</a></td><td class=docright>
+Check for a collision with a <a href=#tlPolygon>tlPolygon</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#PreventOverlap>PreventOverlap</a></td><td class=docright>
+Prevent the boundary from overlapping another based on the result of a collision.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#RayCollide>RayCollide</a></td><td class=docright>
+See is a ray collides with this <a href=#tlbox>tlbox</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#RectWithin>RectWithin</a></td><td class=docright>
+Find out if a <a href=#tlBox>tlBox</a> lies within this objects bounding box.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#RemoveFromQuadTree>RemoveFromQuadTree</a></td><td class=docright>
+Remove the tlBox from the quadtree.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetCollisionLayer>SetCollisionLayer</a></td><td class=docright>
+Set the collision layer that this boundary is on.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetData>SetData</a></td><td class=docright>
+Assign an object to the boundary.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetPosition>SetPosition</a></td><td class=docright>
+Set the position of the bounding box.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetScale>SetScale</a></td><td class=docright>
+Set the scale of the Box.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetVelocity>SetVelocity</a></td><td class=docright>
+Set the velocity of the boundary.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#UpdatePosition>UpdatePosition</a></td><td class=docright>
+Update the position of the boundary.
+</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=BoundingBoxOverlap>
+<tr><td class=doctop colspan=2>Method BoundingBoxOverlap:Int(rect:tlBox, VelocityCheck:Int = False)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>True if they do overlap.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Compare this <a href=#tlBox>tlBox</a> with another to see if they overlap.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Use this to find out if this <a href=#tlBox>tlBox</a> overlaps the <a href=#tlBox>tlBox</a> you pass to it. This is a very simple overlap to see if the bounding box overlaps only
+Set VelocityCheck to true if you want to see if they will overlap next frame based on their velocities.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=BoxCollide>
+<tr><td class=doctop colspan=2>Method BoxCollide:tlCollisionResult(Box:tlBox)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright><a href=#tlCollisionResult>tlCollisionResult</a> type containing info about the collision.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Check for a collision with another <a href=#tlBox>tlBox</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Use this to check for a collision with another <a href=#tlBox>tlBox</a> that you pass to the method. You can then use the information stored in
+<a href=#tlCollisionResult>tlCollisionResult</a> to perform various things based on the result of the collision check.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=CircleCollide>
+<tr><td class=doctop colspan=2>Method CircleCollide:tlCollisionResult(circle:tlCircle)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright><a href=#tlCollisionResult>tlCollisionResult</a> type containing info about the collision.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Check for a collision with a <a href=#tlCircle>tlCircle</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Use this to check for a collision with a <a href=#tlCircle>tlCircle</a> that you pass to the method. You can then use the information stored in
+<a href=#tlCollisionResult>tlCollisionResult</a> to perform various things based on the result of the collision check.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=CircleOverlap>
+<tr><td class=doctop colspan=2>Method CircleOverlap:Int(circle:tlCircle)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>True if they do overlap.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Compare this <a href=#tlBox>tlBox</a> with a <a href=#tlCircle>tlCircle</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will perfrom a simple bounding box to circle collision check on the <a href=#tlCircle>tlCircle</a> you pass to it.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Create>
+<tr><td class=doctop colspan=2>Method Create:tlBox(x:Float, y:Float, w:Float, h:Float, layer:Int = tlLAYER_1, Data:Object = Null)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tlBox.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create a new <a href=#tlBox>tlBox</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Creates a new Bounding box that you can use for collision checking and adding to a <a href=#tlQuadTree>tlQuadTree</a>. The x and y coordinates represent
+the top left corner of the bounding box. You can also assign some data to the boundary as handy way to store some extra info about the boundary.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Draw>
+<tr><td class=doctop colspan=2>Method Draw(offsetx:Float = 0, offsety:Float = 0, boundingbox:Int = False)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Draw this tlBox.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Use this if you need to draw the bounding box for debugging purposes.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetCollisionLayer>
+<tr><td class=doctop colspan=2>Method GetCollisionLayer:Int()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the collision layer that this boundary is on.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetCollisionType>
+<tr><td class=doctop colspan=2>Method GetCollisionType:Int()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>Either tlBOX_COLLISION, tlCIRCLE_COLLISION, tlLINE_COLLISION or tlPOLY_COLLISION.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the collision type of the Box.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>the collision type can help you determine what type of collision you should be performing on objects calledback from quadtree queries.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetData>
+<tr><td class=doctop colspan=2>Method GetData:Object()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the data assigned to this boundary.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Use this to retrieve the custom data you have assign to the boundary.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetShadowPolys>
+<tr><td class=doctop colspan=2>Method GetShadowPolys:TList (Light:tlVector2, lType:Int = tlDIRECTIONAL_LIGHT, lengthfactor:Float = 1)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>tList of tlPolygons representing each shadow cast by each line in the box.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get a poly represting the shadow of the box.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will take a light located at Light:tlVector2 and create a list of tlPolygons representing a shadow cast by each line in the box.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetWorldX>
+<tr><td class=doctop colspan=2>Method GetWorldX:Float()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>Float with the current x coordinate.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the x world coordinate of the boundary.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>You can use this to find out the current x coordinate of the boundary. This would be especially useful if you have just used <a href=#PreventOverlap>PreventOverlap</a>
+and need to know the new position of the object to update your game object.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetWorldY>
+<tr><td class=doctop colspan=2>Method GetWorldY:Float()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>Float with the current y coordinate.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the y world coordinate of the boundary.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>You can use this to find out the current y coordinate of the boundary. This would be especially useful if you have just used <a href=#PreventOverlap>PreventOverlap</a>
+and need to know the new position of the object to update your game object.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=LineCollide>
+<tr><td class=doctop colspan=2>Method LineCollide:tlCollisionResult(Line:tlLine)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright><a href=#tlCollisionResult>tlCollisionResult</a> type containing info about the collision.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Check for a collision with a <a href=#tlLine>tlLine</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Use this to check for a collision with a <a href=#tlLine>tlLine</a> that you pass to the method. You can then use the information stored in
+<a href=#tlCollisionResult>tlCollisionResult</a> to perform various things based on the result of the collision check.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Move>
+<tr><td class=doctop colspan=2>Method Move(x:Float, y:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Move the bounding box by a given amount.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This sets the position of the top left corner of the bounding box by moving it by the x and y amount. If the box is within quadtree it
+will automatically update itself within it.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=PointInside>
+<tr><td class=doctop colspan=2>Method PointInside:Int(x:Float, y:Float)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>True if the point is within.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Find out if a point is within the bounding box.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Use this to find out if a point at x,y falls with the bounding box of this <a href=#tlBox>tlBox</a>.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=PolyCollide>
+<tr><td class=doctop colspan=2>Method PolyCollide:tlCollisionResult(poly:tlPolygon)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright><a href=#tlCollisionResult>tlCollisionResult</a> type containing info about the collision.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Check for a collision with a <a href=#tlPolygon>tlPolygon</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Use this to check for a collision with a <a href=#tlPolygon>tlPolygon</a> that you pass to the method. You can then use the information stored in
+<a href=#tlCollisionResult>tlCollisionResult</a> to perform various things based on the result of the collision check.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=PreventOverlap>
+<tr><td class=doctop colspan=2>Method PreventOverlap(result:tlCollisionResult, push:Int = False)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Prevent the boundary from overlapping another based on the result of a collision.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>When you check for a collision, the results of that collision are stored with a <a href=#tlCollisionResult>tlCollisionResult</a>. This can be passed to this method
+to prevent 2 boundaries from overlapping. If push is set to true, then the source boundary will push the target boundary along it's velocity vector.</td></tr>
+<tr><td class=docleft width=1%><a href=PreventOverlap.bmx class=small>Example</a></td><td class=docright><pre>SuperStrict
+
+Import rigz.collision
+Import "TDungeon.bmx"
+
+Const wallsize:Int = 64
+
+'set up a maze using TDungeon - Thanks to impixi from the blitz forums for the code in archives found here: 
+'http://www.blitzbasic.com/codearcs/codearcs.php?code=1891
+
+Graphics 800, 600
+
+Cls
+DrawText "Please wait, generating a maze", 10, 10
+Flip
+
+Local WallGrid:Byte[,]
+
+Local Columns:Int
+Local Rows:Int
+
+Local maze:TDungeon = New TDungeon
+maze.generate(MilliSecs(), 128, 128)
+wallgrid = maze.getWallGrid()
+Local d:Int[] = WallGrid.Dimensions()
+columns = d[0]
+rows = d[1]
+
+'create the quadtree. We're creating quite a big game world so the quad tree needs quite a few levels to create
+'the amount of partitioning we need. 9 levels=256x256 possible partitions (2^(levels-1))
+Local QTree:tlQuadTree = CreateQuadtree(0, 0, columns * wallsize, rows * wallsize, 9, 1)
+
+'create and add all of the walls of the maze to the quadtree using tlBox for walls.
+Local wall:tlBox
+Local wallcount:Int
+For Local c:Int = 0 To Columns - 1
+	For Local r:Int = 0 To Rows - 1
+		
+		If wallgrid[c, r] = True
+			wall = CreateBox(c * wallsize, r * wallsize, wallsize, wallsize)
+			AddBoundaryToQuadtree(qtree, wall)
+			wallcount:+1
+		End If
+		
+	Next
+Next
+
+DebugLog wallcount + " walls added to quadtree"
+DebugLog "World size is " + (columns * wallsize) + " x "+ (rows * wallsize)
+
+Local direction:Float
+Local speed:Float = 5.1
+Local velvector:tlVector2 = CreateVector2(0, 0)
+Local VelMatrix:tlMatrix2 = CreateMatrix2()
+
+'create a player to move about the world, and a camera vector to scroll about with
+Local camera:tlVector2 = CreateVector2(0, 0)
+Local player:tlCircle = CreateCircle(96, 96, 16)
+
+Local time:Int = MilliSecs()
+
+While Not KeyDown(KEY_ESCAPE)
+	
+	Cls
+	
+	'some basic movement controls for the player
+	If KeyDown(KEY_UP) direction = 0
+	If KeyDown(KEY_RIGHT) direction = 90
+	If KeyDown(KEY_DOWN) direction = 180
+	If KeyDown(KEY_LEFT) direction = 270
+	If KeyDown(KEY_RIGHT) And KeyDown(KEY_DOWN) direction = 135
+	If KeyDown(KEY_DOWN) And KeyDown(KEY_LEFT) direction = 225
+	If KeyDown(KEY_UP) And KeyDown(KEY_RIGHT) direction = 45
+	If KeyDown(KEY_LEFT) And KeyDown(KEY_UP) direction = 315
+	
+	If KeyDown(KEY_UP) Or KeyDown(KEY_DOWN) Or KeyDown(KEY_LEFT) Or KeyDown(KEY_RIGHT)
+		velvector.SetPosition(0, -speed)
+	Else
+		velvector.SetPosition(0, 0)
+	End If
+	
+	velmatrix.set(Cos(direction) , Sin(direction) , -Sin(direction) , Cos(direction))
+	velvector = velmatrix.transformvector(velvector).Unit()
+	velvector = velvector.Scale(speed)
+	
+	'move the player
+	player.Move(velvector.x, velvector.y)
+	
+	time = MilliSecs()
+	'query the screen space of the quadtree and call the renderscreen callback funtion
+	QueryQuadtreeArea(qtree, camera.x, camera.y, GraphicsWidth() , GraphicsHeight() , camera, RenderScreen)
+	Local screenobjects:Int = qtree.GetObjectsFound()
+	'query the quadtree with the player and call the PlayervsWall callback function
+	'to prevent overlapping with the wall
+	QueryQuadtreeCircle(qtree, player, player, PlayervsWall)
+	
+	'update the camera position
+	camera.SetPosition(player.world.x - GraphicsWidth() / 2, player.world.y - GraphicsHeight() / 2)
+	
+	'draw the player
+	setcolor 0, 255, 0
+	player.draw(camera.x, camera.y)
+	
+	DrawText "Time to run all queries:" + (MilliSecs() - time), 10, 10
+	DrawText "Render screen objects found: " + screenobjects + " / " + wallcount, 10, 20
+	DrawText "Objects close to player found: " + qtree.GetObjectsFound() + " / " + wallcount, 10, 30
+	
+	Flip
+
+Wend
+
+'Here's the Render screen function called by the QueryQuadtreeArea function in the mainloop
+'everytime it finds an object on screen to draw
+Function RenderScreen(wall:Object, cam:Object)
+	'Here, we're passing the wall and the camera as objects through to the callback function
+	'so we can use casting to put them into local variables
+	Local box:tlBox = tlBox(wall)
+	Local camera:tlVector2 = tlVector2(cam)
+	SetColor 128, 128, 128
+	'draw the wall, offsetting it's location by the camera coordinates
+	DrawRect box.world.x - camera.x - wallsize / 2, box.world.y - camera.y - wallsize / 2, wallsize, wallsize
+End Function
+
+'And here's the function called by the QueryQuadtreeCircle function in the mainloop
+'evertime it finds an object in the same space as the player
+Function PlayervsWall(wall:Object, player:Object)
+	'cast the objects into locals
+	Local box:tlBox = tlBox(wall)
+	Local p:tlCircle = tlCircle(player)
+	
+	'check for a collision between the player, and the wall
+	Local result:tlCollisionResult = CheckCollision(p, box)
+	'prevent the 2 from overlapping if necessary.
+	PreventOverlap(result)
+End Function</pre></td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=RayCollide>
+<tr><td class=doctop colspan=2>Method RayCollide:tlCollisionResult(px:Float, py:Float, dx:Float, dy:Float, maxdistance:Float = 0)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright><a href=#tlCollisionResult>tlCollisionResult</a> with the results of the collision.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>See is a ray collides with this <a href=#tlbox>tlbox</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>You can use this to test for a collision with a ray. Pass the origin of the ray with px and py, and set the direction of the ray with dx and dy.
+dx and dy will be normalised and extended infinitely, if maxdistance equals 0 (default), otherwise set maxdistance to how ever far you want the ray
+to extend to. If the ray starts inside the box then result.rayorigininside will be set to true.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=RectWithin>
+<tr><td class=doctop colspan=2>Method RectWithin:Int(rect:tlBox)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>True if it is within.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Find out if a <a href=#tlBox>tlBox</a> lies within this objects bounding box.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>If you need to know whether a <a href=#tlBox>tlBox</a> you pass to this method, lies entirely with this <a href=#tlBox>tlBox</a> (no overlapping) then you can use this method.
+Remember, if you call this method from a poly, line or circle, it will only check against the bounding boxes.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=RemoveFromQuadTree>
+<tr><td class=doctop colspan=2>Method RemoveFromQuadTree()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Remove the tlBox from the quadtree.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will remove the tlBox from the quadtree. You'll need to do this when an actor/entity is destroyed, blown up or whatever!</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetCollisionLayer>
+<tr><td class=doctop colspan=2>Method SetCollisionLayer(Layer:Int)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the collision layer that this boundary is on.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>The layer a boundary is on can determine what other boundarys this one can collide with. You may not want some objects to be able to collide
+with each other, so you can arrange them of different layers. There are 32 layers, assigned to constants: tlLAYER_1, tlLAYER2, tlLAYER_3.. and so on up
+to 32, so to assign a layer, simply pass the appropriate constant:
+<pre>MyBox.SetCollisionLayer(tlLAYER_1)</pre>
+You can also assign to more then one layer using OR:
+<pre>MyBox.SetCollisionLayer(tlLAYER_1 | tlLAYER_2 | tlLAYER_3)</pre>
+Finally, assign it to all layers using:
+<pre>MyBox.SetCollisionLayer(tlLAYER_ALL)</pre></td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetData>
+<tr><td class=doctop colspan=2>Method SetData(d:Object)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Assign an object to the boundary.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This can be handy to store extra custom info about the boundary.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetPosition>
+<tr><td class=doctop colspan=2>Method SetPosition(x:Float, y:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the position of the bounding box.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This sets the position of the top left corner of the bounding box. If the box is within quadtree it will automatically update itself
+within it.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetScale>
+<tr><td class=doctop colspan=2>Method SetScale(x:Float, y:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the scale of the Box.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This sets scale of the Box.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetVelocity>
+<tr><td class=doctop colspan=2>Method SetVelocity(Velocity_x:Float, Velocity_y:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the velocity of the boundary.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>It's import to set the velocity of the boundary so that collisions can be more accurately calculated. If you're attaching this
+to an entity in your game then you'll just need to match this to your entities velocity.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=UpdatePosition>
+<tr><td class=doctop colspan=2>Method UpdatePosition()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Update the position of the boundary.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>You can use this method to update it's position according to its current velocity vector.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=tlCircle>
+<tr><td class=doctop colspan=2>Type tlCircle Extends tlBox</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>tlCircle for circular boundaries for collision checking.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This extends <a href=#tlBox>tlBox</a> so automatically inherits a bounding box, which can be checked first before doing a more complicated circle collision
+check. You can add this type to a <a href=#tlQuadTree>tlQuadTree</a> just as though it were a standard <a href=#tlBox>tlBox</a>, as the quadtree only concerns itself with Boxs.</td></tr>
+</table>
+<table class=doc width=90% align=center><tr ><th class=doctop colspan=2 align=left><a name=tlCircle_methods></a>Methods Summary</th></tr>
+<tr><td class=docleft width=1%><a href=#BoundingBoxOverlap>BoundingBoxOverlap</a></td><td class=docright>
+Compare this <a href=#tlCircle>tlCircle</a> with a <a href=#tlBox>tlBox</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#BoxCollide>BoxCollide</a></td><td class=docright>
+Check for a collision with a <a href=#tlBox>tlBox</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#CircleCollide>CircleCollide</a></td><td class=docright>
+Check for a collision with another <a href=#tlCircle>tlCircle</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#CircleOverlap>CircleOverlap</a></td><td class=docright>
+Compare this circle with another <a href=#tlCircle>tlCircle</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#CreateCircle>CreateCircle</a></td><td class=docright>
+Create a <a href=#tlCircle>tlCircle</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#draw>draw</a></td><td class=docright>
+Draw this tlBox.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#LineCollide>LineCollide</a></td><td class=docright>
+Check for a collision with a <a href=#tlLine>tlLine</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#PointInside>PointInside</a></td><td class=docright>
+Find out if a point is within the circle.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#PolyCollide>PolyCollide</a></td><td class=docright>
+Check for a collision with a <a href=#tlPolygon>tlPolygon</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#RayCollide>RayCollide</a></td><td class=docright>
+See is a ray collides with this <a href=#tlCircle>tlCircle</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetCircle>SetCircle</a></td><td class=docright>
+Set the Box of the circle.
+</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=BoundingBoxOverlap>
+<tr><td class=doctop colspan=2>Method BoundingBoxOverlap:Int(rect:tlBox, VelocityCheck:Int = False)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>True if they do overlap.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Compare this <a href=#tlCircle>tlCircle</a> with a <a href=#tlBox>tlBox</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will perfrom a simple circle to bounding box overlap check on the <a href=#tlBox>tlBox</a> you pass to it.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=BoxCollide>
+<tr><td class=doctop colspan=2>Method BoxCollide:tlCollisionResult(Box:tlBox)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright><a href=#tlCollisionResult>tlCollisionResult</a> type containing info about the collision.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Check for a collision with a <a href=#tlBox>tlBox</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Use this to check for a collision with a <a href=#tlBox>tlBox</a> that you pass to the method. You can then use the information stored in
+<a href=#tlCollisionResult>tlCollisionResult</a> to perform various things based on the result of the collision check.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=CircleCollide>
+<tr><td class=doctop colspan=2>Method CircleCollide:tlCollisionResult(circle:tlCircle)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright><a href=#tlCollisionResult>tlCollisionResult</a> type containing info about the collision.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Check for a collision with another <a href=#tlCircle>tlCircle</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Use this to check for a collision with another <a href=#tlCircle>tlCircle</a> that you pass to the method. You can then use the information stored in
+<a href=#tlCollisionResult>tlCollisionResult</a> to perform various things based on the result of the collision check.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=CircleOverlap>
+<tr><td class=doctop colspan=2>Method CircleOverlap:Int(circle:tlCircle)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>True if they do overlap.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Compare this circle with another <a href=#tlCircle>tlCircle</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will perfrom a simple circle to circle collision check on the <a href=#tlCircle>tlCircle</a> you pass to it.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=CreateCircle>
+<tr><td class=doctop colspan=2>Method CreateCircle:tlCircle(x:Float, y:Float, _radius:Float, layer:Int = tlLAYER_1, Data:Object = Null)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New <a href=#tlCircle>tlCircle</a>.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create a <a href=#tlCircle>tlCircle</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Create a new <a href=#tlCircle>tlCircle</a> at the given coordinates with the given radius. The coordinates will represent where the center of the circle is located
+in the world. You can also assign some data to the boundary as handy way to store some extra info about the boundary.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=draw>
+<tr><td class=doctop colspan=2>Method draw(offsetx:Float = 0, offsety:Float = 0, BoundingBox:Int = False)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Draw this tlBox.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Use this if you need to draw the bounding box for debugging purposes. Pass true of false to draw the bounding box as well.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=LineCollide>
+<tr><td class=doctop colspan=2>Method LineCollide:tlCollisionResult(Line:tlLine)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright><a href=#tlCollisionResult>tlCollisionResult</a> type containing info about the collision.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Check for a collision with a <a href=#tlLine>tlLine</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Use this to check for a collision with a <a href=#tlLine>tlLine</a> that you pass to the method. You can then use the information stored in
+<a href=#tlCollisionResult>tlCollisionResult</a> to perform various things based on the result of the collision check.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=PointInside>
+<tr><td class=doctop colspan=2>Method PointInside:Int(x:Float, y:Float)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>True if the point is within.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Find out if a point is within the circle.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Use this to find out if a point at x,y falls with the radius of this <a href=#tlCircle>tlCircle</a>.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=PolyCollide>
+<tr><td class=doctop colspan=2>Method PolyCollide:tlCollisionResult(poly:tlPolygon)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright><a href=#tlCollisionResult>tlCollisionResult</a> type containing info about the collision.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Check for a collision with a <a href=#tlPolygon>tlPolygon</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Use this to check for a collision with another <a href=#tlPolygon>tlPolygon</a> that you pass to the method. You can then use the information stored in
+<a href=#tlCollisionResult>tlCollisionResult</a> to perform various things based on the result of the collision check.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=RayCollide>
+<tr><td class=doctop colspan=2>Method RayCollide:tlCollisionResult(px:Float, py:Float, dx:Float, dy:Float, maxdistance:Float = 0)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright><a href=#tlCollisionResult>tlCollisionResult</a> with the results of the collision.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>See is a ray collides with this <a href=#tlCircle>tlCircle</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>You can use this to test for a collision with a ray. Pass the origin of the ray with px and py, and set the direction of the ray with dx and dy.
+dx and dy will be normalised and extended infinitely, if maxdistance equals 0 (default), otherwise set maxdistance to how ever far you want the ray
+to extend to. If the ray starts inside the poly then result.rayorigininside will be set to true.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetCircle>
+<tr><td class=doctop colspan=2>Method SetCircle(x:Float, y:Float, _radius:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the Box of the circle.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>this lets you change the size and location of the <a href=#tlCircle>tlCircle</a>.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=tlCollisionResult>
+<tr><td class=doctop colspan=2>Type tlCollisionResult</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Type to store the results of collisions.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>When you check for a collision between 2 objects (see <a href=#CheckCollision>CheckCollision</a>) the result of that check will be a <a href=#tlCollisionResult>tlCollisionResult</a>. This contains information about
+how the 2 objects collided and can be used to do further calculations. Call <a href=#GetIntersecting>GetIntersecting</a> to find out if the 2 objects overlap each other and call
+<a href=#GetWillIntersect>GetWillIntersect</a> to see if they will overlap based on their velocities. <a href=#GetSourceBoundary>GetSourceBoundary</a> and <a href=#GetTargetBoundary>GetTargetBoundary</a> will return the object making the collision check and
+the object being checked against respectively with the exception when using <a href=#CheckRayCollision>CheckRayCollision</a> where only the target us set. Preventing objects from overlapping can be achieved by simply calling <a href=#PreventOverlap>PreventOverlap</a>.</td></tr>
+</table>
+<table class=doc width=90% align=center><tr ><th class=doctop colspan=2 align=left><a name=tlCollisionResult_methods></a>Methods Summary</th></tr>
+<tr><td class=docleft width=1%><a href=#GetIntersecting>GetIntersecting</a></td><td class=docright>
+Find out if the last collision check is intersecting.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetRayDistance>GetRayDistance</a></td><td class=docright>
+Get the distance from the ray origin to the instersection point.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetRayIntersection>GetRayIntersection</a></td><td class=docright>
+Get the intersection point of the raycast.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetRayOriginInside>GetRayOriginInside</a></td><td class=docright>
+Find out if the last ray cast found that the ray originated inside the boundary.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetReboundVector>GetReboundVector</a></td><td class=docright>
+Get the rebound vector.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetSourceBoundary>GetSourceBoundary</a></td><td class=docright>
+Gets the Source boundary of a collision check.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetTargetBoundary>GetTargetBoundary</a></td><td class=docright>
+Gets the Target boundary of a collision check.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetTranslationVector>GetTranslationVector</a></td><td class=docright>
+Get the translation vector of the collision.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetWillIntersect>GetWillIntersect</a></td><td class=docright>
+Find out if the last collision check is intersecting.
+</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetIntersecting>
+<tr><td class=doctop colspan=2>Method GetIntersecting:Int()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>true if there was an intersection.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Find out if the last collision check is intersecting.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetRayDistance>
+<tr><td class=doctop colspan=2>Method GetRayDistance:Float()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>float value of distance the ray travelled, 0 if there was no intersection.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the distance from the ray origin to the instersection point.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetRayIntersection>
+<tr><td class=doctop colspan=2>Method GetRayIntersection:tlVector2()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright><a href=#tlvector2>tlvector2</a>.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the intersection point of the raycast.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>If a ray cast has been performed and the ray successfully connected, then this will return the point of intersection as a <a href=#tlVector2>tlVector2</a>.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetRayOriginInside>
+<tr><td class=doctop colspan=2>Method GetRayOriginInside:Int()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>true if the last ray check originated inside the boundary.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Find out if the last ray cast found that the ray originated inside the boundary.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetReboundVector>
+<tr><td class=doctop colspan=2>Method GetReboundVector:tlVector2(v:tlVector2, friction:Float = 0, bounce:Float = 1)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New <a href=#tlVector2>tlVector2</a> with the resulting rebound vector.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the rebound vector.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>When an object collides with a surface you may want to know a resulting vector based on bounce and friction. So you can call this
+and pass the velocity vector of the incoming object, and the amount of bounce and friction to have, where a bounce value of 1 and a friction value of 0
+will result in a perfect bounce.</td></tr>
+<tr><td class=docleft width=1%><a href=GetReboundVector.bmx class=small>Example</a></td><td class=docright><pre>SuperStrict
+
+Import rigz.collision
+
+Graphics 800, 600
+
+Local qtree:tlQuadTree = CreateQuadtree(0, 0, GraphicsWidth(), GraphicsHeight())
+
+'Add some obstacles to the quadtree
+AddBoundaryToQuadtree(qtree, CreateBox(10, 0, GraphicsWidth() - 20, 10))
+AddBoundaryToQuadtree(qtree, CreateBox(10, GraphicsHeight() - 10, GraphicsWidth() - 20, 10))
+AddBoundaryToQuadtree(qtree, CreateBox(0, 10, 10, GraphicsHeight() - 20))
+AddBoundaryToQuadtree(qtree, CreateBox(GraphicsWidth() - 10, 10, 10, GraphicsHeight() - 20))
+Local verts:Float[] = [- 50.0, -50.0, -70.0, 0.0, -50.0, 50.0, 50.0, 50.0, 100.0, 0.0, 50.0, -50.0]
+AddBoundaryToQuadtree(qtree, CreatePolygon(Rnd(GraphicsWidth()), Rnd(GraphicsHeight()), verts))
+AddBoundaryToQuadtree(qtree, CreateCircle(500, 400, 100))
+AddBoundaryToQuadtree(qtree, CreateBox(500, 200, 50, 50))
+AddBoundaryToQuadtree(qtree, CreateLine(300, 300, 350, 590))
+
+'create a ball to bounce about
+Local ball:tlCircle = CreateCircle(200, 200, 10)
+SetBoundaryVelocity(ball, 5, 5)
+
+While Not KeyDown(KEY_ESCAPE)
+	
+	Cls
+	
+	'Query the quadtree with the screen area and call a function that will draw the stuff it finds
+	QueryQuadtreeArea(qtree, 0, 0, GraphicsWidth(), GraphicsHeight(), Null, renderscreen)
+	'Query the quadtree with the ball  and call the function to handle it colliding with stuff in the quadtree
+	QueryQuadtreeBox(qtree, ball, ball, BounceBall)
+	
+	UpdateBoundaryPosition(ball)
+	
+	ball.draw()
+	
+	Flip 1
+
+Wend
+
+'render screen callback function
+Function renderscreen(o:Object, data:Object)
+	
+	Local box:tlBox = tlBox(o)
+	SetColor 255, 255, 255
+	box.Draw()
+
+End Function
+
+'ball colliding callback function
+Function BounceBall(o:Object, data:Object)
+	'o will be the object found in the quadtree
+	'data is our ball we passed through to this function	
+
+	'cast the objects into local variables
+	Local ball:tlCircle = tlCircle(data)
+	Local wall:tlBox = tlBox(o)
+	
+	'check for collisions between the ball and the obstacle found in the quadtree
+	Local result:tlCollisionResult = CheckCollision(ball, wall)
+	'prevent the 2 objects from overlapping
+	PreventOverlap(result)
+	'set the ball velocity to the appropriate rebound vector to make it bounce off the walls.
+	ball.velocity = GetReboundVector(result, ball.velocity)
+	
+End Function</pre></td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetSourceBoundary>
+<tr><td class=doctop colspan=2>Method GetSourceBoundary:tlBox()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright><a href=#tlBox>tlBox</a> Or null if no collision occurred.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Gets the Source boundary of a collision check.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetTargetBoundary>
+<tr><td class=doctop colspan=2>Method GetTargetBoundary:tlBox()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright><a href=#tlBox>tlBox</a> Or null if no collision occurred.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Gets the Target boundary of a collision check.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetTranslationVector>
+<tr><td class=doctop colspan=2>Method GetTranslationVector:tlVector2()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright><a href=#tlVector2>tlVector2</a>.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the translation vector of the collision.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>If the collision check finds that either the objects are intersecting, or they will intersect, then the translation vector hold exactly
+how much they do or will overlap. This can then be used to move the 2 objects apart to prevent them overlapping. Handy if you have a wall that you don't
+want a player to move through. See <a href=#PreventOverlap>PreventOverlap</a> to automate this process further.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetWillIntersect>
+<tr><td class=doctop colspan=2>Method GetWillIntersect:Int()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>true if there will be an intersection.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Find out if the last collision check is intersecting.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>knowing if there will be an intersection allows you to adjust the position of objects so that visually they will never overlap. Do do this
+you can use the information stored in the translation vector, which is the vector describing how much the objects need to move so that they no longer
+overlap. See <a href=#GetTranslationVector>GetTranslationVector</a>.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=tlLine>
+<tr><td class=doctop colspan=2>Type tlLine Extends tlPolygon</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>tlLine for line collisions.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This type extends <a href=#tlPolygon>tlPolygon</a> and can be used to check for collisions with any of the other types of collision.</td></tr>
+</table>
+<table class=doc width=90% align=center><tr ><th class=doctop colspan=2 align=left><a name=tlLine_methods></a>Methods Summary</th></tr>
+<tr><td class=docleft width=1%><a href=#BoxCollide>BoxCollide</a></td><td class=docright>
+Check for a collision with a <a href=#tlBox>tlBox</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#CircleCollide>CircleCollide</a></td><td class=docright>
+Check for a collision with a <a href=#tlCircle>tlCircle</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#CreateLine>CreateLine</a></td><td class=docright>
+Create a <a href=#tlLine>tlLine</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#LineCollide>LineCollide</a></td><td class=docright>
+Check for a collision with another <a href=#tlLine>tlLine</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#PolyCollide>PolyCollide</a></td><td class=docright>
+Check for a collision with a <a href=#tlPoly>tlPoly</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#RayCollide>RayCollide</a></td><td class=docright>
+See is a ray collides with this <a href=#tlLine>tlLine</a>.
+</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=BoxCollide>
+<tr><td class=doctop colspan=2>Method BoxCollide:tlCollisionResult(Box:tlBox)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright><a href=#tlCollisionResult>tlCollisionResult</a> type containing info about the collision.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Check for a collision with a <a href=#tlBox>tlBox</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Use this to check for a collision with a <a href=#tlBox>tlBox</a> that you pass to the method. You can then use the information stored in
+<a href=#tlCollisionResult>tlCollisionResult</a> to perform various things based on the result of the collision check.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=CircleCollide>
+<tr><td class=doctop colspan=2>Method CircleCollide:tlCollisionResult(circle:tlCircle)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright><a href=#tlCollisionResult>tlCollisionResult</a> type containing info about the collision.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Check for a collision with a <a href=#tlCircle>tlCircle</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Use this to check for a collision with a <a href=#tlCircle>tlCircle</a> that you pass to the method. You can then use the information stored in
+<a href=#tlCollisionResult>tlCollisionResult</a> to perform various things based on the result of the collision check.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=CreateLine>
+<tr><td class=doctop colspan=2>Method CreateLine:tlLine(x1:Float, y1:Float, x2:Float, y2:Float, layer:Int = tlLAYER_1, Data:Object = Null)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New <a href=#tlLine>tlLine</a>.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create a <a href=#tlLine>tlLine</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Create a new <a href=#tlLine>tlLine</a> at the coordinates given, x1 and y1 being the start of the line and x2 and y2 being the end. The will placed exactly
+according to the coordinates you give, but it's worth bearing in mind that the handle of the line will be at the center point along the line. Therefore
+the world coordinates will be set to half way point along the line. You can also assign some data to the boundary as handy way to store some extra info about the boundary.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=LineCollide>
+<tr><td class=doctop colspan=2>Method LineCollide:tlCollisionResult(Line:tlLine)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright><a href=#tlCollisionResult>tlCollisionResult</a> type containing info about the collision.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Check for a collision with another <a href=#tlLine>tlLine</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Use this to check for a collision with another <a href=#tlLine>tlLine</a> that you pass to the method. You can then use the information stored in
+<a href=#tlCollisionResult>tlCollisionResult</a> to perform various things based on the result of the collision check.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=PolyCollide>
+<tr><td class=doctop colspan=2>Method PolyCollide:tlCollisionResult(poly:tlPolygon)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright><a href=#tlCollisionResult>tlCollisionResult</a> type containing info about the collision.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Check for a collision with a <a href=#tlPoly>tlPoly</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Use this to check for a collision with a <a href=#tlPoly>tlPoly</a> that you pass to the method. You can then use the information stored in
+<a href=#tlCollisionResult>tlCollisionResult</a> to perform various things based on the result of the collision check.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=RayCollide>
+<tr><td class=doctop colspan=2>Method RayCollide:tlCollisionResult(px:Float, py:Float, dx:Float, dy:Float, maxdistance:Float = 0)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright><a href=#tlCollisionResult>tlCollisionResult</a> with the results of the collision.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>See is a ray collides with this <a href=#tlLine>tlLine</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>You can use this to test for a collision with a ray. Pass the origin of the ray with px and py, and set the direction of the ray with dx and dy.
+dx and dy will be normalised and extended infinitely, if maxdistance equals 0 (default), otherwise set maxdistance to how ever far you want the ray
+to extend to. If the ray starts inside the poly then result.rayorigininside will be set to true.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=tlPolygon>
+<tr><td class=doctop colspan=2>Type tlPolygon Extends tlBox</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>tlPolygon for convex polygon collisions.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This extends <a href=#tlBox>tlBox</a> so automatically inherits a bounding box, which can be checked first before doing a more complicated polygon collision
+check. You can add this type to a <a href=#tlQuadTree>tlQuadTree</a> just as though it were a standard <a href=#tlBox>tlBox</a>, as the quadtree only concerns itself with Boxs.</td></tr>
+</table>
+<table class=doc width=90% align=center><tr ><th class=doctop colspan=2 align=left><a name=tlPolygon_methods></a>Methods Summary</th></tr>
+<tr><td class=docleft width=1%><a href=#BoxCollide>BoxCollide</a></td><td class=docright>
+Check for a collision with a <a href=#tlBox>tlBox</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#CircleCollide>CircleCollide</a></td><td class=docright>
+Check for a collision with a <a href=#tlCircle>tlCircle</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#CreatePoly>CreatePoly</a></td><td class=docright>
+Create a <a href=#tlPolygon>tlPolygon</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#CreatePolyWorld>CreatePolyWorld</a></td><td class=docright>
+Create a <a href=#tlPolygon>tlPolygon</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#draw>draw</a></td><td class=docright>
+Draw the polygon.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#LineCollide>LineCollide</a></td><td class=docright>
+Check for a collision with a <a href=#tlLine>tlLine</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#PointInside>PointInside</a></td><td class=docright>
+Find out if a point resides withing the <a href=#tlPolygon>tlPolygon</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#PolyCollide>PolyCollide</a></td><td class=docright>
+Check for a collision with another <a href=#tlpolygon>tlpolygon</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#RayCollide>RayCollide</a></td><td class=docright>
+See is a ray collides with this <a href=#tlpolygon>tlpolygon</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#Rotate>Rotate</a></td><td class=docright>
+Rotate the polygon.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetAngle>SetAngle</a></td><td class=docright>
+Set the angle of the polygon.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetScale>SetScale</a></td><td class=docright>
+Set the scale of the Polygon.
+</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=BoxCollide>
+<tr><td class=doctop colspan=2>Method BoxCollide:tlCollisionResult(Box:tlBox)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright><a href=#tlCollisionResult>tlCollisionResult</a> type containing info about the collision.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Check for a collision with a <a href=#tlBox>tlBox</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Use this to check for a collision with a <a href=#tlBox>tlBox</a> that you pass to the method. You can then use the information stored in
+<a href=#tlCollisionResult>tlCollisionResult</a> to perform various things based on the result of the collision check.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=CircleCollide>
+<tr><td class=doctop colspan=2>Method CircleCollide:tlCollisionResult(circle:tlCircle)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright><a href=#tlCollisionResult>tlCollisionResult</a> type containing info about the collision.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Check for a collision with a <a href=#tlCircle>tlCircle</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Use this to check for a collision with a <a href=#tlCircle>tlCircle</a> that you pass to the method. You can then use the information stored in
+<a href=#tlCollisionResult>tlCollisionResult</a> to perform various things based on the result of the collision check.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=CreatePoly>
+<tr><td class=doctop colspan=2>Method CreatePoly:tlPolygon(x:Float, y:Float, verts:Float[], layer:Int = tlLAYER_1, Data:Object = Null)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New <a href=#tlPolygon>tlPolygon</a>, or Null if verts[] contained the wrong amount.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create a <a href=#tlPolygon>tlPolygon</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Create a new <a href=#tlPolygon>tlPolygon</a> at the given coordinates with the given array of vertices. The coordinates will represent the center of the polygon, but this
+can be changed with <a href=#SetPolyHandle>SetPolyHandle</a>. The array must contain more then 5 values (2 per vertex) and be an even number or null will be returned. The coordinates of
+the vertices in the array are arranged like so: [x,y,x,y,x,y .. etc]. You can also assign some data to the boundary as handy way to store some extra info about the boundary.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=CreatePolyWorld>
+<tr><td class=doctop colspan=2>Method CreatePolyWorld:tlPolygon(verts:Float[], layer:Int = tlLAYER_1, Data:Object = Null)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New <a href=#tlPolygon>tlPolygon</a>, or Null if verts[] contained the wrong amount.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create a <a href=#tlPolygon>tlPolygon</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Create a new <a href=#tlPolygon>tlPolygon</a> at the given coordinates with the given array of vertices. The coordinates will represent the center of the polygon, but this
+can be changed with <a href=#SetPolyHandle>SetPolyHandle</a>. The array must contain more then 5 values (2 per vertex) and be an even number or null will be returned. The coordinates of
+the vertices in the array are arranged like so: [x,y,x,y,x,y .. etc]. You can also assign some data to the boundary as handy way to store some extra info about the boundary.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=draw>
+<tr><td class=doctop colspan=2>Method draw(offsetx:Float = 0, offsety:Float = 0, BoundingBox:Int = False)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Draw the polygon.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>You can use this for debugging purposes. Pass true of false to draw the bounding box as well.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=LineCollide>
+<tr><td class=doctop colspan=2>Method LineCollide:tlCollisionResult(Line:tlLine)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright><a href=#tlCollisionResult>tlCollisionResult</a> type containing info about the collision.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Check for a collision with a <a href=#tlLine>tlLine</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Use this to check for a collision with a <a href=#tlLine>tlLine</a> that you pass to the method. You can then use the information stored in
+<a href=#tlCollisionResult>tlCollisionResult</a> to perform various things based on the result of the collision check.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=PointInside>
+<tr><td class=doctop colspan=2>Method PointInside:Int(x:Float, y:Float)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>True if they do overlap.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Find out if a point resides withing the <a href=#tlPolygon>tlPolygon</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Use this to check if a point with the given coordinates lies within the polygon.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=PolyCollide>
+<tr><td class=doctop colspan=2>Method PolyCollide:tlCollisionResult(poly:tlPolygon)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright><a href=#tlCollisionResult>tlCollisionResult</a> type containing info about the collision.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Check for a collision with another <a href=#tlpolygon>tlpolygon</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Use this to check for a collision with a <a href=#tlPolygon>tlPolygon</a> that you pass to the method. You can then use the information stored in
+<a href=#tlCollisionResult>tlCollisionResult</a> to perform various things based on the result of the collision check.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=RayCollide>
+<tr><td class=doctop colspan=2>Method RayCollide:tlCollisionResult(px:Float, py:Float, dx:Float, dy:Float, maxdistance:Float = 0)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright><a href=#tlCollisionResult>tlCollisionResult</a> with the results of the collision.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>See is a ray collides with this <a href=#tlpolygon>tlpolygon</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>You can use this to test for a collision with a ray. Pass the origin of the ray with px and py, and set the direction of the ray with dx and dy.
+dx and dy will be normalised and extended infinitely, if maxdistance equals 0 (default), otherwise set maxdistance to how ever far you want the ray
+to extend to. If the ray starts inside the poly then result.rayorigininside will be set to true.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Rotate>
+<tr><td class=doctop colspan=2>Method Rotate(_angle:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Rotate the polygon.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will rotate the polygon by the given amount.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetAngle>
+<tr><td class=doctop colspan=2>Method SetAngle(_angle:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the angle of the polygon.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will adjust the angle of the polygon by the given amount.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetScale>
+<tr><td class=doctop colspan=2>Method SetScale(x:Float, y:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the scale of the Polygon.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This sets scale of the polygon.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=tlQuadTree>
+<tr><td class=doctop colspan=2>Type tlQuadTree</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Quadtree type for managing a quadtree.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright><p>Rather then go on about what a quadtree is, here's some useful resources I used myself to find out about them:
+http://en.wikipedia.org/wiki/Quadtree, http://www.kyleschouviller.com/wsuxna/quadtree-source-included/ and http://www.heroicvirtuecreations.com/QuadTree.html</p>
+<p>Quadtrees vary with each implementation based on the users needs. I've tried to be flexible here with a emphasis on handling objects that will
+move about a lot. If an object moves within a quadtree then it will generally have to be re-added to the quadtree, so I've implemented that possibility here.
+Thankfully there's no need to rebuild the quadtree every time an object moves, the object just removes and adds itself back to the tree, and it will only do it if
+it's moved outside of it's containing <a href=#tlQuadTreeNode>tlQuadTreeNode</a>.</p>
+<p>When I say object, I mean a <a href=#tlBox>tlBox</a>, which is a simple axis aligned bounding box type that can be added to the quadtree, the more complex <a href=#tlCircle>tlCircle</a>, <a href=#tlLine>tlLine</a> and
+<a href=#tlPolygon>tlPolygon</a> which extend <a href=#tlBox>tlBox</a> can also be added, but the quadtree will only concern itself with bounding boxes when a query is made on the
+quadtree.</p>
+<p>Using the quadtree is simple enough, create a new quadtree with whatever dimensions you want and then use <a href=#AddBox>AddBox</a> to add bounding boxes to it. In
+your main loop you might want to put <a href=#RunQuadtreeMaintenance>RunQuadtreeMaintenance</a> which tidies up the quadtree by finding empty partitions and deleting them. Of course
+the whole point of a quadtree is to find out which objects are within a particular area so that you can do collision checking, rendering, updating or whatever. To do that,
+you can query the quadtree by simply calling either <a href=#QueryQuadtreeArea>QueryQuadtreeArea</a> or <a href=#QueryQuadtreeBox>QueryQuadtreeBox</a> which will run a callback function of your choice to perform your
+specific tasks on them. There's also queries available to check for objects within a radius by using, <a href=#QueryQuadtreeRange>QueryQuadtreeRange</a> and <a href=#QueryQuadtreeCircle>QueryQuadtreeCircle</a>, and also
+for lines and rays using <a href=#QueryQuadtreeEdge>QueryQuadtreeEdge</a>, <a href=#QueryQuadtreeLine>QueryQuadtreeLine</a> and <a href=#QueryQuadtreeRay>QueryQuadtreeRay</a>.</p>
+<p>Here is a list of the query functions you can use to query the quadtree, along with the type of callback function you'll need to create to handle the results
+of each query:</p>
+<table>
+<tr>
+<td> <a href=#QueryQuadtreeArea>QueryQuadtreeArea</a> / <a href=#QueryQuadtreeBox>QueryQuadtreeBox</a> </td>
+<td>For querying the quadtree with a rectangular area. All objects within the area will be passed through to a callback function that needs the following
+parameters: <pre>Callback(ObjectFoundInQuadtree:object, Data:object)</pre> You don't have to use those exact variable names, just as long as the 2 variables are objects.</td>
+</tr>
+<tr>
+<td> <a href=#QueryQuadtreeRange>QueryQuadtreeRange</a> / <a href=#QueryQuadtreeCircle>QueryQuadtreeCircle</a> </td>
+<td>For querying the quadtree with a specific radius. All objects within the radius will be passed through to the call back function:
+<pre>Callback(ObjectFoundInQuadtree:object, Data:object)</pre></td>
+</tr>
+<tr>
+<td> <a href=#QueryQuadtreeRay>QueryQuadtreeRay</a> </td>
+<td>This is for casting a ray from any point and doing a callback on the first object that is hit. The callback differs slightly in that the results
+of the ray collision are passed through to the callback aswell. This is because the collision check vs the ray has to be done during the query, so
+there is no need to do any further ray checks in your callback. The callback should look like this: <pre>Callback(ObjectFoundInQuadtree:object, Data:object, Result:tlCollisionResult)</pre></td>
+</tr>
+<tr>
+<td> <a href=#QueryQuadtreeEdge>QueryQuadtreeEdge</a> / <a href=#QueryQuadtreeLine>QueryQuadtreeLine</a> </td>
+<td>This is for querying the QuadTree with a line. Every object in the Quadtree that collides with the line is passed To the callback function, and like
+the ray query, the collision result is also passed through too: <pre>Callback(ObjectFoundInQuadtree:object, Data:object, Result:tlCollisionResult)</pre>
+</td>
+</tr>
+</table>
+<p>Implementing this quadtree within your game will probably involve including <a href=#tlBox>tlBox</a>, <a href=#tlCircle>tlCircle</a>, <a href=#tlLine>tlLine</a> or <a href=#tlPolygon>tlPolygon</a> as a field within your entity/actor etc types.
+When your actors move about, just make sure you update the position of the Box as well using <a href=#SetBoxPosition>SetBoxPosition</a> or <a href=#MoveBox>MoveBox</a>. When this happens all the necessary updating
+of the quadtree will happen automatically behind the scenes. Be aware that if an object moves outside of the quadtree bounds it will drop out of the quadtree.</p>
+<p><b>FAQ:</b></p>
+<p><b>What happens when a object overlaps more then one quadtreenode?</b></p>
+<p>The object is added to each node it overlaps. No object will ever be added to a node that has children, they will be moved down the quadtree to the bottom level of that branch.</p>
+<p><b>What happens when an object is found more then once because it is contained within more than 1 node?</b></p>
+<p>tlBoxs are aware if they have already been found and a callback has been made within the same search, so a callback will never be made twice on
+the same search query.</p>
+<p><b>What happens if a node no longer contains more then the maximium allowed for a node, are it's objects moved back up the tree?</b></p>
+<p>No, onced a node is partioned and objects moved down, they're there to stay, however if you <a href=#RunQuadtreeMaintenance>RunQuadtreeMaintenance</a> then empty nodes will be unpartitioned. I
+didn't think it was worth the overhead to worry about moving objects back up the tree again.</p>
+<p><b>What collision checking is done when calling, for example, <a href=#QueryQuadtreeArea>QueryQuadtreeArea</a>?</b></p>
+<p>The quadtree will just concern itself with doing callbacks on objects it finds with rect->rect collision in the case of <a href=#QueryQuadtreeArea>QueryQuadtreeArea</a>, and circle->rect
+collision in the case of <a href=#QueryQuadtreeRange>QueryQuadtreeRange</a>. Once you've found those objects you can then go on and do more complex collision checking such as poly->poly. If
+however you only need to check for rect->rect then you can assume a hit straight away as the quadtree will only callback actual hits, potential hits are
+already excluded automatically if their bounding box is outside the area being queried.</p>
+<p><b>What are potential hits?</b></p>
+<p>A potential hit would be an object in the same quadtree node that the area check overlaps. So if the area you're checking a collision for overlaps
+2 quadnodes, all the objects in those 2 nodes would be considered potential hits. I decided that I may aswell cull any of those bounding boxes that
+don't overlap the area being checked before doing the callback so that the amount of potential hits is reduced further, and to save wasting the time doing it in the callback function.
+This applies to both <a href=#QueryQuadtreeArea>QueryQuadtreeArea</a> and <a href=#QueryQuadtreeRange>QueryQuadtreeRange</a> functions, but as mentioned before, it will only cull according to bounding boxes, you'll have
+to do a further check in your callback to manage the more complex poly->poly, poly->rect etc., collisions.</p>
+<p><b>If I have to use a callback function, how can I do stuff with an object without resorting to globals?</b></p>
+<p>When you run a <a href=#QueryQuadtreeArea>QueryQuadtreeArea</a> (of any type) you can pass an object that will be passed through to the callback function. So the call back function
+you create should look like: <pre>Function MyCallBackFunction(ObjectFoundInQuadtree:Object, MyData:object)</pre>So your data could be anything such as a bullet
+or player ship etc., and assuming that object has a tlBox field you can do further collision checks between the 2. If you don't need to pass any
+data then just leave it null.</p>
+<p><b>How do I know what kind of tlBox has been passed back from from the quadtree?</b></p>
+<p>tlBoundaries have a field called collisiontype which you can find out by calling <a href=#GetCollisionType>GetCollisionType</a>. This will return either tlBOX_COLLISION,
+tlCIRCLE_COLLISION, tlPOLY_COLLISION or tlLINE_COLLISION. The chances are though, that you won't need to know the type, as a call to <a href=#CheckCollision>CheckCollision</a>
+will automatically determine the type and perform the appropriate collision check.</p>
+<p><b>Can I have more then one quadtree</b></p>
+<p>Yes you can create as many quadtrees as you want, however, bear in mind that a <a href=#tlBox>tlBox</a> can only ever exist in 1 quadtree at a time. I most cases, with
+the use of layers, 1 quadtree will probably be enough.</p></td></tr>
+<tr><td class=docleft width=1%><a href=tlQuadTree.bmx class=small>Example</a></td><td class=docright><pre>SuperStrict
+
+Import rigz.collision
+
+SetGraphicsDriver GLMax2DDriver()
+
+Graphics 1024, 768
+
+'Create our quadtree. Here we're allowing for 5 levels of subdivision and upto 20 objects before subdividing
+'a quadtree node
+Local QTree:tlQuadTree = CreateQuadtree(0, 0, GraphicsWidth() , GraphicsHeight(), 5, 20)
+
+'Populate the quadtree with a bunch of objects
+For Local c:Int = 1 To 1000
+	Local t:Int = Rnd(3)
+	Local rect:tlBox
+	Select t
+		Case 0
+			'Create a Basic bounding box boundary
+			rect = CreateBox(Rnd(GraphicsWidth()), Rnd(GraphicsHeight()), 10, 10, tlLAYER_1)
+		Case 1
+			'Create a circle Boundary
+			rect = CreateCircle(Rnd(GraphicsWidth()), Rnd(GraphicsHeight()), 5, tlLAYER_2)
+		Case 2
+			'Create a polygon boundary
+			Local verts:Float[] = [- 10.0, -10.0, -15.0, 0.0, -10.0, 10.0, 10.0, 10.0, 15.0, 0.0, 10.0, -10.0]
+			rect = CreatePolygon(Rnd(GraphicsWidth()), Rnd(GraphicsHeight()), verts, tlLAYER_3)
+	End Select
+	'Add the boundary to the quadtree
+	AddBoundaryToQuadtree(QTree, rect)
+Next
+
+'Create a circle that we can move about the screen with the mouse
+Local player:tlBox = CreateBox(0, 0, 50, 50)
+
+While Not KeyDown(KEY_ESCAPE)
+	
+	Cls
+	
+	'Update the position of the mouse controlled boundary poly
+	SetBoundaryPosition(player, MouseX(), MouseY())
+	
+	'If the space is pressed then query the quadtree to do a callback on all 
+	'the objects on the screen. You could use something similar to cull all 
+	'off screen objects
+	If KeyDown(KEY_SPACE) QueryQuadtreeArea(QTree, 0, 0, GraphicsWidth(), GraphicsHeight(), Null, RenderScreen, tlLAYER_ALL)
+	
+	'Query the quadtree with our poly and pass the callback where we can check 
+	'for collisions with the potential hits the quadtree finds
+	QueryQuadtreeBox(QTree, player, player, MyCallback)
+	
+	'Draw the quadtree, just to show you how it partitions space
+	SetColor 128, 128, 128
+	QTree.Draw()
+
+	'Draw the player circle
+	SetColor 255, 255, 255
+	player.draw()
+	
+	DrawText "Hold space to render the whole screen", 10, 10
+	
+	Flip 1
+
+Wend
+
+'Our first callback function which is called when space is pressed and objects are found within the screen space
+Function RenderScreen(o:Object, data:Object)
+	'use casting to create the local rect
+	Local rect:tlBox = tlBox(o)
+	'and draw it
+	SetColor 255, 255, 255
+	rect.draw()
+End Function
+
+'This callback is called when the quadtree finds objects within the bounding box of our poly
+Function MyCallback(o:Object, data:Object)
+	'Use casting to create a local rect of whatever boundary object the quad tree has found.
+	'This could be either a tlBoundary, tlBoundaryCircle, tlBoundaryLine or tlBoundaryPoly
+	Local rect:tlBox = tlBox(o)
+	'We used the data variable to pass the poly we're using to move around the screen. This could be
+	'any object, such as a game entity, which could have a field containing a tlBoundary representing
+	'its bounding box/poly etc.
+	Local player:tlBox = tlBox(data)
+	'Do a collision check and store the result
+	Local collisionresult:tlCollisionResult = CheckCollision(player, rect)
+	If collisionresult.intersecting = True
+		If rect.collisiontype = tlPOLY_COLLISION
+			tlPolygon(rect).Rotate(1)
+		End If
+		SetColor 0, 255, 0
+		rect.Draw
+	End If
+End Function</pre></td></tr>
+</table>
+<table class=doc width=90% align=center><tr ><th class=doctop colspan=2 align=left><a name=tlQuadTree_methods></a>Methods Summary</th></tr>
+<tr><td class=docleft width=1%><a href=#AddBox>AddBox</a></td><td class=docright>
+Add a new bounding box to the Quadtree.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#Create>Create</a></td><td class=docright>
+Create a new tlQuadTree.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#Draw>Draw</a></td><td class=docright>
+Draw the quadtree.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#ForEachObjectAlongLine>ForEachObjectAlongLine</a></td><td class=docright>
+Query a quadtree with a <a href=#tlLine>tlLine</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#ForEachObjectInArea>ForEachObjectInArea</a></td><td class=docright>
+Query the Quadtree to find objects with an area.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#ForEachObjectInBox>ForEachObjectInBox</a></td><td class=docright>
+Query the quadtree to find objects within a <a href=#tlBox>tlBox</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#ForEachObjectInBoxCircle>ForEachObjectInBoxCircle</a></td><td class=docright>
+Query the quadtree to find objects within a <a href=#tlCircle>tlCircle</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#ForEachObjectWithinRange>ForEachObjectWithinRange</a></td><td class=docright>
+Query the quadtree to find objects within a certain radius.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetObjectsFound>GetObjectsFound</a></td><td class=docright>
+Find out how many objects were found on the last query.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetTotalObjects>GetTotalObjects</a></td><td class=docright>
+Find out how many objects are currently in the quadtree.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#RayCast>RayCast</a></td><td class=docright>
+&nbsp;
+</td></tr>
+<tr><td class=docleft width=1%><a href=#RunMaintenance>RunMaintenance</a></td><td class=docright>
+Perform some house keeping on the quadtree.
+</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=AddBox>
+<tr><td class=doctop colspan=2>Method AddBox:Int(r:tlBox)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>False if the box doesn't overlap the qaudtree, otherwise True.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Add a new bounding box to the Quadtree.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>A quadtree isn't much use without any objects. Use this to add a <a href=#tlBox>tlBox</a> to the quadtree. If the bounding box does not overlap the
+quadtree then null is returned.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Create>
+<tr><td class=doctop colspan=2>Method Create:tlQuadTree(x:Float, y:Float, w:Float, h:Float, _maxlevels:Int = 4, _maxpernode:Int = 4)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>A new quadtree.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create a new tlQuadTree.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Creates a new quad tree with the coordinates and dimensions given. _maxlevels determines how many times the quadtree can be sub divided. A
+quadtreenode is only subdivided when a certain amount of objects have been added, which is set by passing _maxpernode. There's no optimum values for
+these, it largely depends on your specific needs, so you will probably do well to experiment.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Draw>
+<tr><td class=doctop colspan=2>Method Draw(offsetx:Float = 0, offsety:Float = 0)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Draw the quadtree.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This can be used for debugging purposes. *Warning: This will be very slow if the quadtree has more then 6 or 7 levels!*</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=ForEachObjectAlongLine>
+<tr><td class=doctop colspan=2>Method ForEachObjectAlongLine:Int(line:tlLine, data:Object, callback:Int(ReturnedObject:Object, Data:Object, Result:tlCollisionResult), Layer:Int = tlLAYER_ALL)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>False if the line did not touch anything, otherwise True.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Query a quadtree with a <a href=#tlLine>tlLine</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will query the quadtree with a line and perform a callback on all the objects the <a href=#tlLine>tlLine</a> intersects. Pass the quadtree to do the query on, the
+<a href=#tlLine>tlLine</a> to query with, an object you want to pass through to the callback, and the callback itself. It's worth noting that the callback also requires
+you have a <a href=#tlCollisionResult>tlCollisionResult</a> parameter which will be passed to the callback function with information about the results of the raycast.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=ForEachObjectInArea>
+<tr><td class=doctop colspan=2>Method ForEachObjectInArea(x:Float, y:Float, w:Float, h:Float, Data:Object, callback:Int(ReturnedObject:Object, Data:Object), Layer:Int = tlLAYER_ALL)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Query the Quadtree to find objects with an area.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>When you want to find objects within a particular area of the quadtree you can use this method.  Pass the area coordinates and dimensions
+that you want to check, an object that can be anything that you want to pass through to the callback function, and the function callback that you want
+to perform whatever tasks you need on the objects that are found within the area.
+The callback function you create needs to have 2 parameters: ReturnedObject:object which will be the tlBox/circle/poly, and Data:object which can be
+and object you want to pass through to the call back function.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=ForEachObjectInBox>
+<tr><td class=doctop colspan=2>Method ForEachObjectInBox(area:tlBox, Data:Object, callback:Int(o:Object, Data:Object), Layer:Int = tlLAYER_ALL)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Query the quadtree to find objects within a <a href=#tlBox>tlBox</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This does the same thing as <a href=#ForEachObjectInArea>ForEachObjectInArea</a> except you can pass a <a href=#tlBox>tlBox</a> instead to query the quadtree.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=ForEachObjectInBoxCircle>
+<tr><td class=doctop colspan=2>Method ForEachObjectInBoxCircle(circle:tlCircle, Data:Object, callback:Int(ReturnedObject:Object, Data:Object), Layer:Int = tlLAYER_ALL)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Query the quadtree to find objects within a <a href=#tlCircle>tlCircle</a>.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will query the quadtree and do a callback on any objects it finds within the given tlCircle.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=ForEachObjectWithinRange>
+<tr><td class=doctop colspan=2>Method ForEachObjectWithinRange(x:Float, y:Float, radius:Float, Data:Object, callback:Int(ReturnedObject:Object, Data:Object), Layer:Int = tlLAYER_ALL)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Query the quadtree to find objects within a certain radius.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will query the quadtree and do a callback on any objects it finds within a given radius.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetObjectsFound>
+<tr><td class=doctop colspan=2>Method GetObjectsFound:Int()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>Number of objects found.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Find out how many objects were found on the last query.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Use this to retrieve the amount of object that were found when the last query was run.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetTotalObjects>
+<tr><td class=doctop colspan=2>Method GetTotalObjects:Int()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>Number of Total Objects in Tree.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Find out how many objects are currently in the quadtree.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Use this to retrieve the total amount of objects that are stored in the quadtree.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=RayCast>
+<tr><td class=doctop colspan=2>Method RayCast:Int(px:Float, py:Float, dx:Float, dy:Float, maxdistance:Float = 0, Data:Object, callback:Int(ReturnedObject:Object, Data:Object, Result:tlCollisionResult), Layer:Int = tlLAYER_ALL)</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=RunMaintenance>
+<tr><td class=doctop colspan=2>Method RunMaintenance()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Perform some house keeping on the quadtree.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will search the quadtree tree for any empty <a href=#tlQuadTreeNodes>tlQuadTreeNodes</a> and unpartition them if necessary.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=tlQuadTreeNode>
+<tr><td class=doctop colspan=2>Type tlQuadTreeNode</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>tlQuadTreeNode type for containing objects within the QuadTree.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This type is use internally by <a href=#tlQuadTree>tlQuadTree</a> so you shouldn't have to worry about it.</td></tr>
+</table>
+<table class=doc width=90% align=center><tr ><th class=doctop colspan=2 align=left><a name=tlQuadTreeNode_methods></a>Methods Summary</th></tr>
+<tr><td class=docleft width=1%><a href=#Create>Create</a></td><td class=docright>
+Create a new tlQuadTreeNode.
+</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Create>
+<tr><td class=doctop colspan=2>Method Create:tlQuadTreeNode(x:Float, y:Float, w:Float, h:Float, _parenttree:tlQuadTree, parentnode:tlQuadTreeNode = Null, gridref:Int = -1)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create a new tlQuadTreeNode.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will create a new node within the quad tree. You shouldn't have to worry about this, as it's performed automatically as objects are
+added to the quadtree.</td></tr>
+</table>
+<br>
+<h2 id=modinfo>Module Information</h2>
+<table width=100%>
+<tr><th width=1%>Author</th><td>Peter J. Rigby</td></tr>
+<tr><th width=1%>Copyright</th><td>Peter J. Rigby 2009</td></tr>
+<tr><th width=1%>Purpose</th><td>Provide a way of testing for collisions between boxes, circles, polygons and lines with the added option of using quadtrees</td></tr>
+<tr><th width=1%>Version</th><td>1.01</td></tr>
+<tr><th width=1%>History</th><td>20.06.10 - Fixed a bug with velocity not being taken into account after querying a quadtree which was causing tunnelling to occurr.</td></tr>
+<tr><th width=1%>History</th><td>06.01.10 - Initial Release</td></tr>
+</body></html>

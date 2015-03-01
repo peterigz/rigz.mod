@@ -1,0 +1,195 @@
+<html><head><title>Fixed timing object for tweening animation reference</title>
+<link rel=stylesheet Type=text/css href='../../../../doc/bmxstyle.css'>
+</head><body>
+<table width=100% cellspacing=0><tr align=center><td class=small>&nbsp;</td>
+<td class=small width=1%><b>rigz.tweener:</b></td>
+<td class=small width=1%><a href=#types class=small>Types</a></td>
+<td class=small width=1%><a href=#modinfo class=small>Modinfo</a></td>
+<td class=small width=1%><a href='../../../../mod/rigz.mod/tweener.mod/tweener.bmx' class=small>Source</a></td>
+<td class=small>&nbsp;</td></tr></table>
+<h1>Fixed timing object for tweening animation</h1>
+<h2><a name=types></a>Types Summary</h2><table class=doc width=100%>
+<tr><td class=docleft width=1%><a href=#tTweener>tTweener</a></td><td class=docright>
+The tweener type.
+</td></tr>
+</table>
+<h2
+ id=typesdet>Types
+</h2>
+<table class=doc width=100% cellspacing=3 id=tTweener>
+<tr><td class=doctop colspan=2>Type tTweener</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>The tweener type.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>By creating a tweener you can use it to control how many frames per second your game/app logic updates but let the stuff on screen be
+drawn as many times as possible, interpolating between each position to get very smooth results.</td></tr>
+<tr><td class=docleft width=1%><a href=tTweener.bmx class=small>Example</a></td><td class=docright><pre>SuperStrict
+
+Import rigz.Tweener
+
+SetGraphicsDriver GLMax2DDriver()
+
+Graphics (800, 600, 0)
+
+Global Tweener:tTweener = New tTweener.Create(10)
+
+'A little test oval we can move about the screen
+Type Testoval
+	Field x:Float
+	Field oldx:Float
+	
+	'The speed should be measured in pixels per second as the number will be divided be the current updatetime.
+	Field speed:Float = 200
+	
+	Method Create:Testoval()
+		Return New Testoval
+	End Method
+	
+	Method update()
+		'capture the old coordinate so that we have something to tween with
+		capture()
+		'divide the speed by the updatefrequency to get the proper pixels per second value and update x
+		X:+speed / Tweener.UpdateFrequency
+		'Bounce the oval off the side of the screens
+		If x > GraphicsWidth() speed = -speed
+		If x < 0 speed = -speed
+	End Method
+	
+	'render the oval
+	Method Render(tween:Float)
+		'work out the interpolated position using the tweenvalues function in the tweener
+		Local TweenedX:Float = Tweener.TweenValues(oldX, X, tween)
+		'draw the tweened oval
+		DrawOval TweenedX - 10, 200 - 25, 50, 50
+		'and draw and untweened oval for comparison
+		DrawOval X - 10, 300 - 25, 50, 50
+	End Method
+	
+	'method to capture the old coordinates
+	Method capture()
+		oldx = x
+	End Method
+End Type
+
+Local oval:Testoval = New Testoval.Create()
+
+'Our main loop
+While Not KeyDown(KEY_ESCAPE)
+	
+	Cls
+		
+	'here is the timing code, update the tweener to get the number of ticks for this loop
+	Tweener.Update()
+	
+	For Local Ticks:Int = 1 To Tweener.FrameTicks
+		'Update the execution time for the tweener
+		Tweener.UpdateExecutionTime()
+		oval.update()
+	Next
+	
+	'Draw the oval
+	oval.Render(Tweener.Tween)
+		
+	Flip 0
+	
+Wend</pre></td></tr>
+</table>
+<table class=doc width=90% align=center><tr ><th class=doctop colspan=2 align=left><a name=tTweener_methods></a>Methods Summary</th></tr>
+<tr><td class=docleft width=1%><a href=#Create>Create</a></td><td class=docright>
+Create a tweener.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetFps>GetFps</a></td><td class=docright>
+Get the current FPS.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#getFrameTicks>getFrameTicks</a></td><td class=docright>
+Get the current number of frame ticks.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#getTween>getTween</a></td><td class=docright>
+Get the current tween value.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetUpdateFrequency>GetUpdateFrequency</a></td><td class=docright>
+Get the UpdateFrequency value in this tTweener object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetUpdateTime>GetUpdateTime</a></td><td class=docright>
+Get the UpdateTime value in this tTweener object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetUpdateFrequency>SetUpdateFrequency</a></td><td class=docright>
+Set the UpdateFrequency value for this tTweener object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetUpdateTime>SetUpdateTime</a></td><td class=docright>
+Set the UpdateTime value for this tTweener object.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#Update>Update</a></td><td class=docright>
+Update the tweener.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#UpdateExecutionTime>UpdateExecutionTime</a></td><td class=docright>
+Keep a track of the execution time.
+</td></tr>
+</table>
+<table class=doc width=90% align=center><tr ><th class=doctop colspan=2 align=left><a name=tTweener_functions></a>Functions Summary</th></tr>
+<tr><td class=docleft width=1%><a href=#TweenValues>TweenValues</a></td><td class=docright>
+Interpolate between 2 values.
+</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Create>
+<tr><td class=doctop colspan=2>Method Create:tTweener(_UpdateFrequency:Float)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>a new tTweener object.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create a tweener.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Pass the frequency that you want your app to update every second. 30 = 30 updates per second.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetFps>
+<tr><td class=doctop colspan=2>Method GetFps:Int()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the current FPS.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=getFrameTicks>
+<tr><td class=doctop colspan=2>Method getFrameTicks:Int()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the current number of frame ticks.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>this gets the current number of frames you need to update for your for..next loop.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=getTween>
+<tr><td class=doctop colspan=2>Method getTween:Float()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the current tween value.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>You need the tween value to know how much you need to interpolate between old and new positions.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetUpdateFrequency>
+<tr><td class=doctop colspan=2>Method GetUpdateFrequency:Double()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the UpdateFrequency value in this tTweener object.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetUpdateTime>
+<tr><td class=doctop colspan=2>Method GetUpdateTime:Double()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the UpdateTime value in this tTweener object.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetUpdateFrequency>
+<tr><td class=doctop colspan=2>Method SetUpdateFrequency(Value:Double)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the UpdateFrequency value for this tTweener object.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetUpdateTime>
+<tr><td class=doctop colspan=2>Method SetUpdateTime(Value:Double)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the UpdateTime value for this tTweener object.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Update>
+<tr><td class=doctop colspan=2>Method Update()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Update the tweener.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This needs to be called just before the logic update loop. It basically calculates how many logic updates need to be made this frame, if at all.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=UpdateExecutionTime>
+<tr><td class=doctop colspan=2>Method UpdateExecutionTime()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Keep a track of the execution time.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This command needs to be called inside the logic update loop.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=TweenValues>
+<tr><td class=doctop colspan=2>Function TweenValues:Float(oldValue:Float, value:Float, tween:Float)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>The interpolated value.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Interpolate between 2 values.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>You can use this function to find out where something should be drawn based on its old and new positions.</td></tr>
+</table>
+<br>
+<h2 id=modinfo>Module Information</h2>
+<table width=100%>
+<tr><th width=1%>Author</th><td>Peter J. Rigby</td></tr>
+<tr><th width=1%>Copyright</th><td>Peter J. Rigby 2009</td></tr>
+<tr><th width=1%>Purpose</th><td>Easily implement fixed rate timing code to your apps/games</td></tr>
+<tr><th width=1%>Version</th><td>v1.0</td></tr>
+<tr><th width=1%>History v1.03</th><td>Added GetTween now returns tween like it's supposed to!</td></tr>
+<tr><th width=1%>History v1.02</th><td>Added GetFps() Method for finding out the current FPS of the game/app using it</td></tr>
+<tr><th width=1%>History v1.01</th><td>Fixed create method so it now returns self - thanks redspark!</td></tr>
+<tr><th width=1%>History v1.00</th><td>11th April 2009 - Initial Version</td></tr>
+</body></html>
