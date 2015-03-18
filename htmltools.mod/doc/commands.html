@@ -1,0 +1,754 @@
+<html><head><title>HTML Tools module for building HTML documents reference</title>
+<link rel=stylesheet Type=text/css href='../../../../doc/bmxstyle.css'>
+</head><body>
+<table width=100% cellspacing=0><tr align=center><td class=small>&nbsp;</td>
+<td class=small width=1%><b>rigz.htmltools:</b></td>
+<td class=small width=1%><a href=#globals class=small>Globals</a></td>
+<td class=small width=1%><a href=#functions class=small>Functions</a></td>
+<td class=small width=1%><a href=#types class=small>Types</a></td>
+<td class=small width=1%><a href=#modinfo class=small>Modinfo</a></td>
+<td class=small width=1%><a href='../../../../mod/rigz.mod/htmltools.mod/htmltools.bmx' class=small>Source</a></td>
+<td class=small>&nbsp;</td></tr></table>
+<h1>HTML Tools module for building HTML documents</h1>
+This is a simple module for aiding in the creation of HTML documents. Note: requires BaH.LibXML.
+<h2><a name=globals></a>Globals Summary</h2><table class=doc width=100%><tr><td colspan=2>
+<a href=#DXHTMLStrict>DXHTMLStrict</a>
+, 
+<a href=#DXHTMLTransitional>DXHTMLTransitional</a>
+, 
+<a href=#TAGS>TAGS</a>
+</td></tr>
+</table>
+<h2><a name=functions></a>Functions Summary</h2><table class=doc width=100%>
+<tr><td class=docleft width=1%><a href=#CreateHTMLBlock>CreateHTMLBlock</a></td><td class=docright>
+Create a new tHTMLTag.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#CreateHTMLDoc>CreateHTMLDoc</a></td><td class=docright>
+Create a new tHTMLDoc.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#LoadHTMLDoc>LoadHTMLDoc</a></td><td class=docright>
+Load an HTML Document from a file.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SaveHTMLDoc>SaveHTMLDoc</a></td><td class=docright>
+Save a tHTMLDoc to a file.
+</td></tr>
+</table>
+<h2><a name=types></a>Types Summary</h2><table class=doc width=100%>
+<tr><td class=docleft width=1%><a href=#tDoctype>tDoctype</a></td><td class=docright>
+type for storing different doctypes for WW3 Doctypes.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#tHTMLConstructor>tHTMLConstructor</a></td><td class=docright>
+Type for storing HTML tags and <a href=#tHTMLTag>tHTMLTag</a> constructors.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#tHTMLDoc>tHTMLDoc</a></td><td class=docright>
+An html doc type.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#tHTMLTag>tHTMLTag</a></td><td class=docright>
+Type for storing Blocks of HTML.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#tProperty>tProperty</a></td><td class=docright>
+Type for storing HTML properties/attributes.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#tStyle>tStyle</a></td><td class=docright>
+tStyle type for storing CSS.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#tStyleProperty>tStyleProperty</a></td><td class=docright>
+Type for storing Style properties.
+</td></tr>
+</table>
+<h2
+ id=globalsdet>Globals
+</h2>
+<table class=doc width=100% cellspacing=3 id=DXHTMLStrict>
+<tr><td class=doctop colspan=2>Global DXHTMLStrict:tdoctype</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Global <a href=#tDoctype>tDoctype</a> storing the doctype for an XHTML Strict HTML document.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=DXHTMLTransitional>
+<tr><td class=doctop colspan=2>Global DXHTMLTransitional:tDoctype</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Global <a href=#tDoctype>tDoctype</a> storing the doctype for an XHTML Transitional HTML document.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=TAGS>
+<tr><td class=doctop colspan=2>Global TAGS:tHTMLConstructor</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Global <a href=#tHTMLConstructor>tHTMLConstructor</a> type for accessing preset HTML tags and constructors for <a href=#tHTMLTag>tHTMLTag</a>.</td></tr>
+</table>
+<br>
+<h2
+ id=functionsdet>Functions
+</h2>
+<table class=doc width=100% cellspacing=3 id=CreateHTMLBlock>
+<tr><td class=doctop colspan=2>Function CreateHTMLBlock:tHTMLTag(name:String, container:Int = True, plaintext:Int = False)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create a new tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Pass the name of the tag, whehter it can contain children, and specify if it should or shouldn't be plain text (no tag). For best results, use <a href=#tHTMLConstructors>tHTMLConstructors</a>
+for an easier way to create html blocks.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=CreateHTMLDoc>
+<tr><td class=doctop colspan=2>Function CreateHTMLDoc:tHTMLDoc(doctype:tDoctype)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create a new tHTMLDoc.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Pass the doctype, you can use the follwing consts for this: DXHTMLTransitional, DXHTMLStrict.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=LoadHTMLDoc>
+<tr><td class=doctop colspan=2>Function LoadHTMLDoc:tHTMLDoc(url:Object)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Load an HTML Document from a file.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=SaveHTMLDoc>
+<tr><td class=doctop colspan=2>Function SaveHTMLDoc(url:String, htmldoc:tHTMLDoc)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Save a tHTMLDoc to a file.</td></tr>
+</table>
+<br>
+<h2
+ id=typesdet>Types
+</h2>
+<table class=doc width=100% cellspacing=3 id=tDoctype>
+<tr><td class=doctop colspan=2>Type tDoctype</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>type for storing different doctypes for WW3 Doctypes.</td></tr>
+</table>
+<table class=doc width=90% align=center><tr ><th class=doctop colspan=2 align=left><a name=tDoctype_methods></a>Methods Summary</th></tr>
+<tr><td class=docleft width=1%><a href=#ToString>ToString</a></td><td class=docright>
+convert this doctype into a string.
+</td></tr>
+</table>
+<table class=doc width=90% align=center><tr ><th class=doctop colspan=2 align=left><a name=tDoctype_functions></a>Functions Summary</th></tr>
+<tr><td class=docleft width=1%><a href=#Create>Create</a></td><td class=docright>
+Create a new Doctype.
+</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=ToString>
+<tr><td class=doctop colspan=2>Method ToString:String()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>convert this doctype into a string.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Create>
+<tr><td class=doctop colspan=2>Function Create:tDoctype(externalid:String, systemid:String, name:String)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>a new tDoctype.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create a new Doctype.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=tHTMLConstructor>
+<tr><td class=doctop colspan=2>Type tHTMLConstructor</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Type for storing HTML tags and <a href=#tHTMLTag>tHTMLTag</a> constructors.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This type can be accessed through the global <a href=#Tags>Tags</a> and provides a convienient way of constructing <a href=#tTags>tTags</a>.</td></tr>
+</table>
+<table class=doc width=90% align=center><tr ><th class=doctop colspan=2 align=left><a name=tHTMLConstructor_methods></a>Methods Summary</th></tr>
+<tr><td class=docleft width=1%><a href=#A>A</a></td><td class=docright>
+Create and return the HTML tag: a.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#B>B</a></td><td class=docright>
+Create and return the HTML tag: b.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#BIG>BIG</a></td><td class=docright>
+Create and return the HTML tag: big.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#BODY>BODY</a></td><td class=docright>
+Create and return the HTML tag: body.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#BR>BR</a></td><td class=docright>
+Create and return the HTML tag: br.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#DIV>DIV</a></td><td class=docright>
+Create and return the HTML tag: div.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#EM>EM</a></td><td class=docright>
+Create and return the HTML tag: em.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#H1>H1</a></td><td class=docright>
+Create and return the HTML tag: h1.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#H2>H2</a></td><td class=docright>
+Create and return the HTML tag: h2.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#H3>H3</a></td><td class=docright>
+Create and return the HTML tag: h3.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#H4>H4</a></td><td class=docright>
+Create and return the HTML tag: h4.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#H5>H5</a></td><td class=docright>
+Create and return the HTML tag: h5.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#H6>H6</a></td><td class=docright>
+Create and return the HTML tag: h6.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#HEAD>HEAD</a></td><td class=docright>
+Create and return the HTML tag: head.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#HR>HR</a></td><td class=docright>
+Create and return the HTML tag: hr.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#HTML>HTML</a></td><td class=docright>
+Create and return the HTML tag: html.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#I>I</a></td><td class=docright>
+Create and return the HTML tag: i.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#IMG>IMG</a></td><td class=docright>
+Create and return the HTML tag: img.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#IsContainer>IsContainer</a></td><td class=docright>
+Find out whether an HTML tag can contain other tags.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#IsPlainText>IsPlainText</a></td><td class=docright>
+Find out if a node name is plaintext.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#LI>LI</a></td><td class=docright>
+Create and return the HTML tag: li.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#META>META</a></td><td class=docright>
+Create and return the HTML tag: meta.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#NeedsNewLine>NeedsNewLine</a></td><td class=docright>
+See if a particular tag requires a new line when being formatted into a string.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#P>P</a></td><td class=docright>
+Create and return the HTML tag: p.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#PlainText>PlainText</a></td><td class=docright>
+Create and return a <a href=#tHTMLTag>tHTMLTag</a> that is just plain text (no html tag)
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SMALL>SMALL</a></td><td class=docright>
+Create and return the HTML tag: small.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SPAN>SPAN</a></td><td class=docright>
+Create and return the HTML tag: span.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#STRONG>STRONG</a></td><td class=docright>
+Create and return the HTML tag: strong.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#STYLE>STYLE</a></td><td class=docright>
+Create and return the HTML tag: style.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SUB>SUB</a></td><td class=docright>
+Create and return the HTML tag: sub.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SUP>SUP</a></td><td class=docright>
+Create and return the HTML tag: sup.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#TABLE>TABLE</a></td><td class=docright>
+Create and return the HTML tag: table.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#TD>TD</a></td><td class=docright>
+Create and return the HTML tag: td.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#TH>TH</a></td><td class=docright>
+Create and return the HTML tag: th.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#TITLE>TITLE</a></td><td class=docright>
+Create and return the HTML tag: title.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#TR>TR</a></td><td class=docright>
+Create and return the HTML tag: tr.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#TT>TT</a></td><td class=docright>
+Create and return the HTML tag: tt.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#UL>UL</a></td><td class=docright>
+Create and return the HTML tag: ul.
+</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=A>
+<tr><td class=doctop colspan=2>Method A:tHTMLTag(href:String = "", title:String = "")</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: a.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=B>
+<tr><td class=doctop colspan=2>Method B:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: b.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=BIG>
+<tr><td class=doctop colspan=2>Method BIG:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: big.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=BODY>
+<tr><td class=doctop colspan=2>Method BODY:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: body.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=BR>
+<tr><td class=doctop colspan=2>Method BR:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: br.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=DIV>
+<tr><td class=doctop colspan=2>Method DIV:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: div.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=EM>
+<tr><td class=doctop colspan=2>Method EM:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: em.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=H1>
+<tr><td class=doctop colspan=2>Method H1:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: h1.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=H2>
+<tr><td class=doctop colspan=2>Method H2:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: h2.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=H3>
+<tr><td class=doctop colspan=2>Method H3:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: h3.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=H4>
+<tr><td class=doctop colspan=2>Method H4:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: h4.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=H5>
+<tr><td class=doctop colspan=2>Method H5:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: h5.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=H6>
+<tr><td class=doctop colspan=2>Method H6:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: h6.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=HEAD>
+<tr><td class=doctop colspan=2>Method HEAD:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: head.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=HR>
+<tr><td class=doctop colspan=2>Method HR:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: hr.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=HTML>
+<tr><td class=doctop colspan=2>Method HTML:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: html.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=I>
+<tr><td class=doctop colspan=2>Method I:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: i.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=IMG>
+<tr><td class=doctop colspan=2>Method IMG:tHTMLTag(src:String = "", alt:String = "")</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: img.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=IsContainer>
+<tr><td class=doctop colspan=2>Method IsContainer:Int(tag:String)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Find out whether an HTML tag can contain other tags.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=IsPlainText>
+<tr><td class=doctop colspan=2>Method IsPlainText:Int(name:String)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>True or False.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Find out if a node name is plaintext.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=LI>
+<tr><td class=doctop colspan=2>Method LI:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: li.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=META>
+<tr><td class=doctop colspan=2>Method META:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: meta.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=NeedsNewLine>
+<tr><td class=doctop colspan=2>Method NeedsNewLine:Int(tag:String)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>See if a particular tag requires a new line when being formatted into a string.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=P>
+<tr><td class=doctop colspan=2>Method P:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: p.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=PlainText>
+<tr><td class=doctop colspan=2>Method PlainText:tHTMLTag(text:String = "")</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return a <a href=#tHTMLTag>tHTMLTag</a> that is just plain text (no html tag)</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SMALL>
+<tr><td class=doctop colspan=2>Method SMALL:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: small.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SPAN>
+<tr><td class=doctop colspan=2>Method SPAN:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: span.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=STRONG>
+<tr><td class=doctop colspan=2>Method STRONG:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: strong.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=STYLE>
+<tr><td class=doctop colspan=2>Method STYLE:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: style.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SUB>
+<tr><td class=doctop colspan=2>Method SUB:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: sub.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SUP>
+<tr><td class=doctop colspan=2>Method SUP:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: sup.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=TABLE>
+<tr><td class=doctop colspan=2>Method TABLE:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: table.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=TD>
+<tr><td class=doctop colspan=2>Method TD:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: td.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=TH>
+<tr><td class=doctop colspan=2>Method TH:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: th.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=TITLE>
+<tr><td class=doctop colspan=2>Method TITLE:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: title.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=TR>
+<tr><td class=doctop colspan=2>Method TR:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: tr.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=TT>
+<tr><td class=doctop colspan=2>Method TT:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: tt.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=UL>
+<tr><td class=doctop colspan=2>Method UL:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create and return the HTML tag: ul.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=tHTMLDoc>
+<tr><td class=doctop colspan=2>Type tHTMLDoc</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>An html doc type.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This type can be used to store an HTML document, specifying a doctype and containing the root html tag.</td></tr>
+<tr><td class=docleft width=1%><a href=tHTMLDoc.bmx class=small>Example</a></td><td class=docright><pre>Import rigz.htmltools
+
+'Create an HTML document
+Local htmldoc:tHTMLDoc = CreateHTMLDoc(DXHTMLStrict)
+
+'Create some HTML Tags using Tags object to construct them more easily.
+Local head:tHTMLTag = Tags.HEAD()
+Local title:tHTMLTag = Tags.TITLE()
+'Use addchild to create a structured HTML document
+title.AddChild(Tags.PlainText("A Simple HTML Document"))
+head.AddChild(title)
+Local body:tHTMLTag = Tags.BODY()
+Local div:tHTMLTag = Tags.DIV()
+'You can also use AddStyle to add inline CSS to HTML Tags
+div.AddStyle("text-align", "center")
+div.AddStyle("font-family", "Arial, Verdana, Times New Roman")
+Local p:tHTMLTag = Tags.P()
+p.AddChild(Tags.PlainText("This is a very simple HTML document"))
+div.AddChild(p)
+body.AddChild(div)
+
+htmldoc.AddChild(head)
+htmldoc.AddChild(body)
+
+Print htmldoc.ToString()</pre></td></tr>
+</table>
+<table class=doc width=90% align=center><tr ><th class=doctop colspan=2 align=left><a name=tHTMLDoc_methods></a>Methods Summary</th></tr>
+<tr><td class=docleft width=1%><a href=#AddChild>AddChild</a></td><td class=docright>
+Add a child <a href=#tHTMLTag>tHTMLTag</a> to the root html tag of this HTML doc.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetRootHTML>GetRootHTML</a></td><td class=docright>
+Get the root html tag of the document.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetRootHTML>SetRootHTML</a></td><td class=docright>
+set the root html tag of the document.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#ToString>ToString</a></td><td class=docright>
+Convert the HTML document to a string.
+</td></tr>
+</table>
+<table class=doc width=90% align=center><tr ><th class=doctop colspan=2 align=left><a name=tHTMLDoc_functions></a>Functions Summary</th></tr>
+<tr><td class=docleft width=1%><a href=#Create>Create</a></td><td class=docright>
+Create a new tHTMLDoc.
+</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=AddChild>
+<tr><td class=doctop colspan=2>Method AddChild(block:tHTMLTag)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Add a child <a href=#tHTMLTag>tHTMLTag</a> to the root html tag of this HTML doc.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetRootHTML>
+<tr><td class=doctop colspan=2>Method GetRootHTML:tHTMLTag()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the root html tag of the document.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetRootHTML>
+<tr><td class=doctop colspan=2>Method SetRootHTML(htmlblock:tHTMLTag)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>set the root html tag of the document.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>this should be an "HTML" tag.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=ToString>
+<tr><td class=doctop colspan=2>Method ToString:String()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>Formatted string.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Convert the HTML document to a string.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>The string this returns can be loaded into an HTML viewer.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Create>
+<tr><td class=doctop colspan=2>Function Create:tHTMLDoc(doctype:tDoctype)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create a new tHTMLDoc.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Pass the doctype, you can use the follwing consts for this: DOCTYPE_XHTML1_TRANSITIONAL, DOCTYPE_XHTML1_STRICT.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=tHTMLTag>
+<tr><td class=doctop colspan=2>Type tHTMLTag</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Type for storing Blocks of HTML.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>this type provides the means to store HTML data, with each block being capable of containing child blocks to achieve a proper HTML document structure.</td></tr>
+</table>
+<table class=doc width=90% align=center><tr ><th class=doctop colspan=2 align=left><a name=tHTMLTag_methods></a>Methods Summary</th></tr>
+<tr><td class=docleft width=1%><a href=#AddChild>AddChild</a></td><td class=docright>
+Add a child tHTMLTag.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#AddProperty>AddProperty</a></td><td class=docright>
+Add a new property to the html block.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#AddStyle>AddStyle</a></td><td class=docright>
+Add an inline style to the html block.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#AppendText>AppendText</a></td><td class=docright>
+Append text to a plain text html block.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetNewline>GetNewline</a></td><td class=docright>
+Get the value of newline.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetStyle>GetStyle</a></td><td class=docright>
+Set the style of this html block.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GetText>GetText</a></td><td class=docright>
+Get the text of a plain text html block.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetNewline>SetNewline</a></td><td class=docright>
+Set the value of newline.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetStyle>SetStyle</a></td><td class=docright>
+Set the style of this html block.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetText>SetText</a></td><td class=docright>
+Set the text of a plain text html block.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#ToString>ToString</a></td><td class=docright>
+Convert the tHTMLTag into a string.
+</td></tr>
+</table>
+<table class=doc width=90% align=center><tr ><th class=doctop colspan=2 align=left><a name=tHTMLTag_functions></a>Functions Summary</th></tr>
+<tr><td class=docleft width=1%><a href=#Create>Create</a></td><td class=docright>
+Create a new tHTMLTag.
+</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=AddChild>
+<tr><td class=doctop colspan=2>Method AddChild(HTMLBlock:tHTMLTag)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Add a child tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This is essential if want to add nested html blocks.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=AddProperty>
+<tr><td class=doctop colspan=2>Method AddProperty(name:String, value:String)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Add a new property to the html block.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Adds a new property yo the type for example "src" would be a property of an image tag.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=AddStyle>
+<tr><td class=doctop colspan=2>Method AddStyle(name:String, value:String)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Add an inline style to the html block.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Adds new style property to the html block, passing the name and the value. eg. style="float: right" where float would be the name and left the value.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=AppendText>
+<tr><td class=doctop colspan=2>Method AppendText(value:String)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Append text to a plain text html block.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>If an html block is plain text only, then you can use this to append some text.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetNewline>
+<tr><td class=doctop colspan=2>Method GetNewline(value:Int)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the value of newline.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>If Newline is true then this HTML tag will start on a new line when parsed into a string. By default newline is true.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetStyle>
+<tr><td class=doctop colspan=2>Method GetStyle:tStyle()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the style of this html block.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetText>
+<tr><td class=doctop colspan=2>Method GetText:String()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the text of a plain text html block.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>If an html block is plain text only, then you can use this to retrieve the text.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetNewline>
+<tr><td class=doctop colspan=2>Method SetNewline(value:Int)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the value of newline.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Set newline to false if you don't want this HTML tag to start on a new line when parsed into a string. By default newline is true.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetStyle>
+<tr><td class=doctop colspan=2>Method SetStyle(value:tStyle)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the style of this html block.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>the style will be applied inline to the HTML block.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetText>
+<tr><td class=doctop colspan=2>Method SetText(value:String)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the text of a plain text html block.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>If an html block is plain text only, then you can use this to set the text.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=ToString>
+<tr><td class=doctop colspan=2>Method ToString:String()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>Formatted string.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Convert the tHTMLTag into a string.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Create>
+<tr><td class=doctop colspan=2>Function Create:tHTMLTag(name:String, container:Int = True, plaintext:Int = False)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create a new tHTMLTag.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Pass the name of the tag, whehter it can contain children, and specify if it should or shouldn't be plain text (no tag). For best results, use <a href=#tHTMLConstructors>tHTMLConstructors</a>
+for an easier way to create html blocks.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=tProperty>
+<tr><td class=doctop colspan=2>Type tProperty</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Type for storing HTML properties/attributes.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>An HTML property is for example, on an img tag, you could have the property src and alt.</td></tr>
+</table>
+<table class=doc width=90% align=center><tr ><th class=doctop colspan=2 align=left><a name=tProperty_methods></a>Methods Summary</th></tr>
+<tr><td class=docleft width=1%><a href=#GetValue>GetValue</a></td><td class=docright>
+Get the value of the property.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetValue>SetValue</a></td><td class=docright>
+Set the value of the property.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#ToString>ToString</a></td><td class=docright>
+Convert the tProperty to a string.
+</td></tr>
+</table>
+<table class=doc width=90% align=center><tr ><th class=doctop colspan=2 align=left><a name=tProperty_functions></a>Functions Summary</th></tr>
+<tr><td class=docleft width=1%><a href=#Create>Create</a></td><td class=docright>
+Create a new tProperty.
+</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=GetValue>
+<tr><td class=doctop colspan=2>Method GetValue:String()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>String containing the value.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Get the value of the property.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SetValue>
+<tr><td class=doctop colspan=2>Method SetValue(v:String)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set the value of the property.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=ToString>
+<tr><td class=doctop colspan=2>Method ToString:String()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>Formated string.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Convert the tProperty to a string.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Create>
+<tr><td class=doctop colspan=2>Function Create:tProperty(name:String, value:String)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tProperty.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create a new tProperty.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=tStyle>
+<tr><td class=doctop colspan=2>Type tStyle</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>tStyle type for storing CSS.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This type is used for storing CSS properties.</td></tr>
+</table>
+<table class=doc width=90% align=center><tr ><th class=doctop colspan=2 align=left><a name=tStyle_methods></a>Methods Summary</th></tr>
+<tr><td class=docleft width=1%><a href=#AddProperty>AddProperty</a></td><td class=docright>
+Add a new property to the style, or update an existing one.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#FindStyleProperty>FindStyleProperty</a></td><td class=docright>
+Find a style property.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#StyleExists>StyleExists</a></td><td class=docright>
+Find out if a property exists.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#ToString>ToString</a></td><td class=docright>
+Convert the tStyle to a string.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#UpdateProperty>UpdateProperty</a></td><td class=docright>
+Update an existing style property.
+</td></tr>
+</table>
+<table class=doc width=90% align=center><tr ><th class=doctop colspan=2 align=left><a name=tStyle_functions></a>Functions Summary</th></tr>
+<tr><td class=docleft width=1%><a href=#Create>Create</a></td><td class=docright>
+Create new tStyle.
+</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=AddProperty>
+<tr><td class=doctop colspan=2>Method AddProperty(name:String, value:String)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Add a new property to the style, or update an existing one.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Adds a style property, such as text-align, width, background-color etc., pass the name and the value. If the property already exists
+then it is updated rather then a new one added.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=FindStyleProperty>
+<tr><td class=doctop colspan=2>Method FindStyleProperty:tStyleProperty(name:String)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>The <a href=#tStyleProperty>tStyleProperty</a> if found, otherwise null is returned.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Find a style property.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=StyleExists>
+<tr><td class=doctop colspan=2>Method StyleExists:Int(name:String)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Find out if a property exists.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=ToString>
+<tr><td class=doctop colspan=2>Method ToString:String()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>Formatted string.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Convert the tStyle to a string.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=UpdateProperty>
+<tr><td class=doctop colspan=2>Method UpdateProperty(name:String, value:String)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Update an existing style property.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>If the property is not found then nothing happens.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Create>
+<tr><td class=doctop colspan=2>Function Create:tStyle(name:String, inline:Int = True)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tStyle.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create new tStyle.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Pass the name of the style, for example "#content" and true or false as to whether the style is inline, ie., should appear inline with an HTML tag.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=tStyleProperty>
+<tr><td class=doctop colspan=2>Type tStyleProperty Extends tProperty</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Type for storing Style properties.</td></tr>
+</table>
+<table class=doc width=90% align=center><tr ><th class=doctop colspan=2 align=left><a name=tStyleProperty_methods></a>Methods Summary</th></tr>
+<tr><td class=docleft width=1%><a href=#ToString>ToString</a></td><td class=docright>
+Convert the tStyleProperty to a string.
+</td></tr>
+</table>
+<table class=doc width=90% align=center><tr ><th class=doctop colspan=2 align=left><a name=tStyleProperty_functions></a>Functions Summary</th></tr>
+<tr><td class=docleft width=1%><a href=#Create>Create</a></td><td class=docright>
+Create a new tStyleProperty.
+</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=ToString>
+<tr><td class=doctop colspan=2>Method ToString:String()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>Formatted string.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Convert the tStyleProperty to a string.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=Create>
+<tr><td class=doctop colspan=2>Function Create:tStyleProperty(name:String, value:String)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tStyleProperty.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Create a new tStyleProperty.</td></tr>
+</table>
+<br>
+<h2 id=modinfo>Module Information</h2>
+<table width=100%>
+<tr><th width=1%>Version</th><td>1.0</td></tr>
+<tr><th width=1%>License</th><td>MIT</td></tr>
+<tr><th width=1%>Copyright</th><td>2010 Peter J Rigby</td></tr>
+<tr><th width=1%>History</th><td>v1.0 Initial Version</td></tr>
+</body></html>

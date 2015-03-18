@@ -1,0 +1,53 @@
+<html><head><title>Simple config type using reflection reference</title>
+<link rel=stylesheet Type=text/css href='../../../../doc/bmxstyle.css'>
+</head><body>
+<table width=100% cellspacing=0><tr align=center><td class=small>&nbsp;</td>
+<td class=small width=1%><b>rigz.config:</b></td>
+<td class=small width=1%><a href=#types class=small>Types</a></td>
+<td class=small width=1%><a href=#modinfo class=small>Modinfo</a></td>
+<td class=small width=1%><a href='../../../../mod/rigz.mod/config.mod/config.bmx' class=small>Source</a></td>
+<td class=small>&nbsp;</td></tr></table>
+<h1>Simple config type using reflection</h1>
+You can use this module to create simple configuration files.
+<h2><a name=types></a>Types Summary</h2><table class=doc width=100%>
+<tr><td class=docleft width=1%><a href=#tlConfig>tlConfig</a></td><td class=docright>
+Configuration type for creating .cfg files.
+</td></tr>
+</table>
+<h2
+ id=typesdet>Types
+</h2>
+<table class=doc width=100% cellspacing=3 id=tlConfig>
+<tr><td class=doctop colspan=2>Type tlConfig Abstract</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Configuration type for creating .cfg files.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>You can use configuration files to store whatever settings you want. To use this type you must extend it and create your own type from it. Any fields you put
+into that type you create will become a setting that's saved in the configuration file. Simply use <a href=#LoadConfig>LoadConfig</a> and <a href=#SaveConfig>SaveConfig</a> to load and save those
+settings.</td></tr>
+</table>
+<table class=doc width=90% align=center><tr ><th class=doctop colspan=2 align=left><a name=tlConfig_methods></a>Methods Summary</th></tr>
+<tr><td class=docleft width=1%><a href=#LoadConfig>LoadConfig</a></td><td class=docright>
+Load a config into the type.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SaveConfig>SaveConfig</a></td><td class=docright>
+Save this type to a config file.
+</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=LoadConfig>
+<tr><td class=doctop colspan=2>Method LoadConfig:Int(url:Object)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Load a config into the type.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will take a configuration file and populate all the fields of the type with the settings found in the config file. Use <a href=#SaveConfig>SaveConfig</a> to save a configuration
+file.</td></tr>
+</table>
+<table class=doc width=100% cellspacing=3 id=SaveConfig>
+<tr><td class=doctop colspan=2>Method SaveConfig(url:Object)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Save this type to a config file.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will take all of the fields in this type and save them to a sonfig file. You can load them in again at anytime using <a href=#LoadConfig>LoadConfig</a>.</td></tr>
+</table>
+<br>
+<h2 id=modinfo>Module Information</h2>
+<table width=100%>
+<tr><th width=1%>Author</th><td>Peter J. Rigby</td></tr>
+<tr><th width=1%>Copyright</th><td>Peter J. Rigby 2010</td></tr>
+<tr><th width=1%>Purpose</th><td>Simple way of creating configuration files for saving basic settings</td></tr>
+<tr><th width=1%>Version</th><td>1.0</td></tr>
+</body></html>

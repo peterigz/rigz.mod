@@ -1,0 +1,160 @@
+<html><head><title>Extended Max2D reference</title>
+<link rel=stylesheet Type=text/css href='../../../../doc/bmxstyle.css'>
+</head><body>
+<table width=100% cellspacing=0><tr align=center><td class=small>&nbsp;</td>
+<td class=small width=1%><b>rigz.max2dext:</b></td>
+<td class=small width=1%><a href=#functions class=small>Functions</a></td>
+<td class=small width=1%><a href=#modinfo class=small>Modinfo</a></td>
+<td class=small width=1%><a href='../../../../mod/rigz.mod/max2dext.mod/max2dext.bmx' class=small>Source</a></td>
+<td class=small>&nbsp;</td></tr></table>
+<h1>Extended Max2D</h1>
+<p>Max2D module provides a few extra features for the standard max2d, mainly the loading of images in PreMultipliedAlpha mode which enables
+and additional blend mode - screen blend, plus making it a lot easier to grab a screen with the lpaha channel intact.</p>
+<p>In order to use this properly for your own use (this is mainly for use internally by timelinefx you need to follow a few rules:</p>
+<ol>
+<li>Use <a href=#SetGraphicsDriverEXT>SetGraphicsDriverEXT</a> and set the driver to the specific max2d driver you're using, ie., GLMax2DDriverEXT(),D3D7Max2DDriverEXT() or
+D3D9Max2DDriverEXT()</li>
+<li>After setting that make sure you call InitEXTGraphics() to initialise the extended driver.</li>
+<li>For all images you load with <a href=#LoadImageEXT>LoadImageEXT</a> or <a href=#LoadAnimImageEXT>LoadAnimImageEXT</a> with the PreMultiAlpha falg set to true, you need to use the following
+max2d state change commands instead of the normal ones: <a href=#SetBlendEXT>SetBlendEXT</a>, <a href=#SetColorEXT>SetColorEXT</a> and <a href=#SetAlphaEXT>SetAlphaEXT</a>.</li>
+<li>If you want to switch between SetBlend for a normal image (non-premultiplied alpha) and SetBlendEXT then you need to use <a href=#ResetBlendMode>ResetBlendMode</a> after
+calling <a href=#SetBlendEXT>SetBlendEXT</a> and ResetBlendModeEXT after using the normal SetBlend. This is only necessary when you switch bettwen the two, so if you used
+<a href=#SetBlendEXT>SetBlendEXT</a> 10 times in a row you' only have to use ResetBlendMode after the 10th one befoer using the normal SetBlend command.</li>
+<li></li>
+</ol>
+<h2><a name=functions></a>Functions Summary</h2><table class=doc width=100%>
+<tr><td class=docleft width=1%><a href=#GetBlendEXT>GetBlendEXT</a></td><td class=docright>
+get the current Blend Mode of <a href=#SetBlendEXT>SetBlendEXT</a>.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#GrabPixmapEXT>GrabPixmapEXT</a></td><td class=docright>
+Grab pixmap.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#InitEXTGraphics>InitEXTGraphics</a></td><td class=docright>
+Initialise the Extended Graphics Driver.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#LoadAnimImageEXT>LoadAnimImageEXT</a></td><td class=docright>
+Load a multi-frame image.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#LoadImageEXT>LoadImageEXT</a></td><td class=docright>
+Load an image.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetAlphaEXT>SetAlphaEXT</a></td><td class=docright>
+Set current alpha level.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetBlendEXT>SetBlendEXT</a></td><td class=docright>
+Set current blend mode.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetClsColorEXT>SetClsColorEXT</a></td><td class=docright>
+Reset the state_blend of the normal SetBlend command.
+</td></tr>
+<tr><td class=docleft width=1%><a href=#SetColorEXT>SetColorEXT</a></td><td class=docright>
+Set current color.
+</td></tr>
+</table>
+<h2
+ id=functionsdet>Functions
+</h2>
+<table class=doc width=100% cellspacing=3 id=GetBlendEXT>
+<tr><td class=doctop colspan=2>Function GetBlendEXT:Int()</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>the current blendmode.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>get the current Blend Mode of <a href=#SetBlendEXT>SetBlendEXT</a>.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=GrabPixmapEXT>
+<tr><td class=doctop colspan=2>Function GrabPixmapEXT:TPixmap(x:Int, y:Int, width:Int, height:Int)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Grab pixmap.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=InitEXTGraphics>
+<tr><td class=doctop colspan=2>Function InitEXTGraphics()</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Initialise the Extended Graphics Driver.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>It's important that you run this before attemtping to use any of the EXT commands.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=LoadAnimImageEXT>
+<tr><td class=doctop colspan=2>Function LoadAnimImageEXT:TImage(url:Object, cell_width:Int, cell_height:Int, first_cell:Int, cell_count:Int, flags:Int = -1, PreMultiAlpha:Int = False)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>An image object.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Load a multi-frame image.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will load an animation image and pre multiply all it's colour with the alpha channel PreMultiAlpha is set to true.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=LoadImageEXT>
+<tr><td class=doctop colspan=2>Function LoadImageEXT:TImage(url:Object, flags:Int = -1, ChangeImage:TPixmap(pixmap:TPixmap))</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>A new image object.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Load an image.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>This will load an image and pre multiply all it's colour with the alpha channel if PreMultiAlpha is set to True.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=SetAlphaEXT>
+<tr><td class=doctop colspan=2>Function SetAlphaEXT(alpha:Float)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set current alpha level.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Use this when working with images that have premultiplied alpha
+<b>alpha</b> should be in the range 0 to 1.
+<p>
+<b>alpha</b> controls the transparancy level when the ALPHABLEND blend mode is in effect.
+The range from 0.0 to 1.0 allows a range of transparancy from completely transparent
+to completely solid.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=SetBlendEXT>
+<tr><td class=doctop colspan=2>Function SetBlendEXT(blend:Int)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set current blend mode.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>SetBlend controls how pixels are combined with existing pixels in the back buffer when drawing
+commands are used in BlitzMax.
+<p>
+<b>blend</b> should be one of:
+<p>
+<table><tr><td> <b>Blend mode</b></td><td><b>Effect</b>
+</td></tr><tr><td>MASKBLEND</td><td>Pixels are drawn only if their alpha component is greater than .5
+</td></tr><tr><td>SOLIDBLEND</td><td>Pixels overwrite existing backbuffer pixels
+</td></tr><tr><td>ALPHABLEND</td><td>Pixels are alpha blended with existing backbuffer pixels
+</td></tr><tr><td>LIGHTBLEND</td><td>Pixel colors are added to backbuffer pixel colors, giving a 'lighting' effect
+</td></tr><tr><td>SCREENBLEND</td><td>Blends the colours similar to the photoshop screen blend
+</td></tr><tr><td>SHADEBLEND</td><td>Pixel colors are multiplied with backbuffer pixel colors, giving a 'shading' effect</table>
+</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=SetClsColorEXT>
+<tr><td class=doctop colspan=2>Function SetClsColorEXT(red:Int, green:Int, blue:Int, alpha:Float = 1)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Reset the state_blend of the normal SetBlend command.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>After using <a href=#SetBlendEXT>SetBlendEXT</a>, Max2d won't know whether it's blendmode is the same anymore, so use this to reset it and ensure it works properly
+next time you use it.
+end	rem
+Function ResetBlendMode()
+SetBlend 10
+SetBlend GetBlend()
+End Function
+<p>
+rem
+bbdoc: Reset the state_blend of the <a href=#SetBlendEXT>SetBlendEXT</a> command
+about: After using <a href=#SetBlend>SetBlend</a>, Max2dEXT won't know whether it's blendmode is the same anymore, so use this to reset it and ensure it works properly
+next time you use it.
+end	rem
+Function ResetBlendModeEXT()
+SetBlendEXT 10
+SetBlend GetBlendEXT()
+End Function
+<p>
+Rem
+bbdoc: Set current <a href=#Cls>Cls</a> color plus the alpha level
+about:
+The <b>red</b>, <b>green</b> and <b>blue</b> parameters should be in the range of 0 to 255. Alpha should be in the range 0 to 1.
+<p>
+The default cls color is black.</td></tr>
+</table>
+<br>
+<table class=doc width=100% cellspacing=3 id=SetColorEXT>
+<tr><td class=doctop colspan=2>Function SetColorEXT(red:Int, green:Int, blue:Int)</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Set current color.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright>Use this when working with images that have premultiplied alpha
+<p>
+The <b>red</b>, <b>green</b> and <b>blue</b> parameters should be in the range of 0 to 255.</td></tr>
+</table>
+<br>
+<h2 id=modinfo>Module Information</h2>
+<table width=100%>
+<tr><th width=1%>Version</th><td>1</td></tr>
+<tr><th width=1%>Author</th><td>Peter Rigby</td></tr>
+<tr><th width=1%>License</th><td>MIT</td></tr>
+<tr><th width=1%>Copyright</th><td>RigzSoft</td></tr>
+</body></html>

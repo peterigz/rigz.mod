@@ -32,6 +32,7 @@ ModuleInfo "Author: Peter J. Rigby"
 ModuleInfo "Copyright: Peter J. Rigby 2009-2010"
 ModuleInfo "Purpose: To add rich particle effects to games and applications, quickly and easily"
 
+ModuleInfo "History v1.16: 17 March 2015 - Introduced super effects"
 ModuleInfo "History v1.15: 30 October 2010 - Fixed a bug with interpolated mode and loading effects with compile flag set to false"
 ModuleInfo "History v1.14: 07 October 2010 - Added new effect method, DoNotTimeout() which stops effects from timingout and destroying themselves"
 ModuleInfo "History v1.14: 05 October 2010 - Added effects layers to particle manager to help with z-ordering, see tlParticleManager Docs for more info."
@@ -341,6 +342,8 @@ Type tlEffect Extends tlEntity
 	Field inuse:TList[9]				'This stores particles created by the effect, for drawing purposes only.
 	Field effectlayer:Int				'The layer that the effect resideson in its particle manager
 	Field doesnottimeout:Int			'Whether the effect never timeouts automatically
+	Field issuper:Int = False			'Super effects are used to group other effects together. they don't container emitters.
+	Field effects:TList					'The list to contain the super effects list
 	
 	Field PM:tlParticleManager			'The particle manager that this effect belongs to
 	
@@ -718,6 +721,56 @@ Type tlEffect Extends tlEntity
 	End Method
 	
 	Rem
+		bbdoc: Capture world coordinates, entity angle and scale for tweening.
+		about: Tweening is used in applications that use fixed rate timing. This is where the logic routines of an application are updated a fixed
+		amount of times each frame, but the drawing routines are updated as many times as possible. Each time the entity is updated during a logic
+		update you can capture its coordinates, then, depending on how much time has passed since the last logic update, the entity can be interpolated
+		between the old coordinates and the new ones creating a nice smooth movement no matter the PC you're running it on. To simplify things you
+		can use the tweener.mod to implement fixed rate timing. See the tweener.mod for more info.
+	endrem
+	Method Capture()
+		If issuper
+			For Local e:tlEffect = EachIn effects
+				e.Capture
+			Next
+		Else
+			oldz = z
+			oldwx = wx
+			oldwy = wy
+			oldx = x
+			oldy = y
+			oldangle = angle
+			oldrelativeangle = relativeangle
+			oldscalex = scalex
+			oldscaley = scaley
+			oldcurrentframe = currentframe
+		End If
+	End Method
+	Rem
+	bbdoc: Set the x coordinates of the Effect
+	about: <p>Sets the x coordinate of the effect. If the effect is a super effect, then set the coordinates of the sub effects it contains</p>
+	endrem
+	Method SetX(v:Float)
+		If issuper
+			For Local e:tlEffect = EachIn effects
+				e.x = v
+			Next
+		End If
+		x = v
+	End Method
+	Rem
+	bbdoc: Set the x coordinates of the Effect
+	about: <p>Sets the x coordinate of the effect. If the effect is a super effect, then set the coordinates of the sub effects it contains</p>
+	endrem
+	Method SetY(v:Float)
+		If issuper
+			For Local e:tlEffect = EachIn effects
+				e.y = v
+			Next
+		End If
+		y = v
+	End Method
+	Rem
 	bbdoc: Set the class of the Effect
 	about: <p>Sets the effect to one of 4 types - point, area, ellipse and line. To set one of these use one of the 4 corresponding consts: tlPOINT_EFFECT, 
 	tlAREA_EFFECT, tlLINE_EFFECT, tlELLIPSE_EFFECT</p>
@@ -1079,7 +1132,23 @@ Type tlEffect Extends tlEntity
 			Next
 		Next
 	End Method
-		
+	Rem
+	bbdoc: Turns the effect into a super effect which can basically group effect together. A super effect does not contain emitters, only effects.
+	endrem
+	Method MakeSuper()
+		issuper = True
+		effects = CreateList()
+	End Method
+	Rem
+	bbdoc: If the effect is a super effect, then you can use this method to add effects to it.
+	endrem
+	Method AddGroupedEffect(e:tlEffect)
+		If Not issuper
+			Throw "This is not a super effect. Use MakeSuper first before adding effects."
+		End If
+		effects.AddLast(e)
+		e.parent = Self
+	End Method
 	Rem
 	bbdoc: Get class
 	returns: The current class of the effect - tlAREA_EFFECT, tlLINE_EFFECT, tlELLIPSE_EFFECT or tlPOINT_EFFECT
@@ -7519,10 +7588,17 @@ Type tlParticleManager
 	about: Use this method to add new effects to the particle manager which will be updated automatically. If the particle manager has more 
 	then one layer, then you can specify which layer the effect is added to. If the layer you pass does not exist then it will default to 0.
 	endrem
-	Method addeffect(e:tlEffect, Layer:Int = 0)
+	Method AddEffect(e:tlEffect, Layer:Int = 0)
 		If Layer >= effectlayers Layer = 0
 		e.effectlayer = Layer
-		effects[layer].AddLast e
+		'if the effect is a super effect, then just add the effects in the list
+		If e.issuper
+			For Local se:tlEffect = EachIn e.effects
+				AddEffect(se, Layer)
+			Next
+		Else
+			effects[Layer].AddLast e
+		End If
 	End Method
 	Rem
 	bbdoc: Removes an effect from the particle manager

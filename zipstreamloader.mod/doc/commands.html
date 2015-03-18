@@ -1,0 +1,37 @@
+<html><head><title>Zipstream based effects loader for TimelineFX reference</title>
+<link rel=stylesheet Type=text/css href='../../../../doc/bmxstyle.css'>
+</head><body>
+<table width=100% cellspacing=0><tr align=center><td class=small>&nbsp;</td>
+<td class=small width=1%><b>rigz.zipstreamloader:</b></td>
+<td class=small width=1%><a href=#functions class=small>Functions</a></td>
+<td class=small width=1%><a href=#modinfo class=small>Modinfo</a></td>
+<td class=small width=1%><a href='../../../../mod/rigz.mod/zipstreamloader.mod/zipstreamloader.bmx' class=small>Source</a></td>
+<td class=small>&nbsp;</td></tr></table>
+<h1>Zipstream based effects loader for TimelineFX</h1>
+This module provides an alternative way to load eff files using koriolis.zipstream module available from http://www.koriolis-fx.com/forum/index.php?topic=15.0. (Registration is no longer required)
+**This is an optional mod and you only really need to use it if you're loading effects files from incbin. It will not compile (with makemods) unless you have koriolis.zipstream
+so you can either make sure you download that, or simply delete this mod from your mods folder**
+<h2><a name=functions></a>Functions Summary</h2><table class=doc width=100%>
+<tr><td class=docleft width=1%><a href=#LoadEffects2>LoadEffects2</a></td><td class=docright>
+Load an effects library using koriolis.zipstream.
+</td></tr>
+</table>
+<h2
+ id=functionsdet>Functions
+</h2>
+<table class=doc width=100% cellspacing=3 id=LoadEffects2>
+<tr><td class=doctop colspan=2>Function LoadEffects2:tlEffectsLibrary(filename:String, compile:Int = True)</td></tr>
+<tr><td class=docleft width=1%>Returns</td><td class=docright>New tlEffectsLibrary.</td></tr>
+<tr><td class=docleft width=1%>Description</td><td class=docright>Load an effects library using koriolis.zipstream.</td></tr>
+<tr><td class=docleft width=1%>Information</td><td class=docright><p>Pass the url of the library and pass TRUE or FALSE for compile if you want to compile all the effects or not.</p>
+<p>This is an alternative loader that has the added benefit of loading from incbin.</p>
+<p>Effects can be retrieved from the library using <a href=#GetEffect>GetEffect</a></p></td></tr>
+</table>
+<br>
+<h2 id=modinfo>Module Information</h2>
+<table width=100%>
+<tr><th width=1%>Author</th><td>Peter J. Rigby</td></tr>
+<tr><th width=1%>Copyright</th><td>Peter J. Rigby 2009</td></tr>
+<tr><th width=1%>Purpose</th><td>To add rich particle effects to games and applications, quickly and easily</td></tr>
+<tr><th width=1%>History v1</th><td>12th March 2010 - Initial version</td></tr>
+</body></html>

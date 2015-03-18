@@ -252,12 +252,21 @@ Function CopyEffect:tlEffect(e:tlEffect, ParticleManager:tlParticleManager, copy
 	eff.assignParticleManager(ParticleManager)
 	eff.path = e.path
 	eff.SetOKToRender(False)
-	For Local em:tlEmitter = EachIn e.children
-		ec:tlEmitter = CopyEmitter(em, ParticleManager)
-		ec.setparentEffect eff
-		ec.parent = eff
-		eff.addchild ec
-	Next
+	
+	If e.issuper
+		eff.MakeSuper()
+		For Local se:tlEffect = EachIn e.effects
+			Local sec:tlEffect = CopyEffect(se, ParticleManager)
+			eff.AddGroupedEffect(sec)
+		Next
+	Else
+		For Local em:tlEmitter = EachIn e.children
+			ec:tlEmitter = CopyEmitter(em, ParticleManager)
+			ec.setparentEffect eff
+			ec.parent = eff
+			eff.addchild ec
+		Next
+	End If
 	LinkEffectArrays(e, eff)
 	If copydirectory
 		If Not eff.directory eff.directory = CreateMap()
