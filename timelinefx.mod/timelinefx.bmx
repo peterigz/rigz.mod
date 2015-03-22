@@ -1935,30 +1935,42 @@ Type tlEffect Extends tlEntity
 	into an array. This method will compile all of them together in one go including all of it children emiters and any sub effects and so on.
 	endrem
 	Method compile_all()
-		compile_life()
-		compile_amount()
-		compile_sizex()
-		compile_sizey()
-		compile_velocity()
-		compile_weight()
-		compile_spin()
-		compile_alpha()
-		compile_emissionangle()
-		compile_emissionrange()
-		compile_width()
-		compile_height()
-		compile_angle()
-		compile_stretch()
-		compile_globalz()
-		For Local e:tlEmitter = EachIn children
-			e.compile_all()
-		Next
+		If issuper
+			For Local e:tlEffect = EachIn effects
+				e.compile_all()
+			Next
+		Else
+			compile_life()
+			compile_amount()
+			compile_sizex()
+			compile_sizey()
+			compile_velocity()
+			compile_weight()
+			compile_spin()
+			compile_alpha()
+			compile_emissionangle()
+			compile_emissionrange()
+			compile_width()
+			compile_height()
+			compile_angle()
+			compile_stretch()
+			compile_globalz()
+			For Local e:tlEmitter = EachIn children
+				e.compile_all()
+			Next
+		End If
 	End Method
 	Method compile_quick()
-		For Local e:tlEmitter = EachIn children
-			e.compile_quick()
-			e.ResetByPassers()
-		Next
+		If issuper
+			For Local e:tlEffect = EachIn effects
+				e.compile_quick()
+			Next
+		Else
+			For Local e:tlEmitter = EachIn children
+				e.compile_quick()
+				e.ResetByPassers()
+			Next
+		End If
 	End Method
 	'-------------
 	Method compile_amount()
