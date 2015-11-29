@@ -1,5 +1,13 @@
 What's new in the TimelineFX Module?
 
+29 November 2015 
+TimelineFX
+- Fixed locked angle not taking into account anngle offset"
+
+17.03.15
+TimelineFX
+Introduced super effects
+
 20.06.10
 TimelineFX
 

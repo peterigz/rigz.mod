@@ -32,6 +32,7 @@ ModuleInfo "Author: Peter J. Rigby"
 ModuleInfo "Copyright: Peter J. Rigby 2009-2010"
 ModuleInfo "Purpose: To add rich particle effects to games and applications, quickly and easily"
 
+ModuleInfo "History v1.17: 17 November 2015 - Fixed locked angle not taking into account anngle offset"
 ModuleInfo "History v1.16: 17 March 2015 - Introduced super effects"
 ModuleInfo "History v1.15: 30 October 2010 - Fixed a bug with interpolated mode and loading effects with compile flag set to false"
 ModuleInfo "History v1.14: 07 October 2010 - Added new effect method, DoNotTimeout() which stops effects from timingout and destroying themselves"
@@ -4704,14 +4705,14 @@ Type tlEmitter Extends tlEntity
 				'-----Angle Changes----
 				If lockedangle And angletype = tlANGLE_ALIGN
 					If e.directionlocked
-						e.angle = parenteffect.angle + angle + angleoffset
+						e.angle = parentEffect.angle + angle + angleoffset
 					Else
 						If Not bypass_weight And Not parenteffect.bypass_weight Or e.direction
 							If e.oldwx <> e.wx And e.oldwy <> e.wy
 								If e.relative
-									e.angle = GetDirection(e.oldx, e.oldy, e.x, e.y)
+									e.angle = GetDirection(e.oldx, e.oldy, e.x, e.y) + angleoffset
 								Else
-									e.angle = GetDirection(e.oldwx, e.oldwy, e.wx, e.wy)
+									e.angle = GetDirection(e.oldwx, e.oldwy, e.wx, e.wy) + angleoffset
 								End If
 								If Abs(e.oldangle - e.angle) > 180
 									If e.oldangle > e.angle e.oldangle:-360 Else e.oldangle:+360
@@ -4870,9 +4871,9 @@ Type tlEmitter Extends tlEntity
 						If Not bypass_weight And Not parenteffect.bypass_weight Or e.direction
 							If e.oldwx <> e.wx And e.oldwy <> e.wy
 								If e.relative
-									e.angle = GetDirection(e.oldx, e.oldy, e.x, e.y)
+									e.angle = GetDirection(e.oldx, e.oldy, e.x, e.y) + angleoffset
 								Else
-									e.angle = GetDirection(e.oldwx, e.oldwy, e.wx, e.wy)
+									e.angle = GetDirection(e.oldwx, e.oldwy, e.wx, e.wy) + angleoffset
 								End If
 								If Abs(e.oldangle - e.angle) > 180
 									If e.oldangle > e.angle e.oldangle:-360 Else e.oldangle:+360
