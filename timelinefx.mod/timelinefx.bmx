@@ -201,7 +201,7 @@ Type tlEffectsLibrary
 	bbdoc: Add a new effect to the library including any sub effects and emitters. Effects are stored using a tMap and can be retrieved using #GetEffect.
 	endrem
 	Method AddEffect(e:tlEffect)
-		effects.Insert(Upper(e.getpath()), e)
+		effects.Insert(e.getpath().ToUpper(), e)
 		For Local em:tlEmitter = EachIn e.children
 			addemitter(em)
 		Next
@@ -211,7 +211,7 @@ Type tlEffectsLibrary
 	you're building your effects manually, just use #AddEffect and all its emitters will be added also.
 	endrem
 	Method AddEmitter(e:tlEmitter)
-		effects.Insert(Upper(e.getpath()), e)
+		effects.Insert(e.getpath().ToUpper(), e)
 		For Local ef:tlEffect = EachIn e.effects
 			addeffect(ef)
 		Next
@@ -241,7 +241,7 @@ Type tlEffectsLibrary
 	<p>Note that you should always use forward slashes.</p>
 	endrem
 	Method GetEffect:tlEffect(name:String)
-		Return tlEffect(effects.ValueForKey(Upper(name)))
+		Return tlEffect(effects.ValueForKey(name.ToUpper()))
 	End Method
 	Rem
 	bbdoc: Retrieve an emitter from the library
@@ -253,7 +253,7 @@ Type tlEffectsLibrary
 	<p>Note that you should always use forward slashes.</p>
 	endrem
 	Method GetEmitter:tlEmitter(name:String)
-		Return tlEmitter(effects.ValueForKey(Upper(name)))
+		Return tlEmitter(effects.ValueForKey(name.ToUpper()))
 	End Method
 End Type
 Rem
@@ -1352,7 +1352,7 @@ Type tlEffect Extends tlEntity
 	bbdoc: Add a new effect to the directory including any sub effects and emitters. Effects are stored using a map and can be retrieved using #GetEffect.
 	endrem
 	Method AddEffect(e:tlEffect)
-		directory.Insert(Upper(e.getpath()), e)
+		directory.Insert(e.getpath().ToUpper(), e)
 		For Local em:tlEmitter = EachIn e.children
 			addemitter(em)
 		Next
@@ -1362,7 +1362,7 @@ Type tlEffect Extends tlEntity
 	just use #AddEffect and all its emitters will be added also.
 	endrem
 	Method AddEmitter(e:tlEmitter)
-		directory.Insert(Upper(e.getpath()), e)
+		directory.Insert(e.getpath().ToUpper(), e)
 		For Local ef:tlEffect = EachIn e.effects
 			addeffect(ef)
 		Next
@@ -1377,7 +1377,7 @@ Type tlEffect Extends tlEntity
 	<p>Note that you should always use forward slashes.</p>
 	endrem
 	Method GetEffect:tlEffect(name:String)
-		Return tlEffect(directory.ValueForKey(Upper(name)))
+		Return tlEffect(directory.ValueForKey(name.ToUpper()))
 	End Method
 	Rem
 	bbdoc: Retrieve an emitter from the of the effect
@@ -1389,7 +1389,7 @@ Type tlEffect Extends tlEntity
 	<p>Note that you should always use forward slashes.</p>
 	endrem
 	Method GetEmitter:tlEmitter(name:String)
-		Return tlEmitter(directory.ValueForKey(Upper(name)))
+		Return tlEmitter(directory.ValueForKey(name.ToUpper()))
 	End Method
 	Rem
 		bbdoc: Stop the effect from timing out and be automatically removed

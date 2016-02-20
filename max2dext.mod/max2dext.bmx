@@ -47,21 +47,21 @@ Type TMax2DDriverEXT Extends TGraphicsDriverEXT
 
 End Type
 
-rem
+Rem
 	bbdoc: Reset the state_blend of the normal SetBlend command
 	about: After using #SetBlendEXT, Max2d won't know whether it's blendmode is the same anymore, so use this to reset it and ensure it works properly
 	next time you use it.
-end	rem
+EndRem
 Function ResetBlendMode()
 	SetBlend 10
 	SetBlend GetBlend()
 End Function
 
-rem
+Rem
 	bbdoc: Reset the state_blend of the #SetBlendEXT command
 	about: After using #SetBlend, Max2dEXT won't know whether it's blendmode is the same anymore, so use this to reset it and ensure it works properly
 	next time you use it.
-end	rem
+EndRem
 Function ResetBlendModeEXT()
 	SetBlendEXT 10
 	SetBlend GetBlendEXT()
@@ -73,7 +73,7 @@ about:
 The @red, @green and @blue parameters should be in the range of 0 to 255. Alpha should be in the range 0 to 1.
 
 The default cls color is black.
-End Rem
+EndRem
 Function SetClsColorEXT(red:Int, green:Int, blue:Int, alpha:Float = 1)
 	Assert _max2ddriverext, "Make sure you SetGraphicsDriverEXT and InitEXTGraphics before calling these EXT functions!"
 	_max2ddriverext.SetClsColor red, green, blue, alpha
@@ -101,7 +101,7 @@ Function SetBlendEXT(blend:Int)
 	_max2ddriverext.SetBlend blend
 End Function
 
-rem
+Rem
 	bbdoc: get the current Blend Mode of #SetBlendEXT
 	returns: the current blendmode
 end rem
@@ -168,7 +168,7 @@ Function LoadAnimImageEXT:TImage(url:Object, cell_width:Int, cell_height:Int, fi
 	Return LoadAnimImage(pixmap, cell_width, cell_height, first_cell, cell_count, flags)
 End Function
 
-rem
+Rem
 	bbdoc: Initialise the Extended Graphics Driver
 	about: It's important that you run this before attemtping to use any of the EXT commands
 end rem

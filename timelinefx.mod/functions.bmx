@@ -649,7 +649,7 @@ End Function
 Function GetAlternativeSprite:TAnimImage(l:TList, search:String)
 	If l
 		For Local s:TAnimImage = EachIn l
-			If Upper(s.name) = Upper(search)
+			If s.name.ToUpper() = search.ToUpper()
 				Return s
 			End If
 		Next
@@ -659,7 +659,7 @@ End Function
 Function ShapeExists:Int(l:TList, search:String)
 	If l
 		For Local s:TAnimImage = EachIn l
-			If Upper(s.name) = Upper(search)
+			If s.name.ToUpper() = search.ToUpper()
 				Return True
 			End If
 		Next
@@ -669,7 +669,7 @@ End Function
 Function FindShape:TAnimImage(l:TList, search:String)
 	If l
 		For Local s:TAnimImage = EachIn l
-			If Upper(s.name) = Upper(search)
+			If s.name.ToUpper() = search.ToUpper()
 				Return s
 			End If
 		Next
@@ -1497,12 +1497,12 @@ Function loademitterxmltree:tlEmitter(effectchild:TxmlNode, sprites:TList, e:tlE
 End Function
 Function effectexists:Int(l:TList, Search:String)
 	For Local e:tlEffect = EachIn l
-		If Upper(e.name) = Upper(search) Return True
+		If e.name.ToUpper() = search.ToUpper() Return True
 	Next
 End Function
 Function emitterexists:Int(l:TList, Search:String)
 	For Local e:tlEmitter = EachIn l
-		If Upper(e.name) = Upper(search) Return True
+		If e.name.ToUpper() = search.ToUpper() Return True
 	Next
 End Function
 Function GetBezierValue:Float(lastec:tlAttributeNode, a:tlAttributeNode, t:Float, ymin:Float, ymax:Float)

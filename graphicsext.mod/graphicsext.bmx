@@ -1,6 +1,6 @@
 SuperStrict
 
-rem
+Rem
 	bbdoc: Base driver forextended Max2d Commands, used internally by rigz.max2dext
 end rem
 Module rigz.graphicsext
