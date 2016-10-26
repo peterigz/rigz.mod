@@ -8,6 +8,7 @@ Graphics 800, 600
 Local verts:Float[] = [0.0, 0.0, -150.0, 100.0, 50.0, 150.0, 185.0, 100.0, 300.0, 0.0]
 'verts = [- 10.0, -10.0, 10.0, -10.0, 10.0, 10.0, -10.0, 10.0]
 Local poly:tlPolygon = CreatePolygon(400, 200, verts)
+Local poly2:tlPolygon = CreatePolygon(150, 150, verts)
 
 'create a box to move about
 Local box:tlBox = CreateBox(100, 100, 20, 20)
@@ -26,7 +27,7 @@ While Not KeyDown(KEY_ESCAPE)
 	Cls
 	
 	'rotate the polygon by 1 degree every frame
-	poly.Rotate(1)
+	'poly.Rotate(1)
 	
 	'some basic movement controls for the box
 	If KeyDown(KEY_UP) direction = 0
@@ -60,6 +61,7 @@ While Not KeyDown(KEY_ESCAPE)
 	
 	box.draw()
 	poly.draw()
+	poly2.draw()
 	
 	Flip
 	

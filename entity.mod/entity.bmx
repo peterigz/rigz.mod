@@ -204,6 +204,7 @@ Type tlEntity
 			pixelspersecond = speed / tp_CURRENT_UPDATE_TIME
 			speedvec.x = Sin(direction) * pixelspersecond
 			speedvec.y = Cos(direction) * pixelspersecond
+			DebugLog speedvec.x
 			If relative
 					x:+speedvec.x
 					y:-speedvec.y

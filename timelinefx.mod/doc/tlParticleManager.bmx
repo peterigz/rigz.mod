@@ -8,9 +8,9 @@ Import brl.glmax2d
 SetGraphicsDriver GLMax2DDriver()
 
 'Load the effects library
-Local MyEffectsLib:tlEffectsLibrary = LoadEffects("effects/examples.eff", False)
+Local MyEffectsLib:tlEffectsLibrary = LoadEffects("effects/LibraryExamples.eff", False)
 'Create an effect and assign it an effect from the library
-Local MyEffect:tlEffect = MyEffectsLib.GetEffect("simple explosion 1")
+Local MyEffect:tlEffect = MyEffectsLib.GetEffect("Super Effect")
 'Create the particle manager to manage the particles
 Local MyParticleManager:tlParticleManager = CreateParticleManager()
 
@@ -48,7 +48,7 @@ While Not KeyDown(KEY_ESCAPE) Or AppTerminate()
 		tempeffect.SetX(MouseX())
 		tempeffect.SetY(MouseY())
 		'give it a random zoom level which will affect the overal size of the effect
-		tempeffect.SetZ(Rnd(0.5, 1.5))
+		'tempeffect.SetZ(Rnd(0.5, 1.5))
 		'add the effect to the particle manager. Important, otherwise the particle manager would have nothing to update
 		MyParticleManager.addeffect(tempeffect)
 	End If

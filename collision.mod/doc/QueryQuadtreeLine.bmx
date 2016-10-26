@@ -9,7 +9,7 @@ Graphics 1024, 768
 Local QTree:tlQuadTree = CreateQuadtree(0, 0, GraphicsWidth() , GraphicsHeight(), 5, 1)
 
 'Populate the quadtree with a bunch of objects
-For Local c:Int = 1 To 1000
+For Local c:Int = 1 To 100
 	Local t:Int = Rnd(3)
 	Local rect:tlBox
 	Select t
@@ -53,6 +53,8 @@ While Not KeyDown(KEY_ESCAPE)
 	SetColor 0, 255, 0
 	DrawText "Click and drag to move the line about", 10, 10
 	DrawText "Use right mouse to rotate the line", 10, 20
+	
+	QTree.Draw()
 	
 	Flip 1
 

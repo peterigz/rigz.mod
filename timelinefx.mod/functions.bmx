@@ -314,6 +314,7 @@ Function UpdateEffect(eff:tlEffect, e:tlEffect)
 		eff.setspawndirection
 		LinkEffectArrays(e, eff)
 		Local ec:Object[] = eff.children.ToArray()
+		If Not ec Return
 		For Local em:tlEmitter = EachIn e.children
 			If tlEmitter(ec[index])
 				tlEmitter(ec[index]).alpha = CopyAttributeNodes(em.alpha)
@@ -525,6 +526,14 @@ Function LoadEffects:tlEffectsLibrary(filename:String, compile:Int = True)
 				effects.addeffect effect
 				effect.directory = CreateMap()
 				effect.AddEffect(effect)
+			Case "SUPER_EFFECT"
+				Local effect:tlEffect = loadsupereffectxmltree(effectschild, sprites)
+				If compile
+					effect.compile_all()
+				End If
+				effects.addeffect effect
+				effect.directory = CreateMap()
+				effect.AddEffect(effect)
 			Case "FOLDER"
 				loadfolderxmltree(effectschild, sprites, effects, compile)
 		End Select
@@ -649,7 +658,7 @@ End Function
 Function GetAlternativeSprite:TAnimImage(l:TList, search:String)
 	If l
 		For Local s:TAnimImage = EachIn l
-			If s.name.ToUpper() = search.ToUpper()
+			If Upper(s.name) = Upper(search)
 				Return s
 			End If
 		Next
@@ -659,7 +668,7 @@ End Function
 Function ShapeExists:Int(l:TList, search:String)
 	If l
 		For Local s:TAnimImage = EachIn l
-			If s.name.ToUpper() = search.ToUpper()
+			If Upper(s.name) = Upper(search)
 				Return True
 			End If
 		Next
@@ -669,7 +678,7 @@ End Function
 Function FindShape:TAnimImage(l:TList, search:String)
 	If l
 		For Local s:TAnimImage = EachIn l
-			If s.name.ToUpper() = search.ToUpper()
+			If Upper(s.name) = Upper(search)
 				Return s
 			End If
 		Next
@@ -1016,9 +1025,30 @@ Function loadfolderxmltree(folderchild:TxmlNode, sprites:TList, effects:tlEffect
 					If compile e.compile_all()
 					e.directory = CreateMap()
 					e.AddEffect(e)
+				Case "SUPER_EFFECT"
+					Local e:tlEffect = loadsupereffectxmltree(effectchild, sprites)
+					e.path = folderchild.getAttribute("NAME") + "/" + e.name
+					effects.addeffect(e)
+					If compile e.compile_all()
+					e.directory = CreateMap()
+					e.AddEffect(e)
 			End Select
 		Next
 	End If
+End Function
+Function loadsupereffectxmltree:tlEffect(superchild:TxmlNode, sprites:TList)
+	Local effectschildren:TList = superchild.getChildren()
+	Local effect:tlEffect = loadeffectxmltree(superchild, sprites)
+	effect.MakeSuper()
+	If effectschildren
+		For Local effectchild:TxmlNode = EachIn effectschildren
+			Select effectchild.getname()
+				Case "EFFECT"
+					effect.AddGroupedEffect(loadeffectxmltree(effectchild, sprites))
+			End Select
+		Next
+	End If
+	Return effect
 End Function
 Function loademitterxmltree:tlEmitter(effectchild:TxmlNode, sprites:TList, e:tlEffect)
 	Local particlechildren:TList = effectchild.getChildren()
@@ -1497,12 +1527,12 @@ Function loademitterxmltree:tlEmitter(effectchild:TxmlNode, sprites:TList, e:tlE
 End Function
 Function effectexists:Int(l:TList, Search:String)
 	For Local e:tlEffect = EachIn l
-		If e.name.ToUpper() = search.ToUpper() Return True
+		If Upper(e.name) = Upper(search) Return True
 	Next
 End Function
 Function emitterexists:Int(l:TList, Search:String)
 	For Local e:tlEmitter = EachIn l
-		If e.name.ToUpper() = search.ToUpper() Return True
+		If Upper(e.name) = Upper(search) Return True
 	Next
 End Function
 Function GetBezierValue:Float(lastec:tlAttributeNode, a:tlAttributeNode, t:Float, ymin:Float, ymax:Float)

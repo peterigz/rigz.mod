@@ -1,5 +1,4 @@
-
-Strict
+SuperStrict
 
 Rem
 bbdoc: Extended Graphics/OpenGL Max2D
@@ -22,7 +21,7 @@ Private
 Global _driverext:TGLMax2DDriverEXT
 Global color4ubext:Byte[4]
 
-Global state_blendext
+Global state_blendext:Int
 
 Public
 
@@ -38,7 +37,7 @@ Type TGLMax2DDriverEXT Extends TMax2DDriverEXT
 		Return Self
 	End Method
 
-	Method SetBlend(blend)
+	Method SetBlend(blend:Int)
 		If blend = blend_mode Return
 		blend_mode = blend
 		Select blend
@@ -82,7 +81,7 @@ Type TGLMax2DDriverEXT Extends TMax2DDriverEXT
 		glColor4ubv color4ubext
 	End Method
 	
-	Method SetColor(red, green, blue)
+	Method SetColor(red:Int, green:Int, blue:Int)
 		currentred = red
 		currentgreen = green
 		currentblue = blue
@@ -92,7 +91,7 @@ Type TGLMax2DDriverEXT Extends TMax2DDriverEXT
 		glColor4ubv color4ubext
 	End Method
 
-	Method SetClsColor(red, green, blue, alpha:Float = 1)
+	Method SetClsColor(red:Int, green:Int, blue:Int, alpha:Float = 1)
 		red = Min(Max(red, 0), 255)
 		green = Min(Max(green, 0), 255)
 		blue = Min(Max(blue, 0), 255)
@@ -101,7 +100,7 @@ Type TGLMax2DDriverEXT Extends TMax2DDriverEXT
 		glClearColor red / 255.0, green / 255.0, blue / 255.0, alpha
 	End Method
 	
-	Method GrabPixmap:TPixmap(x, y, w, h)
+	Method GrabPixmap:TPixmap(x:Int, y:Int, w:Int, h:Int)
 		Local blend:Int = state_blendext
 		DebugLog "EXT Grab"
 		SetBlend SOLIDBLEND
@@ -120,9 +119,9 @@ about:
 The returned driver can be used with #SetGraphicsDriverEXT to enable OpenGL Max2D EXT commands.
 End Rem
 Function GLMax2DDriverEXT:TGLMax2DDriverEXT()
-	Global _done
+	Global _done:Int
 	If Not _done
-		_driverext = New TGLMax2DDriverEXT.Create()
+		Local _driverext:TGLMax2DDriverEXT = New TGLMax2DDriverEXT.Create()
 		_done=True
 	EndIf
 	Return _driverext

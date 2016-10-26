@@ -4,14 +4,14 @@ Import rigz.collision
 
 SetGraphicsDriver GLMax2DDriver()
 
-Graphics 1024, 768
+Graphics 640, 480
 
 'Create our quadtree. Here we're allowing for 5 levels of subdivision and upto 20 objects before subdividing
 'a quadtree node
 Local QTree:tlQuadTree = CreateQuadtree(0, 0, GraphicsWidth() , GraphicsHeight(), 5, 20)
 
 'Populate the quadtree with a bunch of objects
-For Local c:Int = 1 To 1000
+For Local c:Int = 1 To 10000
 	Local t:Int = Rnd(3)
 	Local rect:tlBox
 	Select t
@@ -40,6 +40,7 @@ While Not KeyDown(KEY_ESCAPE)
 	'Update the position of the mouse controlled boundary poly
 	SetBoundaryPosition(player, MouseX(), MouseY())
 	
+	Local RenderTime:Int = MilliSecs()
 	'If the space is pressed then query the quadtree to do a callback on all 
 	'the objects on the screen. You could use something similar to cull all 
 	'off screen objects
@@ -54,10 +55,12 @@ While Not KeyDown(KEY_ESCAPE)
 	QTree.Draw()
 
 	'Draw the player circle
-	SetColor 255, 255, 255
+	SetColor 255, 0, 0
 	player.draw()
+	RenderTime = MilliSecs() - RenderTime
 	
 	DrawText "Hold space to render the whole screen", 10, 10
+	DrawText "Render Time: " + RenderTime, 10, 30
 	
 	Flip 1
 

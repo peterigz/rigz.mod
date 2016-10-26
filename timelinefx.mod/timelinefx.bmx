@@ -1,4 +1,4 @@
-Ôªø'Copyright (c) 2009 Peter J Rigby
+'Copyright (c) 2009 Peter J Rigby
 '
 'Permission is hereby granted, free of charge, to any person obtaining a copy
 'of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@ Rem
 	bbdoc:	TimelineFX for BlitzMax
 	about:	<p>TimelineFX is a system for creating particle effects within your games and applications</p>
 	<p>Big thanks to the following: Bruce Henderson (Brucey) for all the great modules, Garritt Grandberg (gman) for the zipengine module,
-	 Manel Ib√°√±ez (Ziggy) for a great IDE, Doug Stastny for the DX9 module and Mark Sibly of course for everything Blitz.</p>
+	 Manel Ib·Òez (Ziggy) for a great IDE, Doug Stastny for the DX9 module and Mark Sibly of course for everything Blitz.</p>
 	<p>For more help and tutorials that expand on the Docs below visit <a href="http://www.rigzsoft.co.uk" target="_blank">www.rigzsoft.co.uk</a></p>
 EndRem
 Module rigz.timelinefx
@@ -32,6 +32,7 @@ ModuleInfo "Author: Peter J. Rigby"
 ModuleInfo "Copyright: Peter J. Rigby 2009-2010"
 ModuleInfo "Purpose: To add rich particle effects to games and applications, quickly and easily"
 
+ModuleInfo "History v1.18: 26 October 2016 - Added missing super effect code for loading effects"
 ModuleInfo "History v1.17: 17 November 2015 - Fixed locked angle not taking into account anngle offset"
 ModuleInfo "History v1.16: 17 March 2015 - Introduced super effects"
 ModuleInfo "History v1.15: 30 October 2010 - Fixed a bug with interpolated mode and loading effects with compile flag set to false"
@@ -49,7 +50,7 @@ ModuleInfo "History v1.10: 04 April 2010 - Fixed an error on loading effects fil
 ModuleInfo "History v1.09: 29 March 2010 - Added a new attribute - Splatter"
 ModuleInfo "History v1.09: 29 March 2010 - Fixed a memory leak when effects files are loaded over and over again"
 ModuleInfo "History v1.09: 13th February 2010 - Particles will now only stretch along their relative velocities."
-moduleinfo "History v1.09: 26th Januray 2010 - Fixed a bug where the wrong frame would be drawn causing array out of bounds error"
+ModuleInfo "History v1.09: 26th Januray 2010 - Fixed a bug where the wrong frame would be drawn causing array out of bounds error"
 ModuleInfo "History v1.08: 23rd November 2009 - Improved the way DrawParticles decides whether a particle is on screen to be drawn."
 ModuleInfo "History v1.08: 19th November 2009 - The particle radius and bounding box are now initialised initialised properly when spawning."
 ModuleInfo "History v1.07: 08th November 2009 - Tidied up the behaviour of adjusting the Z value of effects and implented globalz as a graph attribute"
@@ -201,7 +202,7 @@ Type tlEffectsLibrary
 	bbdoc: Add a new effect to the library including any sub effects and emitters. Effects are stored using a tMap and can be retrieved using #GetEffect.
 	endrem
 	Method AddEffect(e:tlEffect)
-		effects.Insert(e.getpath().ToUpper(), e)
+		effects.Insert(Upper(e.getpath()), e)
 		For Local em:tlEmitter = EachIn e.children
 			addemitter(em)
 		Next
@@ -211,7 +212,7 @@ Type tlEffectsLibrary
 	you're building your effects manually, just use #AddEffect and all its emitters will be added also.
 	endrem
 	Method AddEmitter(e:tlEmitter)
-		effects.Insert(e.getpath().ToUpper(), e)
+		effects.Insert(Upper(e.getpath()), e)
 		For Local ef:tlEffect = EachIn e.effects
 			addeffect(ef)
 		Next
@@ -241,7 +242,7 @@ Type tlEffectsLibrary
 	<p>Note that you should always use forward slashes.</p>
 	endrem
 	Method GetEffect:tlEffect(name:String)
-		Return tlEffect(effects.ValueForKey(name.ToUpper()))
+		Return tlEffect(effects.ValueForKey(Upper(name)))
 	End Method
 	Rem
 	bbdoc: Retrieve an emitter from the library
@@ -253,7 +254,7 @@ Type tlEffectsLibrary
 	<p>Note that you should always use forward slashes.</p>
 	endrem
 	Method GetEmitter:tlEmitter(name:String)
-		Return tlEmitter(effects.ValueForKey(name.ToUpper()))
+		Return tlEmitter(effects.ValueForKey(Upper(name)))
 	End Method
 End Type
 Rem
@@ -1352,7 +1353,7 @@ Type tlEffect Extends tlEntity
 	bbdoc: Add a new effect to the directory including any sub effects and emitters. Effects are stored using a map and can be retrieved using #GetEffect.
 	endrem
 	Method AddEffect(e:tlEffect)
-		directory.Insert(e.getpath().ToUpper(), e)
+		directory.Insert(Upper(e.getpath()), e)
 		For Local em:tlEmitter = EachIn e.children
 			addemitter(em)
 		Next
@@ -1362,7 +1363,7 @@ Type tlEffect Extends tlEntity
 	just use #AddEffect and all its emitters will be added also.
 	endrem
 	Method AddEmitter(e:tlEmitter)
-		directory.Insert(e.getpath().ToUpper(), e)
+		directory.Insert(Upper(e.getpath()), e)
 		For Local ef:tlEffect = EachIn e.effects
 			addeffect(ef)
 		Next
@@ -1377,7 +1378,7 @@ Type tlEffect Extends tlEntity
 	<p>Note that you should always use forward slashes.</p>
 	endrem
 	Method GetEffect:tlEffect(name:String)
-		Return tlEffect(directory.ValueForKey(name.ToUpper()))
+		Return tlEffect(directory.ValueForKey(Upper(name)))
 	End Method
 	Rem
 	bbdoc: Retrieve an emitter from the of the effect
@@ -1389,7 +1390,7 @@ Type tlEffect Extends tlEntity
 	<p>Note that you should always use forward slashes.</p>
 	endrem
 	Method GetEmitter:tlEmitter(name:String)
-		Return tlEmitter(directory.ValueForKey(name.ToUpper()))
+		Return tlEmitter(directory.ValueForKey(Upper(name)))
 	End Method
 	Rem
 		bbdoc: Stop the effect from timing out and be automatically removed
@@ -4528,7 +4529,7 @@ Type tlEmitter Extends tlEntity
 								While GetDistance(0, 0, splatx, splaty) >= splattertemp And splattertemp > 0
 									splatx = Rnd(-splattertemp, splattertemp)
 									splaty = Rnd(-splattertemp, splattertemp)
-								WEnd
+								Wend
 								If z = 1 Or e.relative
 									e.x:+splatx
 									e.y:+splaty
@@ -4705,7 +4706,7 @@ Type tlEmitter Extends tlEntity
 				'-----Angle Changes----
 				If lockedangle And angletype = tlANGLE_ALIGN
 					If e.directionlocked
-						e.angle = parentEffect.angle + angle + angleoffset
+						e.angle = parenteffect.angle + angle + angleoffset
 					Else
 						If Not bypass_weight And Not parenteffect.bypass_weight Or e.direction
 							If e.oldwx <> e.wx And e.oldwy <> e.wy
@@ -4871,9 +4872,9 @@ Type tlEmitter Extends tlEntity
 						If Not bypass_weight And Not parenteffect.bypass_weight Or e.direction
 							If e.oldwx <> e.wx And e.oldwy <> e.wy
 								If e.relative
-									e.angle = GetDirection(e.oldx, e.oldy, e.x, e.y) + angleoffset
+									e.angle = GetDirection(e.oldx, e.oldy, e.x, e.y)
 								Else
-									e.angle = GetDirection(e.oldwx, e.oldwy, e.wx, e.wy) + angleoffset
+									e.angle = GetDirection(e.oldwx, e.oldwy, e.wx, e.wy)
 								End If
 								If Abs(e.oldangle - e.angle) > 180
 									If e.oldangle > e.angle e.oldangle:-360 Else e.oldangle:+360
