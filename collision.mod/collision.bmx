@@ -20,7 +20,7 @@
 
 SuperStrict
 
-rem
+Rem
 	bbdoc: Collision Module with quadtrees for spatial partitioning of boundaries
 	about: <p>This modules provides a way to check for collisions between boxes, circles, lines and polygons (referred to as boundaries throughout
 	to documentation). The option of using a quadtree
@@ -60,7 +60,7 @@ Import brl.linkedlist
 Import brl.max2d
 Import rigz.math
 
-rem 
+Rem 
 	bbdoc: Quadtree type for managing a quadtree
 	about: <p>Rather then go on about what a quadtree is, here's some useful resources I used myself to find out about them:
 	http://en.wikipedia.org/wiki/Quadtree, http://www.kyleschouviller.com/wsuxna/quadtree-source-included/ and http://www.heroicvirtuecreations.com/QuadTree.html</p>
@@ -158,7 +158,7 @@ Type tlQuadTree
 	
 	Field dimension:Int
 	
-	rem
+	Rem
 		bbdoc: Create a new tlQuadTree
 		returns: A new quadtree
 		about: Creates a new quad tree with the coordinates and dimensions given. _maxlevels determines how many times the quadtree can be sub divided. A
@@ -183,7 +183,7 @@ Type tlQuadTree
 		Return Self
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Add a new bounding box to the Quadtree
 		returns: False if the box doesn't overlap the qaudtree, otherwise True.
 		about: A quadtree isn't much use without any objects. Use this to add a #tlBox to the quadtree. If the bounding box does not overlap the 
@@ -200,7 +200,7 @@ Type tlQuadTree
 		End If
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Query the Quadtree to find objects with an area
 		about: When you want to find objects within a particular area of the quadtree you can use this method.  Pass the area coordinates and dimensions
 		that you want to check, an object that can be anything that you want to pass through to the callback function, and the function callback that you want 
@@ -215,7 +215,7 @@ Type tlQuadTree
 		rootnode.ForEachInAreaDo(area, Data, callback, False, layer)
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Query the quadtree to find objects within a #tlBox
 		about: This does the same thing as #ForEachObjectInArea except you can pass a #tlBox instead to query the quadtree.
 	end rem
@@ -225,7 +225,7 @@ Type tlQuadTree
 		rootnode.ForEachInAreaDo(area, Data, callback, True, layer)
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Query the quadtree to find objects within a certain radius
 		about: This will query the quadtree and do a callback on any objects it finds within a given radius.
 	end rem
@@ -236,7 +236,7 @@ Type tlQuadTree
 		rootnode.ForEachWithinRangeDo(range, Data, callback, layer)
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Query the quadtree to find objects within a #tlCircle
 		about: This will query the quadtree and do a callback on any objects it finds within the given tlCircle
 	end rem
@@ -246,7 +246,7 @@ Type tlQuadTree
 		rootnode.ForEachWithinRangeDo(circle, Data, callback, layer)
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Query a quadtree with a #tlLine
 		returns: False if the line did not touch anything, otherwise True
 		about: This will query the quadtree with a line and perform a callback on all the objects the #tlLine intersects. Pass the quadtree to do the query on, the
@@ -407,7 +407,7 @@ Type tlQuadTree
 		End If
 	End Method
 	
-	rem
+	Rem
 		bbdoc:
 		about:
 	end rem
@@ -512,7 +512,7 @@ Type tlQuadTree
 		End If
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Find out how many objects were found on the last query
 		returns: Number of objects found.
 		about: Use this to retrieve the amount of object that were found when the last query was run.
@@ -521,7 +521,7 @@ Type tlQuadTree
 		Return objectsfound
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Find out how many objects are currently in the quadtree
 		returns: Number of Total Objects in Tree
 		about: Use this to retrieve the total amount of objects that are stored in the quadtree.
@@ -530,7 +530,7 @@ Type tlQuadTree
 		Return totalobjectsintree
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Perform some house keeping on the quadtree
 		about: This will search the quadtree tree for any empty #tlQuadTreeNodes and unpartition them if necessary. 
 	end rem
@@ -538,7 +538,7 @@ Type tlQuadTree
 		rootnode.UnpartitionEmptyQuads()
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Draw the quadtree
 		about: This can be used for debugging purposes. *Warning: This will be very slow if the quadtree has more then 6 or 7 levels!*
 	end rem
@@ -564,7 +564,7 @@ Type tlQuadTree
 	End Method
 End Type
 
-rem
+Rem
 	bbdoc: tlQuadTreeNode type for containing objects within the QuadTree
 	about: This type is use internally by #tlQuadTree so you shouldn't have to worry about it.
 end rem
@@ -586,7 +586,7 @@ Type tlQuadTreeNode
 	
 	'Internal Stuff------------------------------------
 	'This whole type should be handled automatically by the quadtree it belongs to, so you don't have to worry about it.
-	rem
+	Rem
 		bbdoc: Create a new tlQuadTreeNode
 		about: This will create a new node within the quad tree. You shouldn't have to worry about this, as it's performed automatically as objects are
 		added to the quadtree.
@@ -728,7 +728,7 @@ Type tlQuadTreeNode
 		Next
 	End Method
 	
-	Method RayCast:Int(px:Float, py:Float, dx:Float, dy:Float, maxdistance:Int, Data:Object, callback:Int(ReturnedObject:Object, Data:Object, Result:tlCollisionResult), Layer:Int)
+	Method RayCast:Int(px:Float, py:Float, dx:Float, dy:Float, maxdistance:Float, Data:Object, callback:Int(ReturnedObject:Object, Data:Object, Result:tlCollisionResult), Layer:Int)
 		
 		Local result:tlCollisionResult
 		Local nearestobject:tlBox
@@ -798,7 +798,7 @@ Type tlQuadTreeNode
 	End Method
 End Type
 
-rem
+Rem
 	bbdoc: Type to store the results of collisions
 	about: When you check for a collision between 2 objects (see #CheckCollision) the result of that check will be a #tlCollisionResult. This contains information about
 	how the 2 objects collided and can be used to do further calculations. Call #GetIntersecting to find out if the 2 objects overlap each other and call
@@ -816,7 +816,7 @@ Type tlCollisionResult
 	Field source:tlBox
 	Field target:tlBox
 	
-	rem
+	Rem
 		bbdoc: Find out if the last collision check is intersecting
 		returns: true if there was an intersection
 	end rem
@@ -824,7 +824,7 @@ Type tlCollisionResult
 		Return intersecting
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Find out if the last collision check is intersecting
 		returns: true if there will be an intersection
 		about: knowing if there will be an intersection allows you to adjust the position of objects so that visually they will never overlap. Do do this
@@ -835,7 +835,7 @@ Type tlCollisionResult
 		Return willintersect
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Get the distance from the ray origin to the instersection point
 		returns: float value of distance the ray travelled, 0 if there was no intersection
 	end rem
@@ -843,7 +843,7 @@ Type tlCollisionResult
 		Return raydistance
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Get the translation vector of the collision
 		returns: #tlVector2
 		about: If the collision check finds that either the objects are intersecting, or they will intersect, then the translation vector hold exactly
@@ -854,7 +854,7 @@ Type tlCollisionResult
 		Return translationvector
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Get the intersection point of the raycast
 		returns: #tlvector2
 		about: If a ray cast has been performed and the ray successfully connected, then this will return the point of intersection as a #tlVector2.
@@ -863,7 +863,7 @@ Type tlCollisionResult
 		Return rayintersection
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Gets the Source boundary of a collision check
 		returns: #tlBox Or null if no collision occurred
 	end rem
@@ -871,7 +871,7 @@ Type tlCollisionResult
 		Return source
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Gets the Target boundary of a collision check
 		returns: #tlBox Or null if no collision occurred
 	end rem
@@ -879,7 +879,7 @@ Type tlCollisionResult
 		Return source
 	End Method
 
-	rem
+	Rem
 		bbdoc: Get the rebound vector
 		returns: New #tlVector2 with the resulting rebound vector
 		about: When an object collides with a surface you may want to know a resulting vector based on bounce and friction. So you can call this
@@ -898,7 +898,7 @@ Type tlCollisionResult
 		Return v
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Find out if the last ray cast found that the ray originated inside the boundary
 		returns: true if the last ray check originated inside the boundary
 	end rem
@@ -907,7 +907,7 @@ Type tlCollisionResult
 	End Method
 End Type
 
-rem 
+Rem 
 	bbdoc: Type for handling Axis Aligned Bounding Boxes
 	about: <p>This type can be used to create bounding boxes for the purpose of collision checking. This is the type used to stored objects in #tlQuadTree. It's
 	extended by #tlCircle and #tlPolygon. To implement collision checking in you game/app will probably end up inlcluding these as a field within
@@ -948,7 +948,7 @@ Type tlBox
 		
 	Field _data:Object
 		
-	rem
+	Rem
 		bbdoc: Create a new #tlBox
 		returns: New tlBox
 		about: Creates a new Bounding box that you can use for collision checking and adding to a #tlQuadTree. The x and y coordinates represent
@@ -988,7 +988,7 @@ Type tlBox
 		Return Self
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Assign an object to the boundary
 		about: This can be handy to store extra custom info about the boundary. 
 	end rem
@@ -996,7 +996,7 @@ Type tlBox
 		_data = d
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Get the data assigned to this boundary
 		about: Use this to retrieve the custom data you have assign to the boundary.
 	end rem
@@ -1028,7 +1028,7 @@ Type tlBox
 		collisionlayer = layer
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Set the position of the bounding box.
 		about: This sets the position of the top left corner of the bounding box. If the box is within quadtree it will automatically update itself
 		within it.
@@ -1040,7 +1040,7 @@ Type tlBox
 		If needsmoving() quadtree.UpdateRect(Self)
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Move the bounding box by a given amount.
 		about: This sets the position of the top left corner of the bounding box by moving it by the x and y amount. If the box is within quadtree it 
 		will automatically update itself within it.
@@ -1052,7 +1052,7 @@ Type tlBox
 		If needsmoving() quadtree.UpdateRect(Self)
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Update the position of the boundary
 		about: You can use this method to update it's position according to its current velocity vector
 	end rem
@@ -1060,7 +1060,7 @@ Type tlBox
 		move(velocity.x, velocity.y)
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Get the x world coordinate of the boundary
 		returns: Float with the current x coordinate
 		about: You can use this to find out the current x coordinate of the boundary. This would be especially useful if you have just used #PreventOverlap
@@ -1070,7 +1070,7 @@ Type tlBox
 		Return world.x
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Get the y world coordinate of the boundary
 		returns: Float with the current y coordinate
 		about: You can use this to find out the current y coordinate of the boundary. This would be especially useful if you have just used #PreventOverlap
@@ -1080,7 +1080,7 @@ Type tlBox
 		Return world.y
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Set the velocity of the boundary
 		about: It's import to set the velocity of the boundary so that collisions can be more accurately calculated. If you're attaching this
 		to an entity in your game then you'll just need to match this to your entities velocity.
@@ -1089,7 +1089,7 @@ Type tlBox
 		velocity.SetPosition(velocity_x, velocity_y)
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Set the scale of the Box
 		about: This sets scale of the Box.
 	end rem
@@ -1098,7 +1098,7 @@ Type tlBox
 		TForm()
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Find out if a point is within the bounding box
 		returns: True if the point is within
 		about: Use this to find out if a point at x,y falls with the bounding box of this #tlBox
@@ -1107,7 +1107,7 @@ Type tlBox
 		Return x >= tl_corner.x And x <= br_corner.x And y >= tl_corner.y And y <= br_corner.y
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Compare this #tlBox with another to see if they overlap
 		returns: True if they do overlap
 		about: Use this to find out if this #tlBox overlaps the #tlBox you pass to it. This is a very simple overlap to see if the bounding box overlaps only
@@ -1122,7 +1122,7 @@ Type tlBox
 		Return check1
 	End Method
 		
-	rem
+	Rem
 		bbdoc: Find out if a #tlBox lies within this objects bounding box
 		returns: True if it is within
 		about: If you need to know whether a #tlBox you pass to this method, lies entirely with this #tlBox (no overlapping) then you can use this method. 
@@ -1132,7 +1132,7 @@ Type tlBox
 		Return tl_corner.x < rect.tl_corner.x And br_corner.x > rect.br_corner.x And tl_corner.y < rect.tl_corner.y And br_corner.y > rect.br_corner.y
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Compare this #tlBox with a #tlCircle
 		returns: True if they do overlap
 		about: This will perfrom a simple bounding box to circle collision check on the #tlCircle you pass to it. 
@@ -1146,7 +1146,7 @@ Type tlBox
 		If LineToCircle(tl_corner.x, br_corner.y, tl_corner.x, tl_corner.y, circle.world.x, circle.world.y, circle.radius) Return True
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Check for a collision with another #tlBox
 		returns: #tlCollisionResult type containing info about the collision
 		about: Use this to check for a collision with another #tlBox that you pass to the method. You can then use the information stored in 
@@ -1262,7 +1262,7 @@ Type tlBox
 	
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Check for a collision with a #tlCircle
 		returns: #tlCollisionResult type containing info about the collision
 		about: Use this to check for a collision with a #tlCircle that you pass to the method. You can then use the information stored in 
@@ -1352,7 +1352,7 @@ Type tlBox
 		Return result
 	End Method
 
-	rem
+	Rem
 		bbdoc: Check for a collision with a #tlLine
 		returns: #tlCollisionResult type containing info about the collision
 		about: Use this to check for a collision with a #tlLine that you pass to the method. You can then use the information stored in 
@@ -1441,7 +1441,7 @@ Type tlBox
 		Return result
 	End Method
 
-	rem
+	Rem
 		bbdoc: Check for a collision with a #tlPolygon
 		returns: #tlCollisionResult type containing info about the collision
 		about: Use this to check for a collision with a #tlPolygon that you pass to the method. You can then use the information stored in 
@@ -1530,7 +1530,7 @@ Type tlBox
 		Return result
 	End Method
 	
-	rem
+	Rem
 		bbdoc: See is a ray collides with this #tlbox
 		returns: #tlCollisionResult with the results of the collision
 		about: You can use this to test for a collision with a ray. Pass the origin of the ray with px and py, and set the direction of the ray with dx and dy.
@@ -1595,7 +1595,7 @@ Type tlBox
 	
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Draw this tlBox
 		about: Use this if you need to draw the bounding box for debugging purposes
 	end rem
@@ -1606,7 +1606,7 @@ Type tlBox
 		DrawLine (tl_corner.x - offsetx, br_corner.y - offsety, tl_corner.x - offsetx, tl_corner.y - offsety, False)
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Remove the tlBox from the quadtree
 		about: This will remove the tlBox from the quadtree. You'll need to do this when an actor/entity is destroyed, blown up or whatever!
 	end rem
@@ -1617,7 +1617,7 @@ Type tlBox
 		quadtree.totalobjectsintree:-1
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Get the collision type of the Box
 		returns: Either tlBOX_COLLISION, tlCIRCLE_COLLISION, tlLINE_COLLISION or tlPOLY_COLLISION
 		about: the collision type can help you determine what type of collision you should be performing on objects calledback from quadtree queries.
@@ -1626,7 +1626,7 @@ Type tlBox
 		Return collisiontype
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Prevent the boundary from overlapping another based on the result of a collision.
 		about: When you check for a collision, the results of that collision are stored with a #tlCollisionResult. This can be passed to this method
 		to prevent 2 boundaries from overlapping. If push is set to true, then the source boundary will push the target boundary along it's velocity vector.
@@ -1665,7 +1665,7 @@ Type tlBox
 		End If
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Get a poly represting the shadow of the box
 		returns: tList of tlPolygons representing each shadow cast by each line in the box
 		about: This will take a light located at Light:tlVector2 and create a list of tlPolygons representing a shadow cast by each line in the box.
@@ -1821,7 +1821,7 @@ Type tlBox
 
 End Type
 
-rem
+Rem
 	bbdoc: tlCircle for circular boundaries for collision checking
 	about: This extends #tlBox so automatically inherits a bounding box, which can be checked first before doing a more complicated circle collision
 	check. You can add this type to a #tlQuadTree just as though it were a standard #tlBox, as the quadtree only concerns itself with Boxs.
@@ -1831,7 +1831,7 @@ Type tlCircle Extends tlBox
 	Field radius:Float
 	Field tformradius:Float
 	
-	rem
+	Rem
 		bbdoc: Create a #tlCircle
 		returns: New #tlCircle
 		about: Create a new #tlCircle at the given coordinates with the given radius. The coordinates will represent where the center of the circle is located
@@ -1851,7 +1851,7 @@ Type tlCircle Extends tlBox
 		Return Self
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Find out if a point is within the circle
 		returns: True if the point is within
 		about: Use this to find out if a point at x,y falls with the radius of this #tlCircle
@@ -1860,7 +1860,7 @@ Type tlCircle Extends tlBox
 		Return getdistance(x, y, world.x, world.y) <= radius
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Compare this circle with another #tlCircle
 		returns: True if they do overlap
 		about: This will perfrom a simple circle to circle collision check on the #tlCircle you pass to it.
@@ -1869,7 +1869,7 @@ Type tlCircle Extends tlBox
 		Return getdistance(world.x, world.y, circle.world.x, circle.world.y) <= radius + circle.radius
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Compare this #tlCircle with a #tlBox
 		returns: True if they do overlap
 		about: This will perfrom a simple circle to bounding box overlap check on the #tlBox you pass to it.
@@ -1883,7 +1883,7 @@ Type tlCircle Extends tlBox
 		If LineToCircle(rect.tl_corner.x, rect.br_corner.y, rect.tl_corner.x, rect.tl_corner.y, world.x, world.y, radius) Return True
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Check for a collision with a #tlBox
 		returns: #tlCollisionResult type containing info about the collision
 		about: Use this to check for a collision with a #tlBox that you pass to the method. You can then use the information stored in 
@@ -1973,7 +1973,7 @@ Type tlCircle Extends tlBox
 		Return result
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Check for a collision with another #tlCircle
 		returns: #tlCollisionResult type containing info about the collision
 		about: Use this to check for a collision with another #tlCircle that you pass to the method. You can then use the information stored in 
@@ -2056,7 +2056,7 @@ Type tlCircle Extends tlBox
 		Return result
 	End Method
 
-	rem
+	Rem
 		bbdoc: Check for a collision with a #tlLine
 		returns: #tlCollisionResult type containing info about the collision
 		about: Use this to check for a collision with a #tlLine that you pass to the method. You can then use the information stored in 
@@ -2150,7 +2150,7 @@ Type tlCircle Extends tlBox
 		Return result
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Check for a collision with a #tlPolygon
 		returns: #tlCollisionResult type containing info about the collision
 		about: Use this to check for a collision with another #tlPolygon that you pass to the method. You can then use the information stored in 
@@ -2244,7 +2244,7 @@ Type tlCircle Extends tlBox
 		Return result
 	End Method
 	
-	rem
+	Rem
 		bbdoc: See is a ray collides with this #tlCircle
 		returns: #tlCollisionResult with the results of the collision
 		about: You can use this to test for a collision with a ray. Pass the origin of the ray with px and py, and set the direction of the ray with dx and dy.
@@ -2333,7 +2333,7 @@ Type tlCircle Extends tlBox
 		height = radius * 2
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Draw this tlBox
 		about: Use this if you need to draw the bounding box for debugging purposes. Pass true of false to draw the bounding box as well.
 	end rem
@@ -2354,7 +2354,7 @@ Type tlCircle Extends tlBox
 	End Method
 End Type
 
-rem
+Rem
 	bbdoc: tlPolygon for convex polygon collisions
 	about: This extends #tlBox so automatically inherits a bounding box, which can be checked first before doing a more complicated polygon collision
 	check. You can add this type to a #tlQuadTree just as though it were a standard #tlBox, as the quadtree only concerns itself with Boxs.
@@ -2363,7 +2363,7 @@ Type tlPolygon Extends tlBox
 		
 	Field angle:Float
 	
-	rem
+	Rem
 		bbdoc: Create a #tlPolygon
 		returns: New #tlPolygon, or Null if verts[] contained the wrong amount.
 		about: Create a new #tlPolygon at the given coordinates with the given array of vertices. The coordinates will represent the center of the polygon, but this
@@ -2403,7 +2403,7 @@ Type tlPolygon Extends tlBox
 		Return Self
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Create a #tlPolygon
 		returns: New #tlPolygon, or Null if verts[] contained the wrong amount.
 		about: Create a new #tlPolygon at the given coordinates with the given array of vertices. The coordinates will represent the center of the polygon, but this
@@ -2443,7 +2443,7 @@ Type tlPolygon Extends tlBox
 		Return Self
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Rotate the polygon 
 		about: This will rotate the polygon by the given amount
 	end rem
@@ -2453,7 +2453,7 @@ Type tlPolygon Extends tlBox
 		TForm()
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Set the angle of the polygon
 		about: This will adjust the angle of the polygon by the given amount.
 	end rem
@@ -2463,7 +2463,7 @@ Type tlPolygon Extends tlBox
 		TForm()
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Set the scale of the Polygon
 		about: This sets scale of the polygon.
 	end rem
@@ -2474,7 +2474,7 @@ Type tlPolygon Extends tlBox
 		TForm()
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Find out if a point resides withing the #tlPolygon
 		returns: True if they do overlap
 		about: Use this to check if a point with the given coordinates lies within the polygon
@@ -2513,7 +2513,7 @@ Type tlPolygon Extends tlBox
 		If Abs(total)=4 Then Return True Else Return False
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Check for a collision with a #tlBox
 		returns: #tlCollisionResult type containing info about the collision
 		about: Use this to check for a collision with a #tlBox that you pass to the method. You can then use the information stored in 
@@ -2602,7 +2602,7 @@ Type tlPolygon Extends tlBox
 		Return result
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Check for a collision with a #tlCircle
 		returns: #tlCollisionResult type containing info about the collision
 		about: Use this to check for a collision with a #tlCircle that you pass to the method. You can then use the information stored in 
@@ -2696,7 +2696,7 @@ Type tlPolygon Extends tlBox
 		Return result
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Check for a collision with a #tlLine
 		returns: #tlCollisionResult type containing info about the collision
 		about: Use this to check for a collision with a #tlLine that you pass to the method. You can then use the information stored in 
@@ -2786,7 +2786,7 @@ Type tlPolygon Extends tlBox
 		Return result
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Check for a collision with another #tlpolygon
 		returns: #tlCollisionResult type containing info about the collision
 		about: Use this to check for a collision with a #tlPolygon that you pass to the method. You can then use the information stored in 
@@ -2876,7 +2876,7 @@ Type tlPolygon Extends tlBox
 		Return result
 	End Method
 	
-	rem
+	Rem
 		bbdoc: See is a ray collides with this #tlpolygon
 		returns: #tlCollisionResult with the results of the collision
 		about: You can use this to test for a collision with a ray. Pass the origin of the ray with px and py, and set the direction of the ray with dx and dy.
@@ -2941,7 +2941,7 @@ Type tlPolygon Extends tlBox
 	
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Draw the polygon
 		about: You can use this for debugging purposes. Pass true of false to draw the bounding box as well.
 	end rem
@@ -3090,13 +3090,13 @@ Type tlPolygon Extends tlBox
 	
 End Type
 
-rem
+Rem
 	bbdoc: tlLine for line collisions
 	about: This type extends #tlPolygon and can be used to check for collisions with any of the other types of collision.
 end rem
 Type tlLine Extends tlPolygon
 	
-	rem
+	Rem
 		bbdoc: Create a #tlLine
 		returns: New #tlLine
 		about: Create a new #tlLine at the coordinates given, x1 and y1 being the start of the line and x2 and y2 being the end. The will placed exactly
@@ -3131,7 +3131,7 @@ Type tlLine Extends tlPolygon
 		Return Self
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Check for a collision with a #tlBox
 		returns: #tlCollisionResult type containing info about the collision
 		about: Use this to check for a collision with a #tlBox that you pass to the method. You can then use the information stored in 
@@ -3220,7 +3220,7 @@ Type tlLine Extends tlPolygon
 		Return result
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Check for a collision with a #tlCircle
 		returns: #tlCollisionResult type containing info about the collision
 		about: Use this to check for a collision with a #tlCircle that you pass to the method. You can then use the information stored in 
@@ -3314,7 +3314,7 @@ Type tlLine Extends tlPolygon
 		Return result
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Check for a collision with another #tlLine
 		returns: #tlCollisionResult type containing info about the collision
 		about: Use this to check for a collision with another #tlLine that you pass to the method. You can then use the information stored in 
@@ -3404,7 +3404,7 @@ Type tlLine Extends tlPolygon
 		Return result
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Check for a collision with a #tlPoly
 		returns: #tlCollisionResult type containing info about the collision
 		about: Use this to check for a collision with a #tlPoly that you pass to the method. You can then use the information stored in 
@@ -3494,7 +3494,7 @@ Type tlLine Extends tlPolygon
 		Return result
 	End Method
 	
-	rem
+	Rem
 		bbdoc: See is a ray collides with this #tlLine
 		returns: #tlCollisionResult with the results of the collision
 		about: You can use this to test for a collision with a ray. Pass the origin of the ray with px and py, and set the direction of the ray with dx and dy.
@@ -3626,7 +3626,7 @@ End Type
 
 'Quadtree Wrapper
 
-rem
+Rem
 	bbdoc: Create a new #tlQuadTree
 	returns: A new #tlQuadtree
 	about: Creates a new quad tree with the coordinates and dimensions given. Maxlevels determines how many times the quadtree can be sub divided. A
@@ -3638,7 +3638,7 @@ Function CreateQuadtree:tlQuadtree(x:Float, y:Float, w:Float, h:Float, maxlevels
 	Return quadtree
 End Function
 
-rem
+Rem
 	bbdoc: Add a new bounding box to the Quadtree
 	returns: False if the box doesn't overlap the quadtree, otherwise True.
 	about: A quadtree isn't much use without any objects. Use this to add a #tlBox to the quadtree. If the bounding box does not overlap the 
@@ -3648,7 +3648,7 @@ Function AddBoundaryToQuadtree:Int(quadtree:tlQuadTree, Box:tlBox)
 	Return QuadTree.AddBox(Box)
 End Function
 
-rem
+Rem
 	bbdoc: Query a Quadtree to find objects with an area
 	about: When you want to find objects within a particular area of the quadtree you can use this method.  Pass the area coordinates and dimensions
 	that you want to check, an object (Data) that can be anything that you want to pass through to the callback function, and the function callback that you want 
@@ -3661,7 +3661,7 @@ Function QueryQuadtreeArea(Quadtree:tlQuadTree, x:Float, y:Float, w:Float, h:Flo
 	QuadTree.ForEachObjectInArea(x, y, w, h, data, callback, layer)
 End Function
 
-rem
+Rem
 	bbdoc: Query a quadtree to find objects within a #tlBox
 	about: This does the same thing as #QueryQuadtreeArea except you can pass a #tlBox instead to query the quadtree.
 end rem
@@ -3669,7 +3669,7 @@ Function QueryQuadtreeBox(Quadtree:tlQuadTree, area:tlBox, Data:Object, callback
 	QuadTree.ForEachObjectInBox(area, data, callback, layer)
 End Function
 
-rem
+Rem
 	bbdoc: Query a quadtree to find objects within a certain radius
 	about: This will query the quadtree and do a callback on any objects it finds within a given radius. See #QueryQuadtreeArea for more info.
 end rem
@@ -3677,7 +3677,7 @@ Function QueryQuadtreeRange(Quadtree:tlQuadTree, x:Float, y:Float, radius:Float,
 	QuadTree.ForEachObjectWithinRange(x, y, radius, data, callback, layer)
 End Function
 
-rem
+Rem
 	bbdoc: Query a quadtree to find objects within a #tlCircle
 	about: This will query the quadtree and do a callback on any objects it finds within the given #tlCircle.
 end rem
@@ -3685,7 +3685,7 @@ Function QueryQuadtreeCircle(Quadtree:tlQuadTree, circle:tlCircle, Data:Object, 
 	QuadTree.ForEachObjectInBoxCircle(circle, data, callback, layer)
 End Function
 
-rem
+Rem
 	bbdoc: Query a quadtree with a Ray
 	returns: False if the ray did not hit anything, otherwise True
 	about: This will query the quadtree with a ray and perform a callback on the first object the ray hits. Pass the quadtree to do the query on, the
@@ -3697,7 +3697,7 @@ Function QueryQuadtreeRay:Int(Quadtree:tlQuadTree, px:Float, py:Float, dx:Float,
 	Return QuadTree.RayCast(px, py, dx, dy, maxdistance, data, callback, layer)
 End Function
 
-rem
+Rem
 	bbdoc: Query a quadtree with a line edge
 	returns: False if the line did not touch anything, otherwise True
 	about: This will query the quadtree with a line and perform a callback on all the objects the line intersects. Pass the quadtree to do the query on, the
@@ -3709,7 +3709,7 @@ Function QueryQuadtreeEdge:Int(Quadtree:tlQuadTree, x1:Float, y1:Float, x2:Float
 	Return QuadTree.ForEachObjectAlongLine(line, data, callback, layer)
 End Function
 
-rem
+Rem
 	bbdoc: Query a quadtree with a #tlLine
 	returns: False if the line did not touch anything, otherwise True
 	about: This will query the quadtree with a line and perform a callback on all the objects the #tlLine intersects. Pass the quadtree to do the query on, the
@@ -3720,7 +3720,7 @@ Function QueryQuadtreeLine:Int(Quadtree:tlQuadTree, Line:tlLine, Data:Object, ca
 	Return QuadTree.ForEachObjectAlongLine(line, data, callback, layer)
 End Function
 
-rem
+Rem
 	bbdoc: Perform some house keeping on a quadtree
 	about: This will search a quadtree tree for any empty #tlQuadTreeNodes and unpartition them if necessary. It's probably unnecessary to run to every frame.
 	Every other frame should be more then enough, and maybe not even necessary at all, it will depend on how you're using the quadtree.
@@ -3729,7 +3729,7 @@ Function RunQuadtreeMaintenance(Quadtree:tlQuadtree)
 	quadtree.RunMaintenance()
 End Function
 
-rem
+Rem
 	bbdoc: Remove a boundary from the quadtree
 	about: This will remove a boundary from the quadtree. You'll need to do this when your actor/entity using the boundary is destroyed, blown up or whatever!
 	No need to pass the quadtree as the boundary knows what quadtree it lives in.
@@ -3741,7 +3741,7 @@ End Function
 
 'Box Wrappers
 
-rem
+Rem
 	bbdoc: Create a new #tlBox
 	returns: New #tlBox
 	about: Creates a new Bounding box that you can use for collision checking and adding to a #tlQuadTree. Use layer to specify a particular layer
@@ -3752,7 +3752,7 @@ Function CreateBox:tlBox(x:Float, y:Float, w:Float, h:Float, layer:Int = tlLAYER
 	Return New tlBox.Create(x, y, w, h, layer)
 End Function
 
-rem
+Rem
 	bbdoc: Create a #tlCircle
 	returns: New #tlCircle
 	about: Create a new #tlLine at the coordinates given, x1 and y1 being the start of the line and x2 and y2 being the end. The will placed exactly
@@ -3765,7 +3765,7 @@ Function CreateLine:tlLine(x1:Float, y1:Float, x2:Float, y2:Float, layer:Int = t
 	Return New tlLine.CreateLine(x1, y1, x2, y2, layer)
 End Function
 
-rem
+Rem
 	bbdoc: Create a #tlLine
 	returns: New #tlLine
 	about: Create a new #tlLine at the given coordinates with the given radius. The coordinates will represent the center of the circle. Use layer to specify a particular layer
@@ -3776,7 +3776,7 @@ Function CreateCircle:tlCircle(x:Float, y:Float, radius:Float, layer:Int = tlLAY
 	Return New tlCircle.CreateCircle(x, y, radius, layer)
 End Function
 
-rem
+Rem
 	bbdoc: Create a #tlPolygon
 	returns: New #tlPolygon, or Null if verts[] contained the wrong amount.
 	about: Create a new #tlPolygon at the given coordinates with the given array of vertices. The coordinates will represent the center of the polygon which is
@@ -3789,7 +3789,7 @@ Function CreatePolygon:tlPolygon(x:Float, y:Float, verts:Float[], layer:Int = tl
 	Return New tlPolygon.CreatePoly(x, y, verts, layer)
 End Function
 
-rem
+Rem
 	bbdoc: Set the position of a Boundary.
 	about: Sets the position of a #tlBox, #tlCircle or #tlPolygon.
 end rem
@@ -3821,7 +3821,7 @@ Function GetBoundaryLayer:Int(Boundary:tlBox)
 	Return Boundary.GetCollisionLayer()
 End Function
 
-rem
+Rem
 	bbdoc: Assign an object to a boundary
 	about: This can be handy to store extra custom info about a boundary. 
 end rem
@@ -3829,7 +3829,7 @@ Function SetBoundaryData(Boundary:tlBox, Data:Object)
 	boundary.SetData(data)
 End Function
 
-rem
+Rem
 	bbdoc: Get the data assigned to a boundary
 	about: Use this to retrieve the custom data you have assign to a boundary.
 end rem
@@ -3837,7 +3837,7 @@ Function GetBoundaryData:Object(Boundary:tlBox, Data:Object)
 	Return boundary.GetData()
 End Function
 
-rem
+Rem
 	bbdoc: Move a Boundary by a given amount.
 	about: This sets the position of a #tlBox, #tlCircle or #tlPolygon by moving it by the x and y amount.
 end rem
@@ -3845,7 +3845,7 @@ Function MoveBoundary(Boundary:tlBox, x:Float, y:Float)
 	Boundary.Move(x, y)
 End Function
 
-rem
+Rem
 	bbdoc: Find out if a point is within a boundary
 	returns: True if the point is within
 	about: Use this to find out if a point at x,y falls within a #tlBox, #tlCircle or #tlPolygon
@@ -3854,7 +3854,7 @@ Function PointInside:Int(Boundary:tlBox, x:Float, y:Float)
 	Return boundary.PointInside(x, y)
 End Function
 
-rem
+Rem
 	bbdoc: Set the scale of a Boundary
 	about: This sets the scale a #tlBox, #tlCircle or #tlPolygon by x and y (or just x in the case if a #tlCircle)
 end rem
@@ -3862,7 +3862,7 @@ Function ScaleBoundary(Boundary:tlBox, x:Float, y:Float)
 	Boundary.SetScale(x, y)
 End Function
 
-rem
+Rem
 	bbdoc: Set the velocity of a boundary
 	about: It's import to set the velocity of the boundary so that collisions can be more accurately calculated. If you're attaching this
 	to an entity in your game then you'll just need to match this to your entities velocity.
@@ -3871,7 +3871,7 @@ Function SetBoundaryVelocity(Boundary:tlBox, Velocity_x:Float, Velocity_y:Float)
 	boundary.SetVelocity(velocity_x, velocity_y)
 End Function
 
-rem
+Rem
 	bbdoc: Update the position of the boundary
 	about: You can use this function to update a boundary's position according to its current velocity vector
 end rem
@@ -3879,7 +3879,7 @@ Function UpdateBoundaryPosition(Boundary:tlBox)
 	boundary.UpdatePosition()
 End Function
 
-rem
+Rem
 	bbdoc: Rotate a #tlPolygon
 	about: This will rotate the polygon by the given amount
 end rem
@@ -3887,7 +3887,7 @@ Function RotatePolygon(Poly:tlPolygon, angle:Float)
 	Poly.Rotate(angle)
 End Function
 
-rem
+Rem
 	bbdoc: Set the angle of a #tlPolygon
 	about: This will set the angle of a polygon to the given amount
 end rem
@@ -3895,7 +3895,7 @@ Function SetPolygonAngle(Poly:tlPolygon, angle:Float)
 	Poly.SetAngle(angle)
 End Function
 
-rem
+Rem
 	bbdoc: Check for a collision between 2 Boundaries
 	returns: #tlCollisionResult.
 	about: You can use this function to check for collisions between any type of boundary: #tlBox, #tlCircle, #tlLine and #tlPolygon. The #tlCollisionResult
@@ -3951,7 +3951,7 @@ Function CheckCollision:tlCollisionResult(Source:tlBox, Target:tlBox)
 	End Select
 End Function
 
-rem
+Rem
 	bbdoc: Find out if 2 boundaries are on the same collision layers.
 	returns: True if they are on the same layer, otherwise false.
 end rem
@@ -3960,7 +3960,7 @@ Function SameLayer:Int(Source:tlBox, Target:tlBox)
 	Return False
 End Function
 
-rem
+Rem
 	bbdoc: See if a ray collides with a boundary
 	returns: #tlCollisionResult with the results of the collision
 	about: You can use this to test for a collision with a ray and any type of boundary: #tlBox, #tlCircle, #tlLine and #tlPolygon. 
@@ -3974,7 +3974,7 @@ Function CheckRayCollision:tlCollisionResult(Target:tlBox, px:Float, py:Float, d
 
 End Function
 
-rem
+Rem
 	bbdoc: Prevent boundaries from overlapping, based on a #tlCollisionResult
 	about: After you have retrieved a #tlCollisionResult from calling #CheckCollision you can call this function to separate 2 boundaries from each other.
 	If push is false (default) then the source boundary will be stopped by the target boundary, otherwsie the source bouandry will push the target boundary
@@ -3991,7 +3991,7 @@ Function PreventOverlap(Result:tlCollisionResult, Push:Int = False)
 	End If
 End Function
 
-rem
+Rem
 	bbdoc: Get the rebound vector
 	returns: New #tlVector2 with the resulting rebound vector, or v, if there was nothing to rebound
 	about: When an object collides with a surface you may want to know a resulting vector based on bounce and friction. So you can call this
@@ -4004,7 +4004,7 @@ End Function
 
 'helper functions
 
-rem
+Rem
 	bbdoc: Do a Line to Circle collision check
 	returns: True if line and circle overlap
 	about: x1, y1 and x2, y2 represent the beginning and end line coordinates, and px, py and r represent the circle coordinates and radius. 
@@ -4029,7 +4029,7 @@ Function LineToCircle:Int(x1:Float, y1:Float, x2:Float, y2:Float, px:Float, py:F
 	EndIf
 	
 End Function
-rem
+Rem
 	bbdoc: Do a Line to Line collision check
 	returns: True if lines overlap
 	about: x0, y0, x1, y1 is the first line and x2, y2, x3, y3 is the second line you want want check for an intersection
@@ -4053,7 +4053,7 @@ Function LinesCross:Int(x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Flo
 	Return False
 
 End Function
-rem
+Rem
 	bbdoc: Do a Line to Line collision check and return the point of intersection.
 	returns: True if lines overlap, and Sets X_Point and Y_Point to the point of interection.
 	about: x0, y0, x1, y1 is the first line and x2, y2, x3, y3 is the second line you want want check for an intersection
@@ -4081,7 +4081,7 @@ Function LinesCrossAtPoint:Int(x0:Float, y0:Float, x1:Float, y1:Float, x2:Float,
 	Return False
 
 End Function
-rem
+Rem
 	bbdoc: Get the quad a vertex lies within
 	about: This will return the quad a vertex lies within according to the x and y axis you pass it.
 end rem
@@ -4100,14 +4100,14 @@ Function GetQuad:Int(axis_x:Float, axis_y:Float, vert_x:Float, vert_y:Float)
 		EndIf	
 	EndIf
 End Function
-rem
+Rem
 	bbdoc: Check if a point is with a field of view
 	returns: True if if point is withing observers fov, otherwise false
 end rem
 Function WithinFieldOfView:Int(Observer_x:Float, Observer_y:Float, FOV:Float, Direction:Float, PointX:Float, PointY:Float)
 	Return AngleDifference(GetDirection(observer_x, observer_y, pointx, pointy), direction) <= fov *.5
 End Function
-rem
+Rem
 	bbdoc: Return the nearest point on a line to the center of a circle
 	returns: NearestPoint_x and NearestPoint_y
 	about: x1, y1 and x2, y2 represent the beginning and end line coordinates, and px, py and r represent the circle coordinates and radius. 
@@ -4126,7 +4126,7 @@ Function NearestPointToCircle:Int(x1:Float, y1:Float, x2:Float, y2:Float, px:Flo
 	NearestPoint_y = (1 - q) * y1 + q * y2
 	
 End Function
-rem
+Rem
 	bbdoc: Find the amount of overlap between 2 1D lines
 	returns: The amount of overlap. Any value less then 0 is not overlapping.
 end rem

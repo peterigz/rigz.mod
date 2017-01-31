@@ -20,7 +20,7 @@
 
 SuperStrict
 
-rem
+Rem
 	bbdoc: 2d Vector and Matrix types for basic 2d geometry stuff
 	about: These types are basic with the minimum functionality required for the rest of the rigz collection of modules. 
 	These type grow as the overal need grows.
@@ -33,7 +33,7 @@ ModuleInfo "Version: v1.07"
 
 Import brl.math
 
-rem
+Rem
 	bbdoc: Matrix type which can be used to easily transform vectors
 	about: Matrices come in handy for transforming vectors such as scale and rotation
 end rem
@@ -42,7 +42,7 @@ Type tlMatrix2
 	Field aa:Float, ab:Float
 	Field ba:Float, bb:Float
 	
-	rem
+	Rem
 		bbdoc: Create a new matrix
 		returns: New matrix type
 	end rem
@@ -55,21 +55,21 @@ Type tlMatrix2
 		Return m
 	End Function
 	
-	rem
+	Rem
 		bbdoc: Set the matrix to a new set of values
 		about: Use this to prepare the matrix for a new transform. For example if you wanted to to rotate a vector, then you could do 
 		&{<matrix.set(cos(angle),sin(angle),-sin(angle),cos(angle))}
 		and then transform the vector with 
 		&{matrix.transformvector(vector)}
 	end rem
-	Method set(_aa:Float = 1, _ab:Float = 0, _ba:Float = 0, _bb:Float = 1)
+	Method set(_aa:Double = 1, _ab:Double = 0, _ba:Double = 0, _bb:Double = 1)
 		aa = _aa
 		ab = _ab
 		ba = _ba
 		bb = _bb
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Transpose the matrix
 	end rem
 	Method transpose()
@@ -78,7 +78,7 @@ Type tlMatrix2
 		ba = abt
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Scale the matrix by a given amount
 	end rem
 	Method scale(s:Float)
@@ -88,7 +88,7 @@ Type tlMatrix2
 		bb:*s
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Transfrom the matrix
 		about: Multiplies 2 matrices together
 		returns: New transformed matrix
@@ -100,7 +100,7 @@ Type tlMatrix2
 		Return r
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Transfrom a vector with the matrix
 		returns: New transformed vector
 		about: You can use this to transfrom a vector, rotating it, scaling it etc.
@@ -112,7 +112,7 @@ Type tlMatrix2
 		Return tV
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Transfrom a point
 		returns: New coordinates for the tranformed point in tx and ty
 		about: This will transform a point (x,y) and appply the new coordinates into tx and ty.
@@ -124,14 +124,14 @@ Type tlMatrix2
 
 End Type
 
-rem
+Rem
 	bbdoc: 2d vector type for basic vector handling
 end rem
 Type tlVector2
 	
 	Field x:Float, y:Float
 	
-	rem
+	Rem
 		bbdoc: Create a new vector with the given coordinates
 		returns: New #tlVector2
 	end rem
@@ -141,7 +141,7 @@ Type tlVector2
 		Return Self
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Clone a Vector
 		returns: Newly cloned #tlVector2
 	end rem
@@ -149,7 +149,7 @@ Type tlVector2
 		Return New tlVector2.Create(x, y)
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Move a vector but the given x and y amount
 	end rem
 	Method Move(distance_x:Float, distance_y:Float)
@@ -157,7 +157,7 @@ Type tlVector2
 		y:+distance_y
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Move a vector buy the given vector
 	end rem
 	Method MoveByVector(distance:tlVector2)
@@ -165,7 +165,7 @@ Type tlVector2
 		y:+distance.y
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Reposition the vector by the new x,y coordinates given
 	end rem
 	Method SetPosition(_x:Float, _y:Float)
@@ -173,7 +173,7 @@ Type tlVector2
 		y = _y
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Reposition the vector by the given vector
 	end rem
 	Method SetPositionByVector(v:tlVector2)
@@ -181,7 +181,7 @@ Type tlVector2
 		y = v.y
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Subtract this tlVector2 vector by another and return the result in a new vector
 		returns: A new #tlVector2
 	end rem
@@ -189,7 +189,7 @@ Type tlVector2
 		Return New tlVector2.Create(x - v.x, y - v.y)
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Add this tlVector2 vector to another and return the result in a new vector
 		returns: A new #tlVector2
 	end rem
@@ -197,7 +197,7 @@ Type tlVector2
 		Return New tlVector2.Create(x + v.x, y + v.y)
 	End Method
 	
-	rem
+	Rem
 		bbdoc: multiply this vector with another and return the result
 		returns: New #tlvector2
 	end rem
@@ -205,7 +205,7 @@ Type tlVector2
 		Return New tlVector2.Create(x * v.x, y * v.y)
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Scale the vector by the given amount and return the result in a new vector
 		returns: new scaled #tlvector2
 	end rem
@@ -213,7 +213,7 @@ Type tlVector2
 		Return New tlVector2.Create(x * scale, y * scale)
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Get the length of the vector
 		returns: The length or magnitude of the vector.
 	end rem
@@ -221,7 +221,7 @@ Type tlVector2
 		Return Sqr(x * x + y * y)
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Get the unit vector of the vector
 		returns: New unit vector of this vector
 	end rem
@@ -235,7 +235,7 @@ Type tlVector2
 		Return v
 	End Method
 	
-	rem
+	Rem
 		bbdoc: get the normal of the vector
 		returns: New #tlVector2 normal of this vector
 	end rem
@@ -247,7 +247,7 @@ Type tlVector2
 		Return New tlVector2.Create(y, -x)
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Normalise the vector
 	end rem
 	Method Normalise()
@@ -258,7 +258,7 @@ Type tlVector2
 		End If
 	End Method
 	
-	rem
+	Rem
 		bbdoc: Get the dot product of the vector
 		returns: The dot product of the vector.
 	end rem
@@ -267,14 +267,14 @@ Type tlVector2
 	EndMethod
 End Type
 
-rem
+Rem
 	bbdoc: Create a new 2d vector
 end rem
 Function CreateVector2:tlVector2(x:Float, y:Float)
 	Return New tlVector2.Create(x, y)
 End Function
 
-rem
+Rem
 	bbdoc: Create a new 2d matrix
 end rem
 Function CreateMatrix2:tlMatrix2(aa:Float = 1, ab:Float = 0, ba:Float = 0, bb:Float = 1)

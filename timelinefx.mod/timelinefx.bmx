@@ -202,7 +202,7 @@ Type tlEffectsLibrary
 	bbdoc: Add a new effect to the library including any sub effects and emitters. Effects are stored using a tMap and can be retrieved using #GetEffect.
 	endrem
 	Method AddEffect(e:tlEffect)
-		effects.Insert(Upper(e.getpath()), e)
+		effects.Insert(e.getpath().ToUpper(), e)
 		For Local em:tlEmitter = EachIn e.children
 			addemitter(em)
 		Next
@@ -212,7 +212,7 @@ Type tlEffectsLibrary
 	you're building your effects manually, just use #AddEffect and all its emitters will be added also.
 	endrem
 	Method AddEmitter(e:tlEmitter)
-		effects.Insert(Upper(e.getpath()), e)
+		effects.Insert(e.getpath().ToUpper(), e)
 		For Local ef:tlEffect = EachIn e.effects
 			addeffect(ef)
 		Next
@@ -242,7 +242,7 @@ Type tlEffectsLibrary
 	<p>Note that you should always use forward slashes.</p>
 	endrem
 	Method GetEffect:tlEffect(name:String)
-		Return tlEffect(effects.ValueForKey(Upper(name)))
+		Return tlEffect(effects.ValueForKey(name.ToUpper()))
 	End Method
 	Rem
 	bbdoc: Retrieve an emitter from the library
@@ -254,7 +254,7 @@ Type tlEffectsLibrary
 	<p>Note that you should always use forward slashes.</p>
 	endrem
 	Method GetEmitter:tlEmitter(name:String)
-		Return tlEmitter(effects.ValueForKey(Upper(name)))
+		Return tlEmitter(effects.ValueForKey(name.ToUpper()))
 	End Method
 End Type
 Rem
@@ -1353,17 +1353,17 @@ Type tlEffect Extends tlEntity
 	bbdoc: Add a new effect to the directory including any sub effects and emitters. Effects are stored using a map and can be retrieved using #GetEffect.
 	endrem
 	Method AddEffect(e:tlEffect)
-		directory.Insert(Upper(e.getpath()), e)
+		directory.Insert(e.getpath().ToUpper(), e)
 		For Local em:tlEmitter = EachIn e.children
 			addemitter(em)
 		Next
 	End Method
 	Rem
-	bbdoc: Add a new emitter to the directory. Emitters are stored using a map and can be retrieved using #GetEmitter. Generally you don't want to call this at all, 
+	bbdoc: Add a New emitter To the directory. Emitters are stored using a map And can be retrieved using #GetEmitter. Generally you don't want to call this at all, 
 	just use #AddEffect and all its emitters will be added also.
 	endrem
 	Method AddEmitter(e:tlEmitter)
-		directory.Insert(Upper(e.getpath()), e)
+		directory.Insert(e.getpath().ToUpper(), e)
 		For Local ef:tlEffect = EachIn e.effects
 			addeffect(ef)
 		Next
@@ -1378,7 +1378,7 @@ Type tlEffect Extends tlEntity
 	<p>Note that you should always use forward slashes.</p>
 	endrem
 	Method GetEffect:tlEffect(name:String)
-		Return tlEffect(directory.ValueForKey(Upper(name)))
+		Return tlEffect(directory.ValueForKey(name.ToUpper()))
 	End Method
 	Rem
 	bbdoc: Retrieve an emitter from the of the effect
@@ -1390,7 +1390,7 @@ Type tlEffect Extends tlEntity
 	<p>Note that you should always use forward slashes.</p>
 	endrem
 	Method GetEmitter:tlEmitter(name:String)
-		Return tlEmitter(directory.ValueForKey(Upper(name)))
+		Return tlEmitter(directory.ValueForKey(name.ToUpper()))
 	End Method
 	Rem
 		bbdoc: Stop the effect from timing out and be automatically removed
@@ -1611,7 +1611,7 @@ Type tlEffect Extends tlEntity
 		Super.Destroy()
 	End Method
 		
-	Method interpolate_amount:Float(_age:Int)
+	Method interpolate_amount:Float(_age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -1632,7 +1632,7 @@ Type tlEffect Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_life:Float(_age:Int)
+	Method interpolate_life:Float(_age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -1653,7 +1653,7 @@ Type tlEffect Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_sizex:Float(_age:Int)
+	Method interpolate_sizex:Float(_age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -1674,7 +1674,7 @@ Type tlEffect Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_sizey:Float(_age:Int)
+	Method interpolate_sizey:Float(_age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -1695,7 +1695,7 @@ Type tlEffect Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_velocity:Float(_age:Int)
+	Method interpolate_velocity:Float(_age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -1716,7 +1716,7 @@ Type tlEffect Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_weight:Float(_age:Int)
+	Method interpolate_weight:Float(_age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -1737,7 +1737,7 @@ Type tlEffect Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_spin:Float(_age:Int)
+	Method interpolate_spin:Float(_age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -1758,7 +1758,7 @@ Type tlEffect Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_alpha:Float(_age:Int)
+	Method interpolate_alpha:Float(_age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -1779,7 +1779,7 @@ Type tlEffect Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_emissionangle:Float(_age:Int)
+	Method interpolate_emissionangle:Float(_age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -1800,7 +1800,7 @@ Type tlEffect Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_emissionrange:Float(_age:Int)
+	Method interpolate_emissionrange:Float(_age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -1821,7 +1821,7 @@ Type tlEffect Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_width:Float(_age:Int)
+	Method interpolate_width:Float(_age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -1842,7 +1842,7 @@ Type tlEffect Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_height:Float(_age:Int)
+	Method interpolate_height:Float(_age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -1863,7 +1863,7 @@ Type tlEffect Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_angle:Float(_age:Int)
+	Method interpolate_angle:Float(_age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -1884,7 +1884,7 @@ Type tlEffect Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_stretch:Float(_age:Int)
+	Method interpolate_stretch:Float(_age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -1905,7 +1905,7 @@ Type tlEffect Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_globalz:Float(_age:Int)
+	Method interpolate_globalz:Float(_age:Float)
 		If Not globalz.Last()
 			Return 1
 		End If
@@ -2308,105 +2308,105 @@ Type tlEffect Extends tlEntity
 	End Method
 	'-------------
 	'Lookups
-	Method get_life:Float(frame:Int)
+	Method get_life:Float(frame:Float)
 		If frame <= c_life.lastframe
 			Return c_life.changes[frame]
 		Else
 			Return c_life.changes[c_life.lastframe]
 		End If
 	End Method
-	Method get_amount:Float(frame:Int)
+	Method get_amount:Float(frame:Float)
 		If frame <= c_amount.lastframe
 			Return c_amount.changes[frame]
 		Else
 			Return c_amount.changes[c_amount.lastframe]
 		End If
 	End Method
-	Method get_sizex:Float(frame:Int)
+	Method get_sizex:Float(frame:Float)
 		If frame <= c_sizex.lastframe
 			Return c_sizex.changes[frame]
 		Else
 			Return c_sizex.changes[c_sizex.lastframe]
 		End If
 	End Method
-	Method get_sizey:Float(frame:Int)
+	Method get_sizey:Float(frame:Float)
 		If frame <= c_sizey.lastframe
 			Return c_sizey.changes[frame]
 		Else
 			Return c_sizey.changes[c_sizey.lastframe]
 		End If
 	End Method
-	Method get_velocity:Float(frame:Int)
+	Method get_velocity:Float(frame:Float)
 		If frame <= c_velocity.lastframe
 			Return c_velocity.changes[frame]
 		Else
 			Return c_velocity.changes[c_velocity.lastframe]
 		End If
 	End Method
-	Method get_weight:Float(frame:Int)
+	Method get_weight:Float(frame:Float)
 		If frame <= c_weight.lastframe
 			Return c_weight.changes[frame]
 		Else
 			Return c_weight.changes[c_weight.lastframe]
 		End If
 	End Method
-	Method get_spin:Float(frame:Int)
+	Method get_spin:Float(frame:Float)
 		If frame <= c_spin.lastframe
 			Return c_spin.changes[frame]
 		Else
 			Return c_spin.changes[c_spin.lastframe]
 		End If
 	End Method
-	Method get_alpha:Float(frame:Int)
+	Method get_alpha:Float(frame:Float)
 		If frame <= c_alpha.lastframe
 			Return c_alpha.changes[frame]
 		Else
 			Return c_alpha.changes[c_alpha.lastframe]
 		End If
 	End Method
-	Method get_emissionangle:Float(frame:Int)
+	Method get_emissionangle:Float(frame:Float)
 		If frame <= c_emissionangle.lastframe
 			Return c_emissionangle.changes[frame]
 		Else
 			Return c_emissionangle.changes[c_emissionangle.lastframe]
 		End If
 	End Method
-	Method get_emissionrange:Float(frame:Int)
+	Method get_emissionrange:Float(frame:Float)
 		If frame <= c_emissionrange.lastframe
 			Return c_emissionrange.changes[frame]
 		Else
 			Return c_emissionrange.changes[c_emissionrange.lastframe]
 		End If
 	End Method
-	Method get_width:Float(frame:Int)
+	Method get_width:Float(frame:Float)
 		If frame <= c_width.lastframe
 			Return c_width.changes[frame]
 		Else
 			Return c_width.changes[c_width.lastframe]
 		End If
 	End Method
-	Method get_height:Float(frame:Int)
+	Method get_height:Float(frame:Float)
 		If frame <= c_height.lastframe
 			Return c_height.changes[frame]
 		Else
 			Return c_height.changes[c_height.lastframe]
 		End If
 	End Method
-	Method get_angle:Float(frame:Int)
+	Method get_angle:Float(frame:Float)
 		If frame <= c_angle.lastframe
 			Return c_angle.changes[frame]
 		Else
 			Return c_angle.changes[c_angle.lastframe]
 		End If
 	End Method
-	Method get_stretch:Float(frame:Int)
+	Method get_stretch:Float(frame:Float)
 		If frame <= c_stretch.lastframe
 			Return c_stretch.changes[frame]
 		Else
 			Return c_stretch.changes[c_stretch.lastframe]
 		End If
 	End Method
-	Method get_globalz:Float(frame:Int)
+	Method get_globalz:Float(frame:Float)
 		If frame <= c_globalz.lastframe
 			Return c_globalz.changes[frame]
 		Else
@@ -2547,7 +2547,7 @@ Rem
 	<tr><td> #setParticlesrelative</td></tr>
 	<tr><td> #settweenspawns</td></tr>
 	</table>
-endrem
+EndRem
 Type tlEmitter Extends tlEntity
 	Field currentlife:Float									'the current life of the emitter as it will vary over time
 	Field uniform:Int = True								'whether it scales uniformly
@@ -5047,7 +5047,7 @@ Type tlEmitter Extends tlEntity
 		End If
 	End Method
 	'-----Spawn values over effect age-----
-	Method interpolate_amount:Float(age:Int)
+	Method interpolate_amount:Float(age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -5069,7 +5069,7 @@ Type tlEmitter Extends tlEntity
 		
 		Return lastv
 	End Method
-	Method interpolate_life:Float(age:Int)
+	Method interpolate_life:Float(age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -5090,7 +5090,7 @@ Type tlEmitter Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_sizex:Float(age:Int)
+	Method interpolate_sizex:Float(age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local lastec:tlAttributeNode
@@ -5111,7 +5111,7 @@ Type tlEmitter Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_sizey:Float(age:Int)
+	Method interpolate_sizey:Float(age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -5132,7 +5132,7 @@ Type tlEmitter Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_basespeed:Float(age:Int)
+	Method interpolate_basespeed:Float(age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -5153,7 +5153,7 @@ Type tlEmitter Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_baseweight:Float(age:Int)
+	Method interpolate_baseweight:Float(age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -5174,7 +5174,7 @@ Type tlEmitter Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_basespin:Float(age:Int)
+	Method interpolate_basespin:Float(age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -5195,7 +5195,7 @@ Type tlEmitter Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_emissionangle:Float(age:Int)
+	Method interpolate_emissionangle:Float(age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -5216,7 +5216,7 @@ Type tlEmitter Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_emissionrange:Float(age:Int)
+	Method interpolate_emissionrange:Float(age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -5237,7 +5237,7 @@ Type tlEmitter Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_splatter:Float(age:Int)
+	Method interpolate_splatter:Float(age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -5259,7 +5259,7 @@ Type tlEmitter Extends tlEntity
 		Return lastv
 	End Method
 	'-----Variations over effect age----
-	Method interpolate_velvariation:Float(age:Int)
+	Method interpolate_velvariation:Float(age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -5280,7 +5280,7 @@ Type tlEmitter Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_weightvariation:Float(age:Int)
+	Method interpolate_weightvariation:Float(age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -5301,7 +5301,7 @@ Type tlEmitter Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_lifevariation:Float(age:Int)
+	Method interpolate_lifevariation:Float(age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -5322,7 +5322,7 @@ Type tlEmitter Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_amountvariation:Float(age:Int)
+	Method interpolate_amountvariation:Float(age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -5343,7 +5343,7 @@ Type tlEmitter Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_sizexvariation:Float(age:Int)
+	Method interpolate_sizexvariation:Float(age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -5364,7 +5364,7 @@ Type tlEmitter Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_sizeyvariation:Float(age:Int)
+	Method interpolate_sizeyvariation:Float(age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -5385,7 +5385,7 @@ Type tlEmitter Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_spinvariation:Float(age:Int)
+	Method interpolate_spinvariation:Float(age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -5406,7 +5406,7 @@ Type tlEmitter Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_directionvariation:Float(age:Int)
+	Method interpolate_directionvariation:Float(age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -5428,7 +5428,7 @@ Type tlEmitter Extends tlEntity
 		Return lastv
 	End Method
 	'-----Particle over life interpolations----
-	Method interpolate_alpha:Float(age:Int, lifetime:Float)
+	Method interpolate_alpha:Float(age:Float, lifetime:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local frame:Float
@@ -5451,7 +5451,7 @@ Type tlEmitter Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_r:Float(age:Int, lifetime:Float)
+	Method interpolate_r:Float(age:Float, lifetime:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local frame:Float
@@ -5467,7 +5467,7 @@ Type tlEmitter Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_g:Float(age:Int, lifetime:Float)
+	Method interpolate_g:Float(age:Float, lifetime:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local frame:Float
@@ -5483,7 +5483,7 @@ Type tlEmitter Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_b:Float(age:Int, lifetime:Float)
+	Method interpolate_b:Float(age:Float, lifetime:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local frame:Float
@@ -5547,7 +5547,7 @@ Type tlEmitter Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_scalex:Float(age:Int, lifetime:Float)
+	Method interpolate_scalex:Float(age:Float, lifetime:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -5570,7 +5570,7 @@ Type tlEmitter Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_scaley:Float(age:Int, lifetime:Float)
+	Method interpolate_scaley:Float(age:Float, lifetime:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -5593,7 +5593,7 @@ Type tlEmitter Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_spin:Float(age:Int, lifetime:Float)
+	Method interpolate_spin:Float(age:Float, lifetime:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local frame:Float
@@ -5616,7 +5616,7 @@ Type tlEmitter Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_velocity:Float(age:Int, lifetime:Float)
+	Method interpolate_velocity:Float(age:Float, lifetime:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local frame:Float
@@ -5639,7 +5639,7 @@ Type tlEmitter Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_weight:Float(age:Int, lifetime:Float)
+	Method interpolate_weight:Float(age:Float, lifetime:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local frame:Float
@@ -5662,7 +5662,7 @@ Type tlEmitter Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_direction:Float(age:Int, lifetime:Float)
+	Method interpolate_direction:Float(age:Float, lifetime:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local frame:Float
@@ -5685,7 +5685,7 @@ Type tlEmitter Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_directionvariationot:Float(age:Int, lifetime:Float)
+	Method interpolate_directionvariationot:Float(age:Float, lifetime:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local frame:Float
@@ -5708,7 +5708,7 @@ Type tlEmitter Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_framerate:Float(age:Int, lifetime:Float)
+	Method interpolate_framerate:Float(age:Float, lifetime:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local frame:Float
@@ -5731,7 +5731,7 @@ Type tlEmitter Extends tlEntity
 		Next
 		Return lastv
 	End Method
-	Method interpolate_stretch:Float(age:Int, lifetime:Float)
+	Method interpolate_stretch:Float(age:Float, lifetime:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local frame:Float
@@ -5755,7 +5755,7 @@ Type tlEmitter Extends tlEntity
 		Return lastv
 	End Method
 	'-----Global interpolations-----
-	Method interpolate_globalvelocity:Float(age:Int)
+	Method interpolate_globalvelocity:Float(age:Float)
 		Local lastv:Float
 		Local lastf:Float
 		Local p:Float
@@ -6681,77 +6681,77 @@ Type tlEmitter Extends tlEntity
 	End Method
 	'lookups
 	'Base
-	Method get_life:Float(frame:Int)
+	Method get_life:Float(frame:Float)
 		If frame <= c_life.lastframe
 			Return c_life.changes[frame]
 		Else
 			Return c_life.changes[c_life.lastframe]
 		End If
 	End Method
-	Method get_lifevariation:Float(frame:Int)
+	Method get_lifevariation:Float(frame:Float)
 		If frame <= c_lifevariation.lastframe
 			Return c_lifevariation.changes[frame]
 		Else
 			Return c_lifevariation.changes[c_lifevariation.lastframe]
 		End If
 	End Method
-	Method get_amount:Float(frame:Int)
+	Method get_amount:Float(frame:Float)
 		If frame <= c_amount.lastframe
 			Return c_amount.changes[frame]
 		Else
 			Return c_amount.changes[c_amount.lastframe]
 		End If
 	End Method
-	Method get_sizex:Float(frame:Int)
+	Method get_sizex:Float(frame:Float)
 		If frame <= c_sizex.lastframe
 			Return c_sizex.changes[frame]
 		Else
 			Return c_sizex.changes[c_sizex.lastframe]
 		End If
 	End Method
-	Method get_sizey:Float(frame:Int)
+	Method get_sizey:Float(frame:Float)
 		If frame <= c_sizey.lastframe
 			Return c_sizey.changes[frame]
 		Else
 			Return c_sizey.changes[c_sizey.lastframe]
 		End If
 	End Method
-	Method get_basespeed:Float(frame:Int)
+	Method get_basespeed:Float(frame:Float)
 		If frame <= c_basespeed.lastframe
 			Return c_basespeed.changes[frame]
 		Else
 			Return c_basespeed.changes[c_basespeed.lastframe]
 		End If
 	End Method
-	Method get_baseweight:Float(frame:Int)
+	Method get_baseweight:Float(frame:Float)
 		If frame <= c_baseweight.lastframe
 			Return c_baseweight.changes[frame]
 		Else
 			Return c_baseweight.changes[c_baseweight.lastframe]
 		End If
 	End Method
-	Method get_basespin:Float(frame:Int)
+	Method get_basespin:Float(frame:Float)
 		If frame <= c_basespin.lastframe
 			Return c_basespin.changes[frame]
 		Else
 			Return c_basespin.changes[c_basespin.lastframe]
 		End If
 	End Method
-	Method get_emissionangle:Float(frame:Int)
+	Method get_emissionangle:Float(frame:Float)
 		If frame <= c_emissionangle.lastframe
 			Return c_emissionangle.changes[frame]
 		Else
 			Return c_emissionangle.changes[c_emissionangle.lastframe]
 		End If
 	End Method
-	Method get_emissionrange:Float(frame:Int)
+	Method get_emissionrange:Float(frame:Float)
 		If frame <= c_emissionrange.lastframe
 			Return c_emissionrange.changes[frame]
 		Else
 			Return c_emissionrange.changes[c_emissionrange.lastframe]
 		End If
 	End Method
-	Method get_splatter:Float(frame:Int)
+	Method get_splatter:Float(frame:Float)
 		If frame <= c_splatter.lastframe
 			Return c_splatter.changes[frame]
 		Else
@@ -6759,49 +6759,49 @@ Type tlEmitter Extends tlEntity
 		End If
 	End Method
 	'Variations
-	Method get_velvariation:Float(frame:Int)
+	Method get_velvariation:Float(frame:Float)
 		If frame <= c_velvariation.lastframe
 			Return c_velvariation.changes[frame]
 		Else
 			Return c_velvariation.changes[c_velvariation.lastframe]
 		End If
 	End Method
-	Method get_weightvariation:Float(frame:Int)
+	Method get_weightvariation:Float(frame:Float)
 		If frame <= c_weightvariation.lastframe
 			Return c_weightvariation.changes[frame]
 		Else
 			Return c_weightvariation.changes[c_weightvariation.lastframe]
 		End If
 	End Method
-	Method get_amountvariation:Float(frame:Int)
+	Method get_amountvariation:Float(frame:Float)
 		If frame <= c_amountvariation.lastframe
 			Return c_amountvariation.changes[frame]
 		Else
 			Return c_amountvariation.changes[c_amountvariation.lastframe]
 		End If
 	End Method
-	Method get_sizexvariation:Float(frame:Int)
+	Method get_sizexvariation:Float(frame:Float)
 		If frame <= c_sizexvariation.lastframe
 			Return c_sizexvariation.changes[frame]
 		Else
 			Return c_sizexvariation.changes[c_sizexvariation.lastframe]
 		End If
 	End Method
-	Method get_sizeyvariation:Float(frame:Int)
+	Method get_sizeyvariation:Float(frame:Float)
 		If frame <= c_sizeyvariation.lastframe
 			Return c_sizeyvariation.changes[frame]
 		Else
 			Return c_sizeyvariation.changes[c_sizeyvariation.lastframe]
 		End If
 	End Method
-	Method get_spinvariation:Float(frame:Int)
+	Method get_spinvariation:Float(frame:Float)
 		If frame <= c_spinvariation.lastframe
 			Return c_spinvariation.changes[frame]
 		Else
 			Return c_spinvariation.changes[c_spinvariation.lastframe]
 		End If
 	End Method
-	Method get_directionvariation:Float(frame:Int)
+	Method get_directionvariation:Float(frame:Float)
 		If frame <= c_directionvariation.lastframe
 			Return c_directionvariation.changes[frame]
 		Else
@@ -7005,7 +7005,7 @@ Type tlEmitter Extends tlEntity
 		End If
 	End Method
 	'global adjusters
-	Method get_globalvelocity:Float(frame:Int)
+	Method get_globalvelocity:Float(frame:Float)
 		If frame <= c_globalvelocity.lastframe
 			Return c_globalvelocity.changes[frame]
 		Else

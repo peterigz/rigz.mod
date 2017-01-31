@@ -91,7 +91,7 @@ Type TAnimImage
 		If image
 			For Local frame:Int = 0 To frames - 1
 				Local pixmap:TPixmap = LockImage(image)
-				pixmap = PixmapWindow(pixmap, u0[frame] * image.width, v0[frame] * image.height, getwidth(), getheight())
+				pixmap = PixmapWindow(pixmap, Int(u0[frame] * image.width), Int(v0[frame] * image.height), getwidth(), getheight())
 				For Local x:Int = 0 To pixmap.width - 1
 					For Local y:Int = 0 To pixmap.height - 1
 						Local RGBA:Int = pixmap.ReadPixel(x, y)
@@ -187,8 +187,8 @@ Rem
 	<li><b>frame: </b>The frame of the animation that you want to draw. The frame index starts from 0.</li>
 	</ul>
 end rem
-Function DrawSprite(sprite:TAnimImage, x:Float, y:Float, frame:Int = 0)
-	sprite.Draw(x, y, sprite.width, sprite.height, frame) 
+Function DrawSprite(sprite:TAnimImage, x:Float, y:Float, frame:Float = 0)
+	sprite.Draw(x, y, sprite.width, sprite.height, Int(frame)) 
 End Function
 
 'internal functions

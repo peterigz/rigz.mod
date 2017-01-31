@@ -408,7 +408,7 @@ Type tlEntity
 			UpdateRootParentEntityRadius()
 		End If
 	End Method
-	rem
+	Rem
 		bbdoc: Update the entity's parent radius of influence
 	end rem
 	Method UpdateParentEntityRadius()
@@ -422,7 +422,7 @@ Type tlEntity
 			parent.UpdateParentEntityRadius()
 		End If
 	End Method
-	rem
+	Rem
 		bbdoc: Update the entity's parent radius of influence
 	end rem
 	Method UpdateRootParentEntityRadius()
@@ -431,7 +431,7 @@ Type tlEntity
 			'DebugLog name + " - Radius: " + entity_Radius + " | Distance to Parent: " + getdistance(wx, wy, rootparent.wx, rootparent.wy)
 		End If
 	End Method
-	rem
+	Rem
 		bbdoc: Update the entity's parent bounding box
 	end rem
 	Method UpdateParentBoundingBox()
@@ -455,7 +455,7 @@ Type tlEntity
 			e.rootparent = Self
 		End If
 	End Method
-	rem
+	Rem
 		bbdoc: draw the bounding box for debugging
 	end rem
 	Method DrawBoundingBox()
@@ -475,7 +475,7 @@ Type tlEntity
 		SetColor 255, 0, 255
 		DrawOval wx - image_radius, wy - image_radius, image_radius * 2, image_radius * 2
 	End Method
-	rem
+	Rem
 		bbdoc: Draw the whole boundary of the entity including children
 	end rem
 	Method DrawEntityBoundary()
@@ -485,7 +485,7 @@ Type tlEntity
 		SetColor 255, 0, 255
 		DrawOval wx - entity_radius, wy - entity_radius, entity_radius * 2, entity_radius * 2
 	End Method
-	rem
+	Rem
 		bbdoc: Change the level of zoom for the particle.
 	endrem
 	Method Zoom(v:Float)
@@ -1047,7 +1047,7 @@ Type tlEntity
 			Else
 				tv = currentframe
 			End If
-			DrawSprite(avatar, TweenValues(oldwx, wx, tween), TweenValues(oldwy, wy, tween), tv Mod avatar.frames)
+			DrawSprite(avatar, TweenValues(oldwx, wx, tween), TweenValues(oldwy, wy, tween), Int(tv Mod avatar.frames))
 		End If
 		For Local e:tlEntity = EachIn children
 			e.render(tween)
