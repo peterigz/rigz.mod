@@ -121,7 +121,7 @@ End Rem
 Function GLMax2DDriverEXT:TGLMax2DDriverEXT()
 	Global _done:Int
 	If Not _done
-		Local _driverext:TGLMax2DDriverEXT = New TGLMax2DDriverEXT.Create()
+		_driverext = New TGLMax2DDriverEXT.Create()
 		_done=True
 	EndIf
 	Return _driverext

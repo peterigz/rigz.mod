@@ -9,7 +9,7 @@ about: <p>Max2D module provides a few extra features for the standard max2d, mai
 		<li>Use #SetGraphicsDriverEXT and set the driver to the specific max2d driver you're using, ie., GLMax2DDriverEXT(),D3D7Max2DDriverEXT() or
 		D3D9Max2DDriverEXT()</li>
 		<li>After setting that make sure you call InitEXTGraphics() to initialise the extended driver.</li>
-		<li>For all images you load with #LoadImageEXT or #LoadAnimImageEXT with the PreMultiAlpha falg set to true, you need to use the following
+		<li>For all images you load with #LoadImageEXT or #LoadAnimImageEXT with the PreMultiAlpha flag set to true, you need to use the following
 		max2d state change commands instead of the normal ones: #SetBlendEXT, #SetColorEXT and #SetAlphaEXT.</li>
 		<li>If you want to switch between SetBlend for a normal image (non-premultiplied alpha) and SetBlendEXT then you need to use #ResetBlendMode after
 		calling #SetBlendEXT and ResetBlendModeEXT after using the normal SetBlend. This is only necessary when you switch bettwen the two, so if you used 

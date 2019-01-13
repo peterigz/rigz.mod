@@ -4,17 +4,21 @@ Framework brl.max2d
 Import rigz.timelinefx
 Import rigz.tweener
 Import brl.glmax2d
-
-SetGraphicsDriver GLMax2DDriver()
+Import rigz.glmax2dext
+Import rigz.max2dext
 
 'Load the effects library
-Local MyEffectsLib:tlEffectsLibrary = LoadEffects("effects/LibraryExamples.eff", False)
+Local MyEffectsLib:tlEffectsLibrary = LoadEffects("effects/LibraryExamples.eff")
 'Create an effect and assign it an effect from the library
-Local MyEffect:tlEffect = MyEffectsLib.GetEffect("Super Effect")
+Local MyEffect:tlEffect = MyEffectsLib.GetEffect("Explosion")
 'Create the particle manager to manage the particles
 Local MyParticleManager:tlParticleManager = CreateParticleManager()
 
 Graphics (800, 600, 0)
+
+		SetGraphicsDriverEXT(GLMax2DDriverEXT())
+		InitEXTGraphics()
+
 
 'These commands are important to set the origin of the particle manager. For this example we're setting the origin so that
 'effects will be placed at screen coordinates. If you leave out the setorigin command then an effect created at 0,0 would
@@ -26,7 +30,7 @@ myparticlemanager.SetOrigin(GraphicsWidth() / 2, GraphicsHeight() / 2)
 'number spawned for example. 1 is the default value.
 MyParticleManager.SetGlobalAmountScale(1)
 
-MyParticleManager.SetUpdateMode(tlUPDATE_MODE_INTERPOLATED)
+'MyParticleManager.SetUpdateMode(tlUPDATE_MODE_COMPILED)
 
 'This will make one frame equal 33 millisecs long - or 30 updates per second.
 SetUpdateFrequency(30)
@@ -36,7 +40,7 @@ Local Tweener:tTweener = New tTweener.Create(30)
 
 'Our main loop
 While Not KeyDown(KEY_ESCAPE) Or AppTerminate()
-	
+	SetClsColor 0,0,0
 	Cls
 	
 	If MouseHit(1)
@@ -68,7 +72,7 @@ While Not KeyDown(KEY_ESCAPE) Or AppTerminate()
 	
 	SetRotation 0
 	SetScale 1, 1
-	SetAlpha 1
+	SetAlphaEXT 1
 	DrawText MyParticleManager.GetParticlesInUse(), 10, 10
 	
 	Flip 0

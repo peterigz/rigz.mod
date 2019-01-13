@@ -204,7 +204,7 @@ Type tlEntity
 			pixelspersecond = speed / tp_CURRENT_UPDATE_TIME
 			speedvec.x = Sin(direction) * pixelspersecond
 			speedvec.y = Cos(direction) * pixelspersecond
-			DebugLog speedvec.x
+
 			If relative
 					x:+speedvec.x
 					y:-speedvec.y
@@ -418,7 +418,7 @@ Type tlEntity
 			Else
 				parent.entity_radius:+Max(0, getdistance(wx, wy, parent.wx, parent.wy) + image_radius - parent.Entity_Radius)
 			End If
-			DebugLog name + " - Radius: " + entity_Radius + " | Distance to Parent: " + getdistance(wx, wy, parent.wx, parent.wy)
+			'DebugLog name + " - Radius: " + entity_Radius + " | Distance to Parent: " + getdistance(wx, wy, parent.wx, parent.wy)
 			parent.UpdateParentEntityRadius()
 		End If
 	End Method

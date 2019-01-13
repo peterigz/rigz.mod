@@ -20,7 +20,7 @@ Type TGraphicsDriverEXT
 
 End Type
 
-Function SetGraphicsDriverEXT(driver:TGraphicsDriverEXT)
+Function SetGraphicsDriverEXT(Driver:TGraphicsDriverEXT)
 	If _driverext <> Driver
 		_driverext = Driver
 	End If
